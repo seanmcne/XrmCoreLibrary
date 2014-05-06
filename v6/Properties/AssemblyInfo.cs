@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Microsoft.Pfe.Xrm.Core")]
-[assembly: AssemblyDescription("Contains a set of common components for building solutions using the Dynamics CRM 2011 SDK. Authored by the Microsoft Premier Field Engineering (PFE) Dynamics team.")]
+[assembly: AssemblyDescription("Contains a set of common components for building solutions using the Dynamics CRM 2013 SDK. Authored by the Microsoft Premier Field Engineering (PFE) Dynamics team.")]
 [assembly: AssemblyCompany("Microsoft Corporation")]
 [assembly: AssemblyProduct("PFE Dynamics Core Library for Microsoft Dynamics CRM 2013")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2014")]
@@ -29,6 +29,6 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("6.1405.1")]
-[assembly: AssemblyFileVersion("6.1405.1")]
-[assembly: AssemblyInformationalVersion("6.1405.1")]
+[assembly: AssemblyVersion("6.1405.2")]
+[assembly: AssemblyFileVersion("6.1405.2")]
+[assembly: AssemblyInformationalVersion("6.1405.2")]
