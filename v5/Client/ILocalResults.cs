@@ -19,7 +19,7 @@ namespace Microsoft.Pfe.Xrm
     using System.Linq;
     using System.Text;
 
-    public interface IThreadLocalResults<TResult>
+    public interface ILocalResults<TResult>
     {
         IList<TResult> Results { get; }
     }
