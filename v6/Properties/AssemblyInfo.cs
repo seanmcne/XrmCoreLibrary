@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Microsoft.Pfe.Xrm.Core")]
 [assembly: AssemblyDescription("Contains a set of common components for building solutions using the Dynamics CRM 2013 SDK. Authored by the Microsoft Premier Field Engineering (PFE) Dynamics team.")]
 [assembly: AssemblyCompany("Microsoft Corporation")]
-[assembly: AssemblyProduct("PFE Dynamics Core Library for Microsoft Dynamics CRM 2013")]
+[assembly: AssemblyProduct("PFE Core Library for Microsoft Dynamics CRM 2013")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2014")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -29,6 +29,6 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("6.0.1405.2")]
-[assembly: AssemblyFileVersion("6.0.1405.2")]
-[assembly: AssemblyInformationalVersion("6.0.1405.2")]
+[assembly: AssemblyVersion("6.0.1407.0")]
+[assembly: AssemblyFileVersion("6.0.1407.0")]
+[assembly: AssemblyInformationalVersion("6.0.1407.0")]

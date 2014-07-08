@@ -25,49 +25,42 @@ namespace Microsoft.Pfe.Xrm
     using Microsoft.Xrm.Sdk.Discovery;
 
     /// <summary>
-    /// DEPRECATED v6.0.1702.1: A DiscoveryServiceProxy that implements ILocalResults<TResponse> for collecting partitioned results in parallel operations
-    /// </summary>
-    /// <typeparam name="TResponse">The expected response type to collect</typeparam>    
-    [System.Obsolete]
-    public sealed class ThreadLocalDiscoveryServiceProxy<TResponse> : DiscoveryServiceProxy, ILocalResults<TResponse>
-    {
-        public ThreadLocalDiscoveryServiceProxy(IServiceManagement<IDiscoveryService> serviceManagement, ClientCredentials credentials)
-            : base(serviceManagement, credentials) { }
-
-        public ThreadLocalDiscoveryServiceProxy(IServiceManagement<IDiscoveryService> serviceManagement, SecurityTokenResponse securityTokenResponse)
-            : base(serviceManagement, securityTokenResponse) { }
-
-        #region IThreadLocalResults<TResponse> Members
-
-        private IList<TResponse> results;
-        public IList<TResponse> Results
-        {
-            get
-            {
-                if (this.results == null)
-                {
-                    this.results = new List<TResponse>();
-                }
-
-                return this.results;
-            }
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// DEPRECATED v6.0.1702.1: An OrganizationServiceProxy that implements ILocalResults<TResponse> for collecting partitioned results in parallel operations
+    /// A parallel operation context object that maintains a reference to a Discovery.svc channel
     /// </summary>
     /// <typeparam name="TResponse">The expected response type to collect</typeparam>
-    [System.Obsolete]
-    public sealed class ThreadLocalOrganizationServiceProxy<TResponse> : OrganizationServiceProxy, ILocalResults<TResponse>
+    /// <remarks>
+    /// ASSUMPTION: The local reference temporarily points to a threadlocal instance shared across partitions, thus we do not dispose from the context directly
+    /// </remarks>
+    internal sealed class ParallelDiscoveryOperationContext<TResponse> : ParallelOperationContext<ManagedTokenDiscoveryServiceProxy, TResponse>
     {
-        public ThreadLocalOrganizationServiceProxy(IServiceManagement<IOrganizationService> serviceManagement, ClientCredentials credentials)
-            : base(serviceManagement, credentials) { }
+        public ParallelDiscoveryOperationContext(ManagedTokenDiscoveryServiceProxy proxy)
+            : base(proxy) { }
+    }
+    
+    /// <summary>
+    /// A parallel operation context object that maintains a reference to a Organization.svc channel
+    /// </summary>
+    /// <typeparam name="TResponse">The expected response type to collect</typeparam>
+    /// <remarks>
+    /// ASSUMPTION: The local reference temporarily points to a threadlocal instance shared across partitions, thus we do not dispose from the context directly
+    /// </remarks>
+    internal sealed class ParallelOrganizationOperationContext<TResponse> : ParallelOperationContext<ManagedTokenOrganizationServiceProxy, TResponse>
+    {
+        public ParallelOrganizationOperationContext(ManagedTokenOrganizationServiceProxy proxy)
+            : base(proxy) {  }        
+    }
+    
+    /// <summary>
+    /// A context object can be passed between iterations of a parallelized process partition
+    /// Maintains a reference to a ThreadLocal<OrganizationServiceProxy>.Value and 
+    /// implements ILocalResults<TResponse> for collecting partitioned results in parallel operations
+    /// </summary>
+    /// <typeparam name="TResponse">The expected response type to collect</typeparam>
+    public class ParallelOperationContext<TLocal, TResponse> : ILocalResults<TResponse>
+    {
+        public ParallelOperationContext(TLocal local) { this.Local = local; }
 
-        public ThreadLocalOrganizationServiceProxy(IServiceManagement<IOrganizationService> serviceManagement, SecurityTokenResponse securityTokenResponse)
-            : base(serviceManagement, securityTokenResponse) { }
+        public TLocal Local { get; set; }
 
         #region ILocalResults<TResponse> Members
 
