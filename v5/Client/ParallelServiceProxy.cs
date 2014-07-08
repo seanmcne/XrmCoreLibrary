@@ -18,6 +18,7 @@ namespace Microsoft.Pfe.Xrm
     using System.Collections.Generic;
     using System.Collections.Concurrent;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Text;
 
@@ -71,14 +72,14 @@ namespace Microsoft.Pfe.Xrm
         public IList<DiscoveryResponse> Execute(IList<DiscoveryRequest> requests, DiscoveryServiceProxyOptions options)
         {
             return this.ExecuteOperationWithResponse<DiscoveryRequest, DiscoveryResponse>(requests, options,
-                (request, loopState, index, proxy) =>
+                (request, loopState, index, context) =>
                 {
-                    var response = proxy.Execute(request);
+                    var response = context.Local.Execute(request);
 
                     //Collect the result from each iteration in this partition
-                    proxy.Results.Add(response);
+                    context.Results.Add(response);
 
-                    return proxy;
+                    return context;
                 });
         } 
 
@@ -100,37 +101,47 @@ namespace Microsoft.Pfe.Xrm
         /// <remarks>
         /// IMPORTANT!! When defining the core operation, be sure to add responses you wish to collect via proxy.Results.Add(TResponse item);
         /// </remarks>
-        protected IList<TResponse> ExecuteOperationWithResponse<TRequest, TResponse>(IList<TRequest> requests, DiscoveryServiceProxyOptions options,
-            Func<TRequest, ParallelLoopState, long, ThreadLocalDiscoveryServiceProxy<TResponse>, ThreadLocalDiscoveryServiceProxy<TResponse>> operation)
+        private IList<TResponse> ExecuteOperationWithResponse<TRequest, TResponse>(IList<TRequest> requests, DiscoveryServiceProxyOptions options,
+            Func<TRequest, ParallelLoopState, long, ParallelDiscoveryOperationContext<TResponse>, ParallelDiscoveryOperationContext<TResponse>> operation)
         {
-            var responses = new List<TResponse>();
-
-            Parallel.ForEach<TRequest, ThreadLocalDiscoveryServiceProxy<TResponse>>(requests,
-                new ParallelOptions() { MaxDegreeOfParallelism = this.MaxDegreeOfParallelism },
-                () =>
+            // NET4 doesn't provide a .Values property on ThreadLocal<T> to track instances. Must track manually for disposal.
+            var values = new ConcurrentBag<ManagedTokenDiscoveryServiceProxy>();
+            var responses = new ConcurrentBag<TResponse>();
+            
+            // Inline method for initializing a new discovery service channel
+            Func<ManagedTokenDiscoveryServiceProxy> proxyInit = () =>
                 {
-                    //Get a thread local proxy so that local responses can be collected and returned
-                    var proxy = this.ServiceManager.GetThreadLocalProxy<TResponse>();
-
+                    var proxy = this.ServiceManager.GetProxy();
                     proxy.SetProxyOptions(options);
 
+                    values.Add(proxy); //Track instance for disposal
+
                     return proxy;
-                },
-                operation,
-                (proxy) =>
+                };            
+
+            using (var threadLocalProxy = new ThreadLocal<ManagedTokenDiscoveryServiceProxy>(proxyInit))
+            {
+                try
                 {
-                    lock (syncRoot)
-                    {
-                        responses.AddRange(proxy.Results);
-                    }
+                    Parallel.ForEach<TRequest, ParallelDiscoveryOperationContext<TResponse>>(requests,
+                        new ParallelOptions() { MaxDegreeOfParallelism = this.MaxDegreeOfParallelism },
+                        () => new ParallelDiscoveryOperationContext<TResponse>(threadLocalProxy.Value),
+                        operation,
+                        (context) =>
+                        {
+                            Array.ForEach(context.Results.ToArray(), r => responses.Add(r));
 
-                    if (proxy != null)
-                        proxy.Dispose();
+                            //Remove temporary reference to ThreadLocal proxy
+                            context.Local = null;
+                        });
+                }
+                finally
+                {
+                    Array.ForEach(values.ToArray(), p => p.Dispose());
+                }
+            }
 
-                    proxy = null;
-                });
-
-            return responses;
+            return responses.ToList();
         }
 
         #endregion
@@ -198,14 +209,14 @@ namespace Microsoft.Pfe.Xrm
         public IList<Entity> Create(IList<Entity> targets, OrganizationServiceProxyOptions options)
         {
             return this.ExecuteOperationWithResponse<Entity, Entity>(targets, options,
-                (target, loopState, index, proxy) =>
+                (target, loopState, index, context) =>
                 {                   
-                    target.Id = proxy.Create(target); //Hydrate target with response Id
+                    target.Id = context.Local.Create(target); //Hydrate target with response Id
                     
                     //Collect the result from each iteration in this partition
-                    proxy.Results.Add(target);
+                    context.Results.Add(target);
 
-                    return proxy;
+                    return context;
                 });
         }
 
@@ -232,11 +243,9 @@ namespace Microsoft.Pfe.Xrm
         public void Update(IList<Entity> targets, OrganizationServiceProxyOptions options)
         {
             this.ExecuteOperation<Entity>(targets, options,
-                (target, loopState, index, proxy) =>
+                (target, proxy) =>
                 {
                     proxy.Update(target);
-
-                    return proxy;
                 });
         }
 
@@ -263,11 +272,9 @@ namespace Microsoft.Pfe.Xrm
         public void Delete(IList<EntityReference> targets, OrganizationServiceProxyOptions options)
         {
             this.ExecuteOperation<EntityReference>(targets, options,
-                (target, loopState, index, proxy) =>
+                (target, proxy) =>
                 {
                     proxy.Delete(target.LogicalName, target.Id);
-
-                    return proxy;
                 });
         }
 
@@ -294,11 +301,9 @@ namespace Microsoft.Pfe.Xrm
         public void Associate(IList<AssociateRequest> requests, OrganizationServiceProxyOptions options)
         {
             this.ExecuteOperation<AssociateRequest>(requests, options,
-                (request, loopState, index, proxy) =>
+                (request, proxy) =>
                 {
                     proxy.Associate(request.Target.LogicalName, request.Target.Id, request.Relationship, request.RelatedEntities);
-
-                    return proxy;
                 });
         }
 
@@ -325,11 +330,9 @@ namespace Microsoft.Pfe.Xrm
         public void Disassociate(IList<DisassociateRequest> requests, OrganizationServiceProxyOptions options)
         {
             this.ExecuteOperation<DisassociateRequest>(requests, options,
-                (request, loopState, index, proxy) =>
+                (request, proxy) =>
                 {
                     proxy.Disassociate(request.Target.LogicalName, request.Target.Id, request.Relationship, request.RelatedEntities);
-
-                    return proxy;
                 });
         }
 
@@ -366,14 +369,14 @@ namespace Microsoft.Pfe.Xrm
         public IList<Entity> Retrieve(IList<RetrieveRequest> requests, OrganizationServiceProxyOptions options)
         {
             return this.ExecuteOperationWithResponse<RetrieveRequest, Entity>(requests, options,
-                (request, loopState, index, proxy) =>
+                (request, loopState, index, context) =>
                 {
-                    var entity = proxy.Retrieve(request.Target.LogicalName, request.Target.Id, request.ColumnSet);
+                    var entity = context.Local.Retrieve(request.Target.LogicalName, request.Target.Id, request.ColumnSet);
 
                     //Collect the result from each iteration in this partition
-                    proxy.Results.Add(entity);
+                    context.Results.Add(entity);
 
-                    return proxy;
+                    return context;
                 });
         }
 
@@ -441,14 +444,14 @@ namespace Microsoft.Pfe.Xrm
         public IList<EntityCollection> RetrieveMultiple(IList<QueryBase> queries, bool shouldRetrieveAllPages, OrganizationServiceProxyOptions options)
         {
             return this.ExecuteOperationWithResponse<QueryBase, EntityCollection>(queries, options,
-                (query, loopState, index, proxy) =>
+                (query, loopState, index, context) =>
                 {
-                    var result = proxy.RetrieveMultiple(query, shouldRetrieveAllPages);
+                    var result = context.Local.RetrieveMultiple(query, shouldRetrieveAllPages);
 
                     //Collect the result from each iteration in this partition
-                    proxy.Results.Add(result);
+                    context.Results.Add(result);
 
-                    return proxy;
+                    return context;
                 });
         }
 
@@ -477,14 +480,14 @@ namespace Microsoft.Pfe.Xrm
         public IList<OrganizationResponse> Execute(IList<OrganizationRequest> requests, OrganizationServiceProxyOptions options)
         {
             return this.ExecuteOperationWithResponse<OrganizationRequest, OrganizationResponse>(requests, options,
-                (request, loopState, index, proxy) =>
+                (request, loopState, index, context) =>
                 {
-                    var response = proxy.Execute(request);
+                    var response = context.Local.Execute(request);
 
                     //Collect the result from each iteration in this partition
-                    proxy.Results.Add(response);
+                    context.Results.Add(response);
 
-                    return proxy;
+                    return context;
                 });
         }
 
@@ -517,13 +520,13 @@ namespace Microsoft.Pfe.Xrm
             where TResponse : OrganizationResponse
         {            
             return this.ExecuteOperationWithResponse<TRequest, TResponse>(requests, options,
-                (request, loopState, index, proxy) =>
+                (request, loopState, index, context) =>
                 {
-                    var response = (TResponse)proxy.Execute(request);
+                    var response = (TResponse)context.Local.Execute(request);
 
-                    proxy.Results.Add(response);
+                    context.Results.Add(response);
 
-                    return proxy;
+                    return context;
                 });
         }
 
@@ -540,28 +543,39 @@ namespace Microsoft.Pfe.Xrm
         /// <param name="requests">The collection of requests to be submitted</param>
         /// <param name="options">The configurable options for the OrganizationServiceProxy requests</param>
         /// <param name="operation">The specific operation being executed</param>
-        protected void ExecuteOperation<TRequest>(IList<TRequest> requests, OrganizationServiceProxyOptions options,
-            Func<TRequest, ParallelLoopState, long, ManagedTokenOrganizationServiceProxy, ManagedTokenOrganizationServiceProxy> operation)
+        private void ExecuteOperation<TRequest>(IList<TRequest> requests, OrganizationServiceProxyOptions options,
+            Action<TRequest, ManagedTokenOrganizationServiceProxy> operation)
         {
-            Parallel.ForEach<TRequest, ManagedTokenOrganizationServiceProxy>(requests,
-                new ParallelOptions() { MaxDegreeOfParallelism = this.MaxDegreeOfParallelism },
-                () =>
+            // NET4 doesn't provide a .Values property on ThreadLocal<T> to track instances. Must track manually for disposal.
+            var values = new ConcurrentBag<ManagedTokenOrganizationServiceProxy>();
+            
+            // Inline method for initializing a new organization service channel
+            Func<ManagedTokenOrganizationServiceProxy> proxyInit = () =>
                 {
-                    //Get a standard proxy instance since no responses will be collected
                     var proxy = this.ServiceManager.GetProxy();
-
                     proxy.SetProxyOptions(options);
 
-                    return proxy;
-                },
-                operation,
-                (proxy) =>
-                {
-                    if (proxy != null)
-                        proxy.Dispose();
+                    values.Add(proxy); //Track instance for disposal
 
-                    proxy = null;
-                });
+                    return proxy;
+                };
+            
+            using (var threadLocalProxy = new ThreadLocal<ManagedTokenOrganizationServiceProxy>(proxyInit))
+            {
+                try
+                {
+                    Parallel.ForEach<TRequest>(requests,
+                        new ParallelOptions() { MaxDegreeOfParallelism = this.MaxDegreeOfParallelism },
+                        (request) =>
+                        {
+                            operation(request, threadLocalProxy.Value);
+                        });
+                }
+                finally
+                {
+                    Array.ForEach(values.ToArray(), p => p.Dispose());
+                }
+            }
         }
 
         /// <summary>
@@ -576,38 +590,47 @@ namespace Microsoft.Pfe.Xrm
         /// <remarks>
         /// IMPORTANT!! When defining the core operation, be sure to add responses you wish to collect via proxy.Results.Add(TResponse item);
         /// </remarks>
-        protected IList<TResponse> ExecuteOperationWithResponse<TRequest, TResponse>(IList<TRequest> requests, OrganizationServiceProxyOptions options,
-            Func<TRequest, ParallelLoopState, long, ThreadLocalOrganizationServiceProxy<TResponse>, ThreadLocalOrganizationServiceProxy<TResponse>> operation)
+        private IList<TResponse> ExecuteOperationWithResponse<TRequest, TResponse>(IList<TRequest> requests, OrganizationServiceProxyOptions options,
+            Func<TRequest, ParallelLoopState, long, ParallelOrganizationOperationContext<TResponse>, ParallelOrganizationOperationContext<TResponse>> operation)
         {
+            // NET4 doesn't provide a .Values property on ThreadLocal<T> to track instances. Must track manually for disposal.
+            var values = new ConcurrentBag<ManagedTokenOrganizationServiceProxy>();
+            var responses = new ConcurrentBag<TResponse>();
 
-            var responses = new List<TResponse>();
-
-            Parallel.ForEach<TRequest, ThreadLocalOrganizationServiceProxy<TResponse>>(requests,
-                new ParallelOptions() { MaxDegreeOfParallelism = this.MaxDegreeOfParallelism },
-                () =>
+            //Inline method for initializing a new organization service channel
+            Func<ManagedTokenOrganizationServiceProxy> proxyInit = () =>
                 {
-                    //Get a thread local proxy so that local responses can be collected and returned
-                    var proxy = this.ServiceManager.GetThreadLocalProxy<TResponse>();
-
+                    var proxy = this.ServiceManager.GetProxy();
                     proxy.SetProxyOptions(options);
 
+                    values.Add(proxy); //Track instance for disposal
+
                     return proxy;
-                },
-                operation,
-                (proxy) =>
+                };
+            
+            using (var threadLocalProxy = new ThreadLocal<ManagedTokenOrganizationServiceProxy>(proxyInit))
+            {
+                try
                 {
-                    lock (syncRoot)
-                    {
-                        responses.AddRange(proxy.Results);
-                    }
+                    Parallel.ForEach<TRequest, ParallelOrganizationOperationContext<TResponse>>(requests,
+                        new ParallelOptions() { MaxDegreeOfParallelism = this.MaxDegreeOfParallelism },
+                        () => new ParallelOrganizationOperationContext<TResponse>(threadLocalProxy.Value),
+                        operation,
+                        (context) =>
+                        {
+                            Array.ForEach(context.Results.ToArray(), r => responses.Add(r));
 
-                    if (proxy != null)
-                        proxy.Dispose();
+                            //Remove temporary reference to ThreadLocal proxy
+                            context.Local = null;
+                        });
+                }
+                finally
+                {
+                    Array.ForEach(values.ToArray(), p => p.Dispose());
+                }
+            }
 
-                    proxy = null;
-                });
-
-            return responses;
+            return responses.ToList();
         }
 
         #endregion 

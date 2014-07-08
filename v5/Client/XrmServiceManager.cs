@@ -112,6 +112,12 @@ namespace Microsoft.Pfe.Xrm
 
         #region Methods
 
+        /// <summary>
+        /// DEPRECATED v6.0.1702.1
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <returns></returns>
+        [System.Obsolete]
         public ThreadLocalDiscoveryServiceProxy<TResult> GetThreadLocalProxy<TResult>()
         {
             return this.GetProxy<ThreadLocalDiscoveryServiceProxy<TResult>>();
@@ -225,7 +231,13 @@ namespace Microsoft.Pfe.Xrm
         #endregion
 
         #region Methods
-        
+
+        /// <summary>
+        /// DEPRECATED v6.0.1702.1
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <returns></returns>
+        [System.Obsolete]
         public ThreadLocalOrganizationServiceProxy<TResult> GetThreadLocalProxy<TResult>()
         {
             return this.GetProxy<ThreadLocalOrganizationServiceProxy<TResult>>();

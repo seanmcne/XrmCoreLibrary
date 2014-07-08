@@ -73,8 +73,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client\AutoRefreshSecurityToken.cs" />
-    <Compile Include="Client\IThreadLocalResults.cs" />
+    <Compile Include="Client\ILocalResults.cs" />
     <Compile Include="Client\ManagedTokenServiceProxy.cs" />
+    <Compile Include="Client\ParallelOperationContext.cs" />
     <Compile Include="Client\ParallelServiceProxy.cs" />
     <Compile Include="Client\ServiceProxyOptions.cs" />
     <Compile Include="Client\ThreadLocalServiceProxy.cs" />
