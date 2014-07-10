@@ -60,6 +60,23 @@ namespace Microsoft.Pfe.Xrm.Samples
         }
 
         /// <summary>
+        /// Demonstrates an online-federated connection to Organization.svc using a userprincipalname and password
+        /// </summary>
+        /// <remarks>
+        /// OrganizationServiceManager stores endpoint metadata and security token. Instance can be reused to construct multiple organization service channels (OrganizationServiceProxy)
+        /// </remarks>
+        public static void BasicConnectionToCrmOnline()
+        {
+            var serverUri = new Uri(String.Format(OrganizationServiceManager.OrganizationServiceOnlineNAUriFormat, "myorganization"));
+            var manager = new OrganizationServiceManager(serverUri, "username@mydomain.onmicrosoft.com", "password");
+
+            using (var proxy = manager.GetProxy())
+            {
+                //Do organization requests...
+            }
+        }
+
+        /// <summary>
         /// Demonstrates a claims-based, cross-realm connection to Organization.svc using a username, password, and alternate realm
         /// </summary>
         /// <remarks>
@@ -87,23 +104,6 @@ namespace Microsoft.Pfe.Xrm.Samples
         {
             var serverUri = new Uri(String.Format(OrganizationServiceManager.OrganizationServiceInternalSecureUriFormat, "mycrmserver:5555", "myorganization"));
             var manager = new OrganizationServiceManager(serverUri, preAuthCredentials);
-
-            using (var proxy = manager.GetProxy())
-            {
-                //Do organization requests...
-            }
-        }
-
-        /// <summary>
-        /// Demonstrates an online-federated connection to Organization.svc using a userprincipalname and password
-        /// </summary>
-        /// <remarks>
-        /// OrganizationServiceManager stores endpoint metadata and security token. Instance can be reused to construct multiple organization service channels (OrganizationServiceProxy)
-        /// </remarks>
-        public static void BasicConnectionToCrmOnline()
-        {
-            var serverUri = new Uri(String.Format(OrganizationServiceManager.OrganizationServiceOnlineNAUriFormat, "myorganization"));
-            var manager = new OrganizationServiceManager(serverUri, "username@mydomain.onmicrosoft.com", "password");
 
             using (var proxy = manager.GetProxy())
             {
