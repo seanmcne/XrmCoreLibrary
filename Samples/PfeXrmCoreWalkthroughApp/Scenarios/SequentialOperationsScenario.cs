@@ -206,78 +206,78 @@ namespace Microsoft.Pfe.Xrm.Samples
                             EntityCollection contacts;
                             EntityCollection opportunities;
 
-                            this.Data.RetrieveMultipleQueries.ForEach(q =>
+                            foreach (var q in this.Data.RetrieveMultipleQueries)
+                            {
+                                var allResults = new EntityCollection();
+                                var firstPage = true;
+
+                                var qe = q.Value as QueryExpression;
+
+                                if (qe != null)
                                 {
-                                    var allResults = new EntityCollection();
-                                    var firstPage = true;
 
-                                    var qe = q as QueryExpression;
-
-                                    if (qe != null)
+                                    if (qe.PageInfo == null)
                                     {
-
-                                        if (qe.PageInfo == null)
+                                        qe.PageInfo = new PagingInfo()
                                         {
-                                            qe.PageInfo = new PagingInfo()
-                                            {
-                                                PageNumber = 1,
-                                                PagingCookie = null,
-                                                ReturnTotalRecordCount = false
-                                            };
+                                            PageNumber = 1,
+                                            PagingCookie = null,
+                                            ReturnTotalRecordCount = false
+                                        };
+                                    }
+                                    else if (qe.PageInfo.PageNumber != 1
+                                            || qe.PageInfo.PagingCookie != null)
+                                    {
+                                        qe.PageInfo.PageNumber = 1;
+                                        qe.PageInfo.PagingCookie = null;
+                                    }
+
+                                    while (true)
+                                    {
+                                        var page = proxy.RetrieveMultiple(qe); //retrieve the page
+
+                                        //Capture the page
+                                        if (firstPage)
+                                        {
+                                            allResults = page;
+                                            firstPage = false;
                                         }
-                                        else if (qe.PageInfo.PageNumber != 1
-                                                || qe.PageInfo.PagingCookie != null)
+                                        else
                                         {
-                                            qe.PageInfo.PageNumber = 1;
-                                            qe.PageInfo.PagingCookie = null;
+                                            allResults.Entities.AddRange(page.Entities);
                                         }
 
-                                        while (true)
+                                        //Setup for next page
+                                        if (page.MoreRecords)
                                         {
-                                            var page = proxy.RetrieveMultiple(qe); //retrieve the page
-
-                                            //Capture the page
-                                            if (firstPage)
-                                            {
-                                                allResults = page;
-                                                firstPage = false;
-                                            }
-                                            else
-                                            {
-                                                allResults.Entities.AddRange(page.Entities);
-                                            }
-
-                                            //Setup for next page
-                                            if (page.MoreRecords)
-                                            {
-                                                qe.PageInfo.PageNumber++;
-                                                qe.PageInfo.PagingCookie = page.PagingCookie;
-                                            }
-                                            else
-                                            {
-                                                break;
-                                            }
+                                            qe.PageInfo.PageNumber++;
+                                            qe.PageInfo.PagingCookie = page.PagingCookie;
+                                        }
+                                        else
+                                        {
+                                            break;
                                         }
                                     }
-                                    else
-                                    {
-                                        //Skip paging requests for FetchExpression and just get the first page of results for sake of brevity
-                                        allResults = proxy.RetrieveMultiple(q);
-                                    }
-                                    
-                                    switch(allResults.EntityName.ToLower())
-                                    {
-                                        case "account":
-                                            accounts = allResults;
-                                            break;
-                                        case "contact":
-                                            contacts = allResults;
-                                            break;
-                                        case "opportunity":
-                                            opportunities = allResults;
-                                            break;
-                                    }
-                                });
+                                }
+                                else
+                                {
+                                    //Skip paging requests for FetchExpression and just get the first page of results for sake of brevity
+                                    allResults = proxy.RetrieveMultiple(q.Value);
+                                }
+
+                                switch (allResults.EntityName.ToLower())
+                                {
+                                    case "account":
+                                        accounts = allResults;
+                                        break;
+                                    case "contact":
+                                        contacts = allResults;
+                                        break;
+                                    case "opportunity":
+                                        opportunities = allResults;
+                                        break;
+                                }
+                            }
                         }
                     };
             }
