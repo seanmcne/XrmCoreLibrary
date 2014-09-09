@@ -17,20 +17,32 @@ namespace Microsoft.Pfe.Xrm
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
+    using System.Linq;    
     using System.Text;
     using System.Xml;
+    using System.Xml.Linq;
 
     using Microsoft.Xrm.Sdk;
     using Microsoft.Xrm.Sdk.Query;
 
     public static class QueryExtensions
-    {       
+    {
+        /// <summary>
+        /// Parses a FetchXML query as an instance of System.Xml.Linq.XElement
+        /// </summary>
+        /// <param name="fe">The expression of a FetchXML query</param>
+        /// <returns>A System.Xml.Linq.XElement representing the query</returns>
+        public static XElement ToXml(this FetchExpression fe)
+        {
+            return XElement.Parse(fe.Query, LoadOptions.PreserveWhitespace);
+        }
+                
         /// <summary>
         /// Get an representation of the FetchXML query as a XmlDocument
         /// </summary>
         /// <param name="fe">The expression of a FetchXML query</param>
         /// <returns>An XmlDocument representing the query</returns>
+        [Obsolete]
         public static XmlDocument GetXml(this FetchExpression fe)
         {
             var doc = new XmlDocument();
@@ -42,25 +54,53 @@ namespace Microsoft.Pfe.Xrm
 
             return doc;
         }
-        
+
         /// <summary>
         /// Gets the page size specified in the 'count' attribute of a FetchXML query
         /// </summary>
         /// <param name="fe">The expression of a FetchXML query</param>
         /// <returns>The fetch count as an integer value</returns>
+        /// <remarks>
+        /// Returns default page size of 5000
+        /// </remarks>
         public static int GetPageSize(this FetchExpression fe)
         {
-            var defaultPageSize = 5000; //TODO: Should we not include a default page size in case the setting is overriden?
-            var doc = fe.GetXml();
+            return fe.GetPageSize(5000);
+        }
 
-            var attributes = doc.DocumentElement.Attributes;
-            var countAttribute = (XmlAttribute)attributes.GetNamedItem("count");
+        /// <summary>
+        /// Gets the page size specified in the 'count' attribute of a FetchXML query
+        /// </summary>
+        /// <param name="fe">The expression of a FetchXML query</param>
+        /// <param name="defaultPageSize">The default page size to return if not found in the FetchXML query</param>
+        /// <returns>The fetch count as an integer value</returns>
+        public static int GetPageSize(this FetchExpression fe, int defaultPageSize)
+        {
+            var pageSize = defaultPageSize;
+            var fetchXml = fe.ToXml();
 
-            if (countAttribute != null
-                && !String.IsNullOrEmpty(countAttribute.Value))
-                return Int32.Parse(countAttribute.Value);
-            
-            return defaultPageSize;
+            var countAttribute = fetchXml.Attribute("count");
+
+            if (countAttribute != null)
+            {
+                Int32.TryParse(countAttribute.Value, out pageSize);
+            }
+
+            return pageSize;
+        }
+
+        /// <summary>
+        /// Sets the paging info in a FetchXML query
+        /// </summary>
+        /// <param name="fe">The expression of a FetchXML query</param>
+        /// <param name="pagingCookie">The paging cookie string to set in the FetchXML query</param>
+        /// <param name="pageNumber">The page number to set in the FetchXML query</param>
+        /// <remarks>
+        /// Sets page size (count) based on what is defined in current FetchXML query. Defaults to 5,000.
+        /// </remarks>
+        public static void SetPage(this FetchExpression fe, string pagingCookie, int pageNumber)
+        {
+            fe.SetPage(pagingCookie, pageNumber, fe.GetPageSize());
         }
 
         /// <summary>
@@ -72,33 +112,17 @@ namespace Microsoft.Pfe.Xrm
         /// <param name="count">The page size (count) to set in the FetchXML query</param>
         public static void SetPage(this FetchExpression fe, string pagingCookie, int pageNumber, int count)
         {
-            var doc = fe.GetXml();
+            var fetchXml = fe.ToXml();
 
-            var attributes = doc.DocumentElement.Attributes;
-
-            if (!String.IsNullOrEmpty(pagingCookie))
+            if (!String.IsNullOrWhiteSpace(pagingCookie))
             {
-                var cookieAttribute = doc.CreateAttribute("paging-cookie");
-                cookieAttribute.Value = pagingCookie;
-                attributes.Append(cookieAttribute);
+                fetchXml.SetAttributeValue("paging-cookie", pagingCookie);                                
             }
 
-            var pageAttribute = doc.CreateAttribute("page");
-            pageAttribute.Value = pageNumber.ToString();
-            attributes.Append(pageAttribute);
+            fetchXml.SetAttributeValue("page", pageNumber);
+            fetchXml.SetAttributeValue("count", count);
 
-            var countAttribute = doc.CreateAttribute("count");
-            countAttribute.Value = count.ToString();
-            attributes.Append(countAttribute);
-
-            var stringBuilder = new StringBuilder(1024);
-
-            using (var xmlWriter = XmlTextWriter.Create(stringBuilder))
-            {
-                doc.WriteTo(xmlWriter);
-            }
-
-            fe.Query = stringBuilder.ToString();
+            fe.Query = fetchXml.ToString();
         }
     }
 }
