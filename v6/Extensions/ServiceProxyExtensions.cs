@@ -66,16 +66,40 @@ namespace Microsoft.Pfe.Xrm
         /// <param name="shouldRetrieveAllPages">True = perform iterative paged query requests, otherwise return first page only</param>
         /// <returns>An EntityCollection containing the results of the query</returns>
         /// <remarks>
+        /// Assumes no paged operation to perform. Passes an empty paged operation.
+        ///
         /// CRM limits query response to paged result sets of 5,000. This method encapsulates the logic for performing subsequent 
         /// query requests so that all results can be retrieved.
         /// </remarks>
         public static EntityCollection RetrieveMultiple(this OrganizationServiceProxy proxy, QueryBase query, bool shouldRetrieveAllPages)
         {
+            return proxy.RetrieveMultiple(query, shouldRetrieveAllPages, (page) => { return; });
+        }
+
+        /// <summary>
+        /// Performs an iterative series of RetrieveMultiple requests in order to obtain all pages of results
+        /// </summary>
+        /// <param name="proxy">The IOrganizationService proxy connection</param>
+        /// <param name="query">The query to be executed</param>
+        /// <param name="shouldRetrieveAllPages">True = perform iterative paged query requests, otherwise return first page only</param>
+        /// <param name="pagedOperation">An operation to perform on each page of results as it's retrieved</param>
+        /// <returns>An EntityCollection containing the results of the query</returns>
+        /// <remarks>
+        /// CRM limits query response to paged result sets of 5,000. This method encapsulates the logic for performing subsequent 
+        /// query requests so that all results can be retrieved.
+        /// </remarks>
+        public static EntityCollection RetrieveMultiple(this OrganizationServiceProxy proxy, QueryBase query, bool shouldRetrieveAllPages, Action<EntityCollection> pagedOperation)
+        {
+            if (query == null)
+                throw new ArgumentNullException("query", "Must supply a query for the RetrieveMultiple request");
+            if (pagedOperation == null)
+                throw new ArgumentNullException("pagedOperation", "Must define an inline method to be invoked on each EntityCollection page");
+            
             var qe = query as QueryExpression;
 
             if (qe != null)
             {
-                return proxy.RetrieveMultiple(qe, shouldRetrieveAllPages, (page) => { return; }); //No operation to perform
+                return proxy.RetrieveMultiple(qe, shouldRetrieveAllPages, pagedOperation);
             }
             else
             {
@@ -83,7 +107,7 @@ namespace Microsoft.Pfe.Xrm
 
                 if (fe != null)
                 {
-                    return proxy.RetrieveMultiple(fe, shouldRetrieveAllPages, (page) => { return; }); //No operation to perform
+                    return proxy.RetrieveMultiple(fe, shouldRetrieveAllPages, pagedOperation);
                 }
             }
 
@@ -97,26 +121,22 @@ namespace Microsoft.Pfe.Xrm
         /// <param name="query">The QueryExpression query to be executed</param>
         /// <param name="shouldRetrieveAllPages">True = perform iterative paged query requests, otherwise return first page only</param>
         /// <param name="pagedOperation">An operation to perform on each page of results as it's retrieved</param>
-        /// <param name="pageSize">Optional parameter to set the size of each page</param>
         /// <returns>An EntityCollection containing the results of the query</returns>
         /// <remarks>
         /// CRM limits query response to paged result sets of 5,000. This method encapsulates the logic for performing subsequent 
         /// query requests so that all results can be retrieved.
         /// </remarks>
-        private static EntityCollection RetrieveMultiple(this OrganizationServiceProxy proxy, QueryExpression query, bool shouldRetrieveAllPages, Action<EntityCollection> pagedOperation, int pageSize = 5000)
+        private static EntityCollection RetrieveMultiple(this OrganizationServiceProxy proxy, QueryExpression query, bool shouldRetrieveAllPages, Action<EntityCollection> pagedOperation)
         {
-            if (query == null)
-                throw new ArgumentNullException("query", "Must supply a QueryExpression for the RetrieveMultiple request");
-            if (pagedOperation == null)
-                throw new ArgumentNullException("pagedOperation", "Must define an inline method to be invoked on each EntityCollection page");
-
             var allResults = new EntityCollection();
             var firstPage = true;
 
+            //Establish first page
             if (query.PageInfo == null)
             {
                 query.PageInfo = new PagingInfo()
                 {
+                    Count = 5000,
                     PageNumber = 1,
                     PagingCookie = null,
                     ReturnTotalRecordCount = false
@@ -125,11 +145,10 @@ namespace Microsoft.Pfe.Xrm
             else if (query.PageInfo.PageNumber != 1
                     || query.PageInfo.PagingCookie != null)
             {
+                //Reset to first page
                 query.PageInfo.PageNumber = 1;
                 query.PageInfo.PagingCookie = null;
             }
-
-            query.PageInfo.Count = pageSize; //Override PageInfo count based on specified pageSize
 
             while (true)
             {
@@ -171,25 +190,21 @@ namespace Microsoft.Pfe.Xrm
         /// <param name="proxy">The IOrganizationService proxy connection</param>
         /// <param name="query">The FetchExpression query to be executed</param>
         /// <param name="shouldRetrieveAllPages">True = perform iterative paged query requests, otherwise return first page only</param>
-        /// <param name="pagedOperation"></param>
-        /// <param name="pageSize">Optional parameter to set the size of each page</param>
+        /// <param name="pagedOperation">An operation to perform on each page of results as it's retrieved</param>
         /// <returns>An EntityCollection containing the results of the query</returns>
         /// <remarks>
         /// CRM limits query response to paged result sets of 5,000. This method encapsulates the logic for performing subsequent 
         /// query requests so that all results can be retrieved.
         /// </remarks>
-        private static EntityCollection RetrieveMultiple(this OrganizationServiceProxy proxy, FetchExpression query, bool shouldRetrieveAllPages, Action<EntityCollection> pagedOperation, int pageSize = 5000)
-        {
-            if (query == null)
-                throw new ArgumentNullException("query", "Must supply a FetchExpression for the RetrieveMultiple request");
-            if (pagedOperation == null)
-                throw new ArgumentNullException("pagedOperation", "Must define an inline method to be invoked on each EntityCollection page");
-            
+        private static EntityCollection RetrieveMultiple(this OrganizationServiceProxy proxy, FetchExpression query, bool shouldRetrieveAllPages, Action<EntityCollection> pagedOperation)
+        {            
             var allResults = new EntityCollection();
             var firstPage = true;
             var pageNumber = 1;
+            var pageSize = query.GetPageSize();
 
-            query.SetPage(null, 1, pageSize);
+            //Establish the first page
+            query.SetPage(null, pageNumber, pageSize);
 
             while (true)
             {
@@ -210,7 +225,10 @@ namespace Microsoft.Pfe.Xrm
                 if (shouldRetrieveAllPages
                     && page.MoreRecords)
                 {
-                    query.SetPage(page.PagingCookie, pageNumber++, pageSize);
+                    //Get next page
+                    pageNumber++;
+
+                    query.SetPage(page.PagingCookie, pageNumber, pageSize);
                 }
                 else
                 {
