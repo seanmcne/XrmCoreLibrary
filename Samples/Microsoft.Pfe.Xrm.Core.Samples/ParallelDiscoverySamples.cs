@@ -39,7 +39,7 @@ namespace Microsoft.Pfe.Xrm.Samples
         /// <summary>
         /// Demonstrates parallelized execution of multiple discovery requests
         /// </summary>
-        /// <param name="organizationNames">The list of organizations to discover by name</param>
+        /// <param name="organizationNames">The array of organizations to discover by name</param>
         public List<DiscoveryResponse> ParallelExecuteDiscoveryRequests(string[] organizationNames)
         {            
             List<DiscoveryResponse> responses = null;
@@ -72,12 +72,10 @@ namespace Microsoft.Pfe.Xrm.Samples
         /// <summary>
         /// Demonstrates parallelized execution of multiple retrieve systemuser by externalID (UPN)requests
         /// </summary>
-        /// <param name="upns">The list of user principal names (UPN)</param>
-        /// <remarks>Available for CRM Online only</remarks>
-        public List<DiscoveryResponse> ParallelExecuteRetrieveByUpnRequests(Guid organizationId, string[] upns)
+        /// <param name="upns">The array of user principal names (UPN)</param>
+        public void ParallelExecuteRetrieveByUpnRequests(Guid organizationId, string[] upns)
         {
-            List<DiscoveryResponse> responses = null;
-            var requests = new List<DiscoveryRequest>();
+            var requests = new Dictionary<string, RetrieveUserIdByExternalIdRequest>();
 
             Array.ForEach(upns, upn =>
             {
@@ -87,19 +85,24 @@ namespace Microsoft.Pfe.Xrm.Samples
                     OrganizationId = organizationId
                 };
 
-                requests.Add(request);
+                requests.Add(upn, request);
             });
 
             try
             {
-                responses = this.Manager.ParallelProxy.Execute(requests).ToList();
+                var responses = this.Manager.ParallelProxy.Execute<RetrieveUserIdByExternalIdRequest, RetrieveUserIdByExternalIdResponse>(requests);
+
+                foreach (var response in responses)
+                {
+                    Console.WriteLine("Retrieved user UPN={0}, systemuserid={1}", 
+                        response.Key, 
+                        response.Value.UserId);
+                }
             }
             catch (AggregateException ae)
             {
                 // Handle exceptions
             }
-
-            return responses;
         }
     }
 }

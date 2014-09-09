@@ -41,25 +41,31 @@ namespace Microsoft.Pfe.Xrm.Samples
         /// <summary>
         /// Demonstrates parallelized submission of multiple create requests
         /// </summary>
-        /// <param name="targets">The list of target entities to create in parallel</param>
-        /// <returns>The list of targets created with the assigned unique identifier</returns>
-        public List<Entity> ParallelCreate(List<Entity> targets)
+        /// <param name="targets">The keyed collection of target entities to create in parallel</param>
+        /// <returns>The keyed collection of the generated unique identifiers</returns>
+        public IDictionary<string, Guid> ParallelCreate(IDictionary<string, Entity> targets)
         {
+            var responses = new Dictionary<string, Guid>();
+            
             try
             {
-                targets = this.Manager.ParallelProxy.Create(targets).ToList();
+                responses = this.Manager.ParallelProxy.Create(targets)
+                    .ToDictionary(t => t.Key, t => t.Value);
             }
             catch (AggregateException ae)
             {
                 // Handle exceptions
             }
 
-            targets.ForEach(r =>
-                {
-                    Console.WriteLine("Created {0} with id = {1}", r.LogicalName, r.Id);
-                });
+            foreach(var response in responses)
+            {
+                Console.WriteLine("Created {0} with id={1} for key={2}", 
+                    targets[response.Key].LogicalName, 
+                    response.Value, 
+                    response.Key);
+            }
 
-            return targets;
+            return responses;
         }
 
         /// <summary>
@@ -91,7 +97,7 @@ namespace Microsoft.Pfe.Xrm.Samples
 
             targets.ForEach(r =>
             {
-                Console.WriteLine("Created {0} with id = {1}", r.LogicalName, r.Id);
+                Console.WriteLine("Created {0} with id={1}", r.LogicalName, r.Id);
             });
 
             return targets;

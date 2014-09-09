@@ -73,10 +73,10 @@ namespace Microsoft.Pfe.Xrm.Samples
         /// </summary>
         /// <param name="teamIds">The list of teams who's privileges that should be retrieved</param>
         /// <returns>The list of team privileges</returns>
-        public List<RetrieveTeamPrivilegesResponse> ParallelGenericExecuteRequests(Guid[] teamIds)
+        public IDictionary<Guid, RetrieveTeamPrivilegesResponse> ParallelGenericExecuteRequests(Guid[] teamIds)
         {
-            List<RetrieveTeamPrivilegesResponse> responses = null;
-            var requests = new List<RetrieveTeamPrivilegesRequest>();
+            IDictionary<Guid, RetrieveTeamPrivilegesResponse> responses = null;
+            var requests = new Dictionary<string, RetrieveTeamPrivilegesRequest>();
 
             Array.ForEach(teamIds, id =>
                 {
@@ -85,12 +85,20 @@ namespace Microsoft.Pfe.Xrm.Samples
                         TeamId = id
                     };
 
-                    requests.Add(request);
+                    requests.Add(id.ToString(), request);
                 });
 
             try
             {
-                responses = this.Manager.ParallelProxy.Execute<RetrieveTeamPrivilegesRequest, RetrieveTeamPrivilegesResponse>(requests).ToList();
+                responses = this.Manager.ParallelProxy.Execute<RetrieveTeamPrivilegesRequest, RetrieveTeamPrivilegesResponse>(requests)
+                    .ToDictionary(r => Guid.Parse(r.Key), r => r.Value);
+
+                foreach (var response in responses)
+                {
+                    Console.WriteLine("Retrieves {0} privileges for team with id={1}", 
+                        response.Value.RolePrivileges.Length, 
+                        response.Key);
+                }
             }
             catch (AggregateException ae)
             {
@@ -104,15 +112,23 @@ namespace Microsoft.Pfe.Xrm.Samples
         /// <summary>
         /// Demonstrates how ExecuteMultipleRequests should be parallelized via generic Execute method
         /// </summary>
-        /// <param name="requests">The list of ExecuteMultipleRequests to execute in parallel</param>
-        /// <returns>The list of ExecuteMultipleResponses (assuming that a response was indicated in the requests)</returns>
-        public List<ExecuteMultipleResponse> ParallelExecuteMultiple(List<ExecuteMultipleRequest> requests)
+        /// <param name="requests">The keyed collection of ExecuteMultipleRequests to execute in parallel</param>
+        /// <returns>The keyed collection of ExecuteMultipleResponses (assuming that a response was indicated in the requests)</returns>
+        public IDictionary<string, ExecuteMultipleResponse> ParallelExecuteMultiple(IDictionary<string, ExecuteMultipleRequest> requests)
         {
-            List<ExecuteMultipleResponse> responses = null;
+            IDictionary<string, ExecuteMultipleResponse> responses = null;
 
             try
             {
-                responses = this.Manager.ParallelProxy.Execute<ExecuteMultipleRequest, ExecuteMultipleResponse>(requests).ToList();
+                responses = this.Manager.ParallelProxy.Execute<ExecuteMultipleRequest, ExecuteMultipleResponse>(requests);
+
+                foreach (var response in responses)
+                {
+                    Console.WriteLine("{0} responses and {1} errors for ExecuteMultipleRequest with key={2}",
+                        response.Value.Responses.Count(r => r.Response != null),
+                        response.Value.Responses.Count(r => r.Fault != null),
+                        response.Key);
+                }
             }
             catch(AggregateException ae)
             {
