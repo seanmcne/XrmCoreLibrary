@@ -158,9 +158,9 @@ namespace Microsoft.Pfe.Xrm.Samples
                     {
                         var results = ServiceManagerContext.Current.ParallelProxy.RetrieveMultiple(this.Data.RetrieveMultipleQueries, true);
 
-                        EntityCollection accounts = results.Where(ec => ec.EntityName.Equals("account", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-                        EntityCollection contacts = results.Where(ec => ec.EntityName.Equals("contact", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-                        EntityCollection opps = results.Where(ec => ec.EntityName.Equals("opportunity", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                        EntityCollection accounts = results.Where(r => r.Key.Equals("accounts", StringComparison.OrdinalIgnoreCase)).Select(r => r.Value).FirstOrDefault();
+                        EntityCollection contacts = results.Where(r => r.Key.Equals("contacts", StringComparison.OrdinalIgnoreCase)).Select(r => r.Value).FirstOrDefault();
+                        EntityCollection opps = results.Where(r => r.Key.Equals("opportunities", StringComparison.OrdinalIgnoreCase)).Select(r => r.Value).FirstOrDefault();
                     };
             }
         }

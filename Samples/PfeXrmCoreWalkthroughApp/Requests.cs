@@ -262,33 +262,30 @@ namespace Microsoft.Pfe.Xrm.Samples
         /// <summary>
         /// List of three queries to execute, 2 QueryExpression and 1 FetchExpression
         /// </summary>
-        public List<QueryBase> RetrieveMultipleQueries
+        public Dictionary<string, QueryBase> RetrieveMultipleQueries
         {
             get
             {
-                var queries = new List<QueryBase>();
+                var queries = new Dictionary<string, QueryBase>();
 
                 var accQuery = new QueryExpression("account");
                 accQuery.ColumnSet.AddColumns("name", "address1_city", "primarycontactid");
                 accQuery.Criteria.AddCondition(new ConditionExpression("name", ConditionOperator.BeginsWith, "Created"));
-                queries.Add(accQuery);
+                queries.Add("accounts", accQuery);
 
                 var cntQuery = new QueryExpression("contact");
                 cntQuery.ColumnSet.AddColumns("firstname", "lastname", "parentcustomerid");
                 cntQuery.Criteria.AddCondition(new ConditionExpression("statecode", ConditionOperator.Equal, 1));
-                queries.Add(cntQuery);
+                queries.Add("contacts", cntQuery);
 
-                var oppQuery = @"<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>
-                                            <entity name='opportunity'>
-                                                <attribute name='name' />
-                                                <attribute name='estimatedvalue' />
-                                                <attribute name='customerid' />
-                                                <filter type='and'>
-                                                    <condition attribute='estimatedvalue' operator='gt' value='1000' />
-                                                </filter>
-                                            </entity> 
-                                            </fetch>";
-                queries.Add(new FetchExpression(oppQuery));
+                var oppQuery = @"<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false' count='5'>
+                                    <entity name='opportunity'>
+                                        <attribute name='name' />
+                                        <attribute name='estimatedvalue' />
+                                        <attribute name='customerid' />
+                                    </entity> 
+                                    </fetch>";
+                queries.Add("opportunities", new FetchExpression(oppQuery));
 
                 return queries;
             }

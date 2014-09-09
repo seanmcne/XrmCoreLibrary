@@ -254,14 +254,15 @@ namespace Microsoft.Pfe.Xrm.Samples
             {
                 return () =>
                     {
-                        var combinedResults = new List<EntityCollection>();
+                        var combinedResults = new List<KeyValuePair<string, EntityCollection>>();
 
                         try
                         {
-                            Parallel.ForEach<QueryBase, LocalProxy<EntityCollection>>(this.Data.RetrieveMultipleQueries,
+                            //Bear with the contrived example contianing nested generics so that we can mimic the Dictionary<TKey, TValue> approach we incorporate into PFE Core Lib parallel RetrieveMultiples
+                            Parallel.ForEach<KeyValuePair<string, QueryBase>, LocalProxy<KeyValuePair<string, EntityCollection>>>(this.Data.RetrieveMultipleQueries,
                                 () =>
                                 {
-                                    return new LocalProxy<EntityCollection>()
+                                    return new LocalProxy<KeyValuePair<string, EntityCollection>>()
                                     {
                                         Channel = this.GetProxy()
                                     };
@@ -271,7 +272,7 @@ namespace Microsoft.Pfe.Xrm.Samples
                                     var allResults = new EntityCollection();
                                     var firstPage = true;
 
-                                    var qe = q as QueryExpression;
+                                    var qe = q.Value as QueryExpression;
 
                                     if (qe != null)
                                     {
@@ -322,11 +323,11 @@ namespace Microsoft.Pfe.Xrm.Samples
                                     else
                                     {
                                         //Skip paging requests for FetchExpression and just get the first page of results for sake of brevity
-                                        allResults = proxy.Channel.RetrieveMultiple(q);
+                                        allResults = proxy.Channel.RetrieveMultiple(q.Value);
                                     }
 
                                     //Add allResults to local results for partition
-                                    proxy.Results.Add(allResults);
+                                    proxy.Results.Add(new KeyValuePair<string, EntityCollection>(q.Key, allResults));
 
                                     return proxy;
                                 },
@@ -349,9 +350,12 @@ namespace Microsoft.Pfe.Xrm.Samples
                             HandleAggregateExceptions(ae);
                         }
 
-                        EntityCollection accounts = combinedResults.Where(ec => ec.EntityName.Equals("account", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-                        EntityCollection contacts = combinedResults.Where(ec => ec.EntityName.Equals("contact", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-                        EntityCollection opps = combinedResults.Where(ec => ec.EntityName.Equals("opportunity", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                        //PFE Core Lib returns the results as a Dictionary<TKey, TValue> using same key associated to the query that generated the results.
+                        var combinedDictionary = combinedResults.ToDictionary(r => r.Key, r => r.Value);
+
+                        EntityCollection accounts = combinedDictionary.Where(r => r.Key.Equals("account", StringComparison.OrdinalIgnoreCase)).Select(r => r.Value).FirstOrDefault();
+                        EntityCollection contacts = combinedDictionary.Where(r => r.Key.Equals("contact", StringComparison.OrdinalIgnoreCase)).Select(r => r.Value).FirstOrDefault();
+                        EntityCollection opps = combinedDictionary.Where(r => r.Key.Equals("opportunity", StringComparison.OrdinalIgnoreCase)).Select(r => r.Value).FirstOrDefault();
                     };
             }
         }
