@@ -33,7 +33,7 @@ namespace Microsoft.Pfe.Xrm.Samples
         /// </remarks>        
         public static void BasicADConnectionToCrm()
         {
-            var serverUri = new Uri(String.Format(OrganizationServiceManager.OrganizationServiceInternalSecureUriFormat, "mycrmserver:5555", "myorganization"));
+            var serverUri = XrmServiceUriFactory.CreateOrganizationServiceUri("http://mycrmserver:5555/myorganization");
             var manager = new OrganizationServiceManager(serverUri, "username", "password", "mydomain");
 
             using (var proxy = manager.GetProxy())
@@ -50,7 +50,7 @@ namespace Microsoft.Pfe.Xrm.Samples
         /// </remarks>   
         public static void BasicClaimsConnectionToCrm()
         {
-            var serverUri = new Uri(String.Format(OrganizationServiceManager.OrganizationServiceInternalSecureUriFormat, "mycrmserver:5555", "myorganization"));
+            var serverUri = XrmServiceUriFactory.CreateOrganizationServiceUri("https://mycrmserver:5555/myorganization");
             var manager = new OrganizationServiceManager(serverUri, "username", "password");
 
             using (var proxy = manager.GetProxy())
@@ -67,7 +67,7 @@ namespace Microsoft.Pfe.Xrm.Samples
         /// </remarks>
         public static void BasicConnectionToCrmOnline()
         {
-            var serverUri = new Uri(String.Format(OrganizationServiceManager.OrganizationServiceOnlineNAUriFormat, "myorganization"));
+            var serverUri = XrmServiceUriFactory.CreateOnlineOrganizationServiceUri("myorganization", CrmOnlineRegion.NA);
             var manager = new OrganizationServiceManager(serverUri, "username@mydomain.onmicrosoft.com", "password");
 
             using (var proxy = manager.GetProxy())
@@ -85,7 +85,7 @@ namespace Microsoft.Pfe.Xrm.Samples
         /// </remarks>   
         public static void BasicCrossRealmConnectionToCrm()
         {
-            var serverUri = new Uri(String.Format(OrganizationServiceManager.OrganizationServiceInternalSecureUriFormat, "mycrmserver:5555", "myorganization"));
+            var serverUri = XrmServiceUriFactory.CreateOrganizationServiceUri("https://mycrmserver:5555/myorganization");
             var manager = new OrganizationServiceManager(serverUri, "username", "password", homeRealm: new Uri("https://myhomerealm.com"));
 
             using (var proxy = manager.GetProxy())
@@ -102,7 +102,7 @@ namespace Microsoft.Pfe.Xrm.Samples
         /// </remarks>  
         public static void BasicPreAuthConnectionToCrm(AuthenticationCredentials preAuthCredentials)
         {
-            var serverUri = new Uri(String.Format(OrganizationServiceManager.OrganizationServiceInternalSecureUriFormat, "mycrmserver:5555", "myorganization"));
+            var serverUri = XrmServiceUriFactory.CreateOrganizationServiceUri("https://mycrmserver:5555/myorganization");
             var manager = new OrganizationServiceManager(serverUri, preAuthCredentials);
 
             using (var proxy = manager.GetProxy())
@@ -120,8 +120,25 @@ namespace Microsoft.Pfe.Xrm.Samples
         /// </remarks>
         public static void BasicCrmDiscovery()
         {
-            var serverUri = new Uri(String.Format(DiscoveryServiceManager.DiscoveryServiceSecureUriFormat, "mycrmserver:5555"));
+            var serverUri = XrmServiceUriFactory.CreateDiscoveryServiceUri("https://mycrmserver:5555");
             var discoManager = new DiscoveryServiceManager(serverUri, "username", "password");
+
+            using (var discoProxy = discoManager.GetProxy())
+            {
+                //Do discovery requests...
+            }
+        }
+
+        /// <summary>
+        /// Demonstrates a online-federated connection to Discovery.svc using a userprincipalname and password
+        /// </summary>
+        /// <remarks>
+        /// DiscoveryServiceManager stores endpoint metadata and security token (if necessary). Instance can be reused to 
+        /// construct multiple discovery service channels (DiscoveryServiceProxy)
+        /// </remarks>
+        public static void BasicCrmOnlineDiscovery()
+        {
+            var discoManager = new DiscoveryServiceManager(XrmServiceUriFactory.DiscoveryServiceOnlineO365NAUri, "username@mydomain.onmicrosoft.com", "password");
 
             using (var discoProxy = discoManager.GetProxy())
             {
