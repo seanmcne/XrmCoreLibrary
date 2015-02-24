@@ -26,7 +26,7 @@ namespace Microsoft.Pfe.Xrm
     using Microsoft.Xrm.Sdk.Client;    
 
     /// <summary>
-    /// Class that handles renewing the SecurityTokenResponse if expired
+    /// Class that handles renewing the <see cref="SecurityTokenResponse"/> if expired
     /// </summary>
     public sealed class AutoRefreshSecurityToken<TProxy, TService>
         where TProxy : ServiceProxy<TService>
@@ -49,7 +49,7 @@ namespace Microsoft.Pfe.Xrm
         }
 
         /// <summary>
-        /// Prepares authentication before authen6ticated
+        /// Prepares authentication before authenticated
         /// </summary>
         public void PrepareCredentials()
         {

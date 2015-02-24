@@ -23,12 +23,12 @@ namespace Microsoft.Pfe.Xrm
     using Microsoft.Xrm.Sdk.Client;
 
     /// <summary>
-    /// Class that contains configurable options for DiscoveryServiceProxy requests
+    /// Class that contains configurable options for <see cref="DiscoveryServiceProxy"/> requests
     /// </summary>
     public class DiscoveryServiceProxyOptions : ServiceProxyOptions { }
     
     /// <summary>
-    /// Class that contains configurable options for OrganizationServiceProxy requests
+    /// Class that contains configurable options for <see cref="OrganizationServiceProxy"/> requests
     /// </summary>
     public class OrganizationServiceProxyOptions : ServiceProxyOptions
     {
@@ -37,14 +37,14 @@ namespace Microsoft.Pfe.Xrm
     }
     
     /// <summary>
-    /// Base class that contains configurable options for ServiceProxy<T> requests
+    /// Base class that contains configurable options for <see cref="ServiceProxy{T}"/> requests
     /// </summary>
     public class ServiceProxyOptions
     {                
         public static TimeSpan DefaultProxyTimeout = new TimeSpan(0,2,0);
         
         /// <summary>
-        /// Construct a ServiceProxyOptions with default Timeout
+        /// Construct a <see cref="ServiceProxyOptions"/> with default Timeout
         /// </summary>
         public ServiceProxyOptions()
         {        
@@ -52,7 +52,7 @@ namespace Microsoft.Pfe.Xrm
         }
 
         /// <summary>
-        /// The Timeout for the ServiceProxy channel
+        /// The timeout for the <see cref="ServiceProxy{T}"/> channel
         /// </summary>
         public TimeSpan Timeout { get; set; }
     }

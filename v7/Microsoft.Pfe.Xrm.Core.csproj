@@ -67,6 +67,7 @@
     <Compile Include="Client\ILocalResults.cs" />
     <Compile Include="Client\ManagedTokenServiceProxy.cs" />
     <Compile Include="Client\ParallelOperationContext.cs" />
+    <Compile Include="Client\ParallelOperationFailure.cs" />
     <Compile Include="Client\ParallelServiceProxy.cs" />
     <Compile Include="Client\ServiceProxyOptions.cs" />
     <Compile Include="Client\XrmServiceManager.cs" />

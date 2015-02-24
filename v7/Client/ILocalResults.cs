@@ -17,10 +17,15 @@ namespace Microsoft.Pfe.Xrm
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.ServiceModel;
     using System.Text;
 
-    public interface ILocalResults<TResult>
+    using Microsoft.Xrm.Sdk;
+
+    public interface ILocalResults<TResult, TFailure>
+        where TFailure : IParallelOperationFailure
     {
         IList<TResult> Results { get; }
+        IList<TFailure> Failures { get; }
     }
 }

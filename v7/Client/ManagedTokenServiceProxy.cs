@@ -25,7 +25,7 @@ namespace Microsoft.Pfe.Xrm
     using Microsoft.Xrm.Sdk.Discovery;
 
     /// <summary>
-    /// Wrapper class for DiscoveryServiceProxy to support auto refresh security token
+    /// Wrapper class for <see cref="DiscoveryServiceProxy"/> to support auto refresh security token
     /// </summary>
     public sealed class ManagedTokenDiscoveryServiceProxy : DiscoveryServiceProxy
     {
@@ -59,7 +59,7 @@ namespace Microsoft.Pfe.Xrm
     }
 
     /// <summary>
-    /// Wrapper class for OrganizationServiceProxy to support auto refresh security token
+    /// Wrapper class for <see cref="OrganizationServiceProxy"/> to support auto refresh security token
     /// </summary>
     public sealed class ManagedTokenOrganizationServiceProxy : OrganizationServiceProxy
     {
