@@ -147,6 +147,39 @@ namespace Microsoft.Pfe.Xrm.Samples
             }
 
             return results;
-        } 
+        }
+
+        /// <summary>
+        /// Demonstrates parallelized submission of multiple queries with the optional exception handler delegate
+        /// </summary>
+        /// <param name="queries">The keyed collection of queries to retrieve</param>
+        /// <returns>The keyed collection of query result collections</returns>
+        /// <remarks>
+        /// The exception handler delegate is provided the request type and the fault exception encountered. This delegate function is executed on the
+        /// calling thread after all parallel operations are complete
+        /// </remarks>
+        public IDictionary<string, EntityCollection> ParallelRetrieveMultipleWithExceptionHandler(IDictionary<string, QueryBase> queries)
+        {
+            int errorCount = 0;
+            IDictionary<string, EntityCollection> results = null;
+
+            try
+            {
+                results = this.Manager.ParallelProxy.RetrieveMultiple(queries, true,
+                    (query, ex) =>
+                    {
+                        System.Diagnostics.Debug.WriteLine("Error encountered during query with key={0}: {1}", query.Key, ex.Detail.Message);
+                        errorCount++;
+                    });
+            }
+            catch (AggregateException ae)
+            {
+                // Handle exceptions
+            }
+
+            Console.WriteLine("{0} errors encountered during parallel queries.", errorCount);
+
+            return results;
+        }
     }
 }

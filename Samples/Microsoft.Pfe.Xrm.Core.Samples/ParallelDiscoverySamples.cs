@@ -104,5 +104,65 @@ namespace Microsoft.Pfe.Xrm.Samples
                 // Handle exceptions
             }
         }
+
+        /// <summary>
+        /// Demonstrates parallelized execution of multiple discovery requests with the optional exception handler delegate
+        /// </summary>
+        /// <param name="requests">The collection of requests</param>
+        /// <remarks>
+        /// The exception handler delegate is provided the request type and the fault exception encountered. This delegate function is executed on the
+        /// calling thread after all parallel operations are complete
+        /// </remarks>
+        public Dictionary<string, RetrieveUserIdByExternalIdResponse> ParallelExecuteWithExceptionHandler(Dictionary<string, RetrieveUserIdByExternalIdRequest> requests)
+        {
+            int errorCount = 0;
+            var responses = new Dictionary<string, RetrieveUserIdByExternalIdResponse>();
+
+            try
+            {
+                responses = this.Manager.ParallelProxy.Execute<RetrieveUserIdByExternalIdRequest, RetrieveUserIdByExternalIdResponse>(requests,
+                    (request, ex) =>
+                    {
+                        System.Diagnostics.Debug.WriteLine("Error encountered during discovery of external user with Id={0}: {1}", request.Value.ExternalId, ex.Detail.Message);
+                        errorCount++;
+                    })
+                    .ToDictionary(t => t.Key, t => t.Value);
+            }
+            catch (AggregateException ae)
+            {
+                // Handle exceptions
+            }
+
+            Console.WriteLine("{0} errors encountered during parallel discovery requests.", errorCount);
+
+            return responses;
+        }
+
+        /// <summary>
+        /// Demonstrates a parallelized submission of multiple discovery requests with service proxy options
+        /// 3. Timeout = Increase the default 2 minute timeout on the channel to 5 minutes.
+        /// </summary>
+        /// <param name="requests">The collection of requests to execute in parallel</param>
+        /// <returns>The collection of responses</returns>
+        public IEnumerable<DiscoveryResponse> ParallelExecuteWithOptions(List<DiscoveryRequest> requests)
+        {
+            IEnumerable<DiscoveryResponse> responses = null;
+            
+            var options = new DiscoveryServiceProxyOptions()
+            {
+                Timeout = new TimeSpan(0, 5, 0)
+            };
+
+            try
+            {
+                responses = this.Manager.ParallelProxy.Execute(requests, options);
+            }
+            catch (AggregateException ae)
+            {
+                // Handle exceptions
+            }
+
+            return responses;
+        }
     }
 }

@@ -60,7 +60,7 @@ namespace Microsoft.Pfe.Xrm.Samples
 
             try
             {
-                this.Manager.ParallelProxy.Execute(requests).ToList();
+                this.Manager.ParallelProxy.Execute(requests);
             }
             catch (AggregateException ae)
             {
@@ -136,6 +136,38 @@ namespace Microsoft.Pfe.Xrm.Samples
             }
 
             return responses;
+        }
+
+        /// <summary>
+        /// Demonstrates parallelized execution of multiple requests with optional exception handler delegate
+        /// </summary>
+        /// <param name="requests">The list of requests</param>
+        /// <remarks>
+        /// The exception handler delegate is provided the request type and the fault exception encountered. This delegate function is executed on the
+        /// calling thread after all parallel operations are complete
+        /// </remarks>
+        public void ParallelExecuteRequestsWithExceptionHandler(List<AssignRequest> requests)
+        {
+            int errorCount = 0;
+            
+            try
+            {
+                this.Manager.ParallelProxy.Execute<AssignRequest, AssignResponse>(requests,
+                    (request, ex) =>
+                    {
+                        System.Diagnostics.Debug.WriteLine("Error encountered assigning entity with Id={0} to user with Id={1}: {2}", 
+                            request.Target.Id, 
+                            request.Assignee.Id, 
+                            ex.Detail.Message);
+                        errorCount++;
+                    });
+            }
+            catch (AggregateException ae)
+            {
+                // Handle exceptions
+            }
+
+            Console.WriteLine("{0} errors encountered during execute of parallel assign requests.", errorCount);
         }
     }
 }
