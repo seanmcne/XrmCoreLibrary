@@ -6,7 +6,7 @@
     using System.Text;
 
     /// <summary>
-    /// Factory class used to create Uri instances targeting XRM service endpoints
+    /// Factory class used to create <see cref="Uri"/> instances targeting Dynamics CRM endpoints
     /// </summary>
     public static class XrmServiceUriFactory
     {
@@ -26,10 +26,10 @@
         public static Uri DiscoveryServiceOnlineLiveAPACUri = new Uri("https://dev.crm5.dynamics.com/XRMServices/2011/Discovery.svc");
 
         /// <summary>
-        /// Creates a Discovery.svc Uri instance based on the specified location
+        /// Creates a Discovery.svc <see cref="Uri"/> instance based on the specified location
         /// </summary>
         /// <param name="location">The scheme, host, and port # (if applicable) representing location of Discovery.svc</param>
-        /// <returns>A new instance of Uri for the Discovery.svc</returns>
+        /// <returns>A new instance of <see cref="Uri"/> for the Discovery.svc</returns>
         /// <remarks>
         /// EXAMPLES: https://hostname:5555, https://hostname
         /// The Discovery.svc endpoint path is not necessary as this will be appended
@@ -40,14 +40,14 @@
         }
 
         /// <summary>
-        /// Creates an Organization.svc Uri instance based on the specified location
+        /// Creates an Organization.svc <see cref="Uri"/> instance based on the specified location
         /// </summary>
         /// <param name="location">The scheme, host, port # (if applicable), and organization representing location of Organization.svc</param>
-        /// <returns>A new instance of Uri for the Organization.svc</returns>
+        /// <returns>A new instance of <see cref="Uri"/> for the Organization.svc</returns>
         /// <remarks>
         /// EXAMPLES: https://hostname:5555/organization, https://organization.hostname:5555, https://hostname/organization, https://organization.hostname
-        /// The organization name, if detected in the Uri path, is preserved in the resulting Uri
-        /// The Organization.svc endpoint path is not necessary as this will be appended to all Uri's based on the type specified
+        /// The organization name, if detected in the <see cref="Uri"/> path, is preserved in the resulting <see cref="Uri"/>
+        /// The Organization.svc endpoint path is not necessary as this will be appended to all <see cref="Uri"/>'s based on the type specified
         /// </remarks>       
         public static Uri CreateOrganizationServiceUri(string location)
         {
@@ -55,14 +55,14 @@
         }
 
         /// <summary>
-        /// Creates an OrganizationData.svc Uri instance based on the specified location
+        /// Creates an OrganizationData.svc <see cref="Uri"/> instance based on the specified location
         /// </summary>
         /// <param name="location">The scheme, host, port # (if applicable), and organization representing location of Organization.svc</param>
-        /// <returns>A new instance of Uri for the OrganizationData.svc</returns>
+        /// <returns>A new instance of <see cref="Uri"/> for the OrganizationData.svc</returns>
         /// <remarks>
         /// EXAMPLES: https://hostname:5555/organization, https://organization.hostname:5555, https://hostname/organization, https://organization.hostname
-        /// The organization name, if detected in the Uri path, is preserved in the resulting Uri
-        /// The OrganizationData.svc endpoint path is not necessary as this will be appended to all Uri's based on the type specified
+        /// The organization name, if detected in the <see cref="Uri"/> path, is preserved in the resulting <see cref="Uri"/>
+        /// The OrganizationData.svc endpoint path is not necessary as this will be appended to all <see cref="Uri"/>'s based on the type specified
         /// </remarks>  
         public static Uri CreateOrganizationDataServiceUri(string location)
         {
@@ -70,14 +70,14 @@
         }
 
         /// <summary>
-        /// Creates an Organization.svc/Web Uri instance based on the specified location
+        /// Creates an Organization.svc/Web <see cref="Uri"/> instance based on the specified location
         /// </summary>
         /// <param name="location">The scheme, host, port # (if applicable), and organization representing location of Organization.svc</param>
-        /// <returns>A new instance of Uri for the Organization.svc/Web</returns>
+        /// <returns>A new instance of <see cref="Uri"/> for the Organization.svc/Web</returns>
         /// <remarks>
         /// EXAMPLES: https://hostname:5555/organization, https://organization.hostname:5555, https://hostname/organization, https://organization.hostname
-        /// The organization name, if detected in the Uri path, is preserved in the resulting Uri
-        /// The Organization.svc/Web endpoint path is not necessary as this will be appended to all Uri's based on the type specified
+        /// The organization name, if detected in the <see cref="Uri"/> path, is preserved in the resulting <see cref="Uri"/>
+        /// The Organization.svc/Web endpoint path is not necessary as this will be appended to all <see cref="Uri"/>'s based on the type specified
         /// </remarks>
         public static Uri CreateOrganizationWebServiceUri(string location)
         {
@@ -85,11 +85,11 @@
         }
 
         /// <summary>
-        /// Creates an Organization.svc Uri instance targeting CRM Online for the specified organization/region pair
+        /// Creates an Organization.svc <see cref="Uri"/> instance targeting CRM Online for the specified organization/region pair
         /// </summary>
         /// <param name="organizationName">The organization name</param>
         /// <param name="region">The region where the organization is located</param>
-        /// <returns>A new instance of Uri for the Organization.svc</returns>
+        /// <returns>A new instance of <see cref="Uri"/> for the Organization.svc</returns>
         public static Uri CreateOnlineOrganizationServiceUri(string organizationName, CrmOnlineRegion region = CrmOnlineRegion.NA)
         {
             string location = XrmServiceUriFactory.CreateOnlineOrganizationServiceLocation(organizationName, region);
@@ -98,11 +98,11 @@
         }
 
         /// <summary>
-        /// Creates an OrganizationData.svc Uri instance targeting CRM Online for the specified organization/region pair
+        /// Creates an OrganizationData.svc <see cref="Uri"/> instance targeting CRM Online for the specified organization/region pair
         /// </summary>
         /// <param name="organizationName">The organization name</param>
         /// <param name="region">The region where the organization is located</param>
-        /// <returns>A new instance of Uri for the OrganizationData.svc</returns>
+        /// <returns>A new instance of <see cref="Uri"/> for the OrganizationData.svc</returns>
         public static Uri CreateOnlineOrganizationDataServiceUri(string organizationName, CrmOnlineRegion region = CrmOnlineRegion.NA)
         {
             string location = XrmServiceUriFactory.CreateOnlineOrganizationServiceLocation(organizationName, region);
@@ -111,11 +111,11 @@
         }
 
         /// <summary>
-        /// Creates an Organization.svc/Web Uri instance targeting CRM Online for the specified organization/region pair
+        /// Creates an Organization.svc/Web <see cref="Uri"/> instance targeting CRM Online for the specified organization/region pair
         /// </summary>
         /// <param name="organizationName">The organization name</param>
         /// <param name="region">The region where the organization is located</param>
-        /// <returns>A new instance of Uri for the Organization.svc/Web</returns>
+        /// <returns>A new instance of <see cref="Uri"/> for the Organization.svc/Web</returns>
         public static Uri CreateOnlineOrganizationWebServiceUri(string organizationName, CrmOnlineRegion region = CrmOnlineRegion.NA)
         {
             string location = XrmServiceUriFactory.CreateOnlineOrganizationServiceLocation(organizationName, region);
@@ -124,15 +124,15 @@
         }
 
         /// <summary>
-        /// Creates a Uri that targets the specified location and XRM service endpoint type 
+        /// Creates a <see cref="Uri"/> that targets the specified location and XRM service endpoint type 
         /// </summary>
-        /// <param name="location">The location of the XRM service endpoint - This should include scheme, host, port, and organization name (if applicable)</param>
-        /// <param name="serviceType">The XRM service endpoint type</param>
-        /// <returns>A Uri targeting the specified XRM service endpoint</returns>
+        /// <param name="location">The location of the Dynamics CRM endpoint - This should include scheme, host, port, and organization name (if applicable)</param>
+        /// <param name="serviceType">The Dynamics CRM endpoint type</param>
+        /// <returns>A <see cref="Uri"/> targeting the specified Dynamics CRM service endpoint</returns>
         /// <remarks>
         /// EXAMPLES: https://hostname:4443/organization, https://hostname/organization, https://organization.hostname, https://hostname
-        /// For Organization.svc types, the organization name, if detected in the Uri path, is preserved in the resulting Uri
-        /// The XRM service endpoint path is not necessary as this will be appended to all Uri's based on the type specified
+        /// For Organization.svc types, the organization name, if detected in the <see cref="Uri"/> path, is preserved in the resulting <see cref="Uri"/>
+        /// The Dynamics CRM service endpoint path is not necessary as this will be appended to all <see cref="Uri"/>'s based on the type specified
         /// </remarks>
         private static Uri CreateServiceUri(string location, XrmServiceType serviceType)
         {
@@ -184,7 +184,7 @@
         }
 
         /// <summary>
-        /// Creates a string representing the Online Organization.svc location based on the specified region
+        /// Creates a string representing the CRM Online Organization.svc location based on the specified region
         /// </summary>
         /// <param name="organizationName">The organization name being targeted</param>
         /// <param name="region">The applicable CRM Online region</param>

@@ -28,27 +28,27 @@ namespace Microsoft.Pfe.Xrm
     using Microsoft.Xrm.Sdk.Discovery;
 
     /// <summary>
-    /// Wrapper class for managing the service configuration of the Discovery.svc endpoint
+    /// Wrapper class for managing the service configuration of the Dynamics CRM Discovery.svc endpoint
     /// </summary>
     public class DiscoveryServiceManager : XrmServiceManager<IDiscoveryService, ManagedTokenDiscoveryServiceProxy>
     {
         #region Constructor(s)
 
         /// <summary>
-        /// Establishes an IDiscoveryService configuration at Uri location using supplied AuthenticationCredentials
+        /// Establishes an <see cref="IDiscoveryService"/> configuration at Uri location using supplied <see cref="AuthenticationCredentials"/>
         /// </summary>
         /// <param name="serviceUri">The service endpoint location</param>
         /// <param name="credentials">The auth credentials</param>
         /// <remarks>
-        /// AuthenticationCredentials can represent AD ClientCredentials, Claims ClientCredentials, or Cross-realm Claims ClientCredentials
-        /// The authCredentials may already contain a SecurityTokenResponse
-        /// For cross-realm (federated) scenarios it can contain a HomeRealm Uri by itself, or also include a SecurityTokenResponse from the federated realm
+        /// <see cref="AuthenticationCredentials"/> can represent AD, Claims, or Cross-realm Claims <see cref="ClientCredentials"/>
+        /// The authCredentials may already contain a <see cref="SecurityTokenResponse"/>
+        /// For cross-realm (federated) scenarios it can contain a HomeRealm Uri by itself, or also include a <see cref="SecurityTokenResponse"/> from the federated realm
         /// </remarks>
         public DiscoveryServiceManager(Uri serviceUri, AuthenticationCredentials credentials)
             : base(serviceUri, credentials) { }
 
         /// <summary>
-        /// Establishes an IDiscoveryService configuration at Uri location using supplied identity details
+        /// Establishes an <see cref="IDiscoveryService"/> configuration at Uri location using supplied identity details
         /// </summary>
         /// <param name="serviceUri">The service endpoint location</param>
         /// <param name="username">The username of the identity to authenticate</param>
@@ -59,20 +59,20 @@ namespace Microsoft.Pfe.Xrm
             : base(serviceUri, username, password, domain, homeRealm) { }
 
         /// <summary>
-        /// Manages an established IDiscoveryService configuration using supplied AuthenticationCredentials
+        /// Manages an established <see cref="IDiscoveryService"/> configuration using supplied <see cref="AuthenticationCredentials"/>
         /// </summary>
         /// <param name="serviceManagement">The established service configuration management object</param>
         /// <param name="credentials">The auth credentials</param>
         /// <remarks>
-        /// AuthenticationCredentials can represent AD ClientCredentials, Claims ClientCredentials, or Cross-realm Claims ClientCredentials
-        /// The authCredentials may already contain a SecurityTokenResponse
-        /// For cross-realm (federated) scenarios it can contain a HomeRealm Uri by itself, or also include a SecurityTokenResponse from the federated realm
+        /// <see cref="AuthenticationCredentials"/> can represent AD, Claims, or Cross-realm Claims <see cref="ClientCredentials"/>
+        /// The authCredentials may already contain a <see cref="SecurityTokenResponse"/>
+        /// For cross-realm (federated) scenarios it can contain a HomeRealm Uri by itself, or also include a <see cref="SecurityTokenResponse"/> from the federated realm
         /// </remarks>
         public DiscoveryServiceManager(IServiceManagement<IDiscoveryService> serviceManagement, AuthenticationCredentials credentials)
             : base(serviceManagement, credentials) { }
 
         /// <summary>
-        /// Manages an established IDiscoveryService configuration using DefaultNetworkCredentials
+        /// Manages an established <see cref="IDiscoveryService"/> configuration using DefaultNetworkCredentials
         /// </summary>
         /// <param name="serviceManagement">The established service configuration management object</param>  
         /// <remarks>
@@ -103,27 +103,27 @@ namespace Microsoft.Pfe.Xrm
     }
     
     /// <summary>
-    /// Wrapper class for managing the service configuration of the Organization.svc endpoint
+    /// Wrapper class for managing the service configuration of the Dynamics CRM Organization.svc endpoint
     /// </summary>
     public class OrganizationServiceManager : XrmServiceManager<IOrganizationService, ManagedTokenOrganizationServiceProxy>
     {
         #region Constructor(s)
 
         /// <summary>
-        /// Establishes an IOrganizationService configuration at Uri location using supplied AuthenticationCredentials
+        /// Establishes an <see cref="IOrganizationService"/> configuration at Uri location using supplied <see cref="AuthenticationCredentials"/>
         /// </summary>
         /// <param name="serviceUri">The service endpoint location</param>
         /// <param name="credentials">The auth credentials</param>
         /// <remarks>
-        /// AuthenticationCredentials can represent AD ClientCredentials, Claims ClientCredentials, or Cross-realm Claims ClientCredentials
-        /// The authCredentials may already contain a SecurityTokenResponse
-        /// For cross-realm (federated) scenarios it can contain a HomeRealm Uri by itself, or also include a SecurityTokenResponse from the federated realm
+        /// <see cref="AuthenticationCredentials"/> can represent AD, Claims, or Cross-realm Claims <see cref="ClientCredentials"/>
+        /// The authCredentials may already contain a <see cref="SecurityTokenResponse"/>
+        /// For cross-realm (federated) scenarios it can contain a HomeRealm Uri by itself, or also include a <see cref="SecurityTokenResponse"/> from the federated realm
         /// </remarks>
         public OrganizationServiceManager(Uri serviceUri, AuthenticationCredentials credentials)
             : base(serviceUri, credentials) { }
 
         /// <summary>
-        /// Establishes an IOrganizationService configuration at Uri location using supplied identity details
+        /// Establishes an <see cref="IOrganizationService"/> configuration at Uri location using supplied identity details
         /// </summary>
         /// <param name="serviceUri">The service endpoint location</param>
         /// <param name="username">The username of the identity to authenticate</param>
@@ -134,20 +134,20 @@ namespace Microsoft.Pfe.Xrm
             : base(serviceUri, username, password, domain, homeRealm) { }
 
         /// <summary>
-        /// Manages an established IOrganizationService configuration using supplied AuthenticationCredentials
+        /// Manages an established <see cref="IOrganizationService"/> configuration using supplied <see cref="AuthenticationCredentials"/>
         /// </summary>
         /// <param name="serviceManagement">The established service configuration management object</param>
         /// <param name="credentials">The auth credentials</param>
         /// <remarks>
-        /// AuthenticationCredentials can represent AD ClientCredentials, Claims ClientCredentials, or Cross-realm Claims ClientCredentials
-        /// The authCredentials may already contain a SecurityTokenResponse
-        /// For cross-realm (federated) scenarios it can contain a HomeRealm Uri by itself, or also include a SecurityTokenResponse from the federated realm
+        /// <see cref="AuthenticationCredentials"/> can represent AD, Claims, or Cross-realm Claims <see cref="ClientCredentials"/>
+        /// The authCredentials may already contain a <see cref="SecurityTokenResponse"/>
+        /// For cross-realm (federated) scenarios it can contain a HomeRealm Uri by itself, or also include a <see cref="SecurityTokenResponse"/> from the federated realm
         /// </remarks>
         public OrganizationServiceManager(IServiceManagement<IOrganizationService> serviceManagement, AuthenticationCredentials credentials)
             : base(serviceManagement, credentials) { }
 
         /// <summary>
-        /// Manages an established IOrganizationService configuration using DefaultNetworkCredentials
+        /// Manages an established <see cref="IOrganizationService"/> configuration using DefaultNetworkCredentials
         /// </summary>
         /// <param name="serviceManagement">The established service configuration management object</param>  
         /// <remarks>
@@ -157,9 +157,9 @@ namespace Microsoft.Pfe.Xrm
             : base(serviceManagement) { }
 
         /// <summary>
-        /// Manages an established IOrganizationService configuration using DefaultNetworkCredentials
+        /// Manages an established <see cref="IOrganizationService"/> configuration using DefaultNetworkCredentials
         /// </summary>
-        /// <param name="serviceUri">Uri to use for establishing IServiceManagement</param>  
+        /// <param name="serviceUri">Uri to use for establishing <see cref="IServiceManagement"/></param>  
         /// <remarks>
         /// This approach authenticates using DefaultNetworkCredentials (AD only) since no credentials are supplied
         /// </remarks>
@@ -194,10 +194,10 @@ namespace Microsoft.Pfe.Xrm
     }
 
     /// <summary>
-    /// Generic class for establishing and managing a ServiceConfiguration for Dynamics CRM 2011 WCF endpoints
+    /// Generic class for establishing and managing a service configuration for Dynamics CRM endpoints
     /// </summary>
-    /// <typeparam name="TService">Set IDiscoveryService or IOrganizationService type to request respective service proxy instances.</typeparam>
-    /// <typeparam name="TProxy">Set a proxy return type to either DiscoveryServiceProxy or OrganizationServiceProxy type based on TService type.</typeparam>
+    /// <typeparam name="TService">Set <see cref="IDiscoveryService"/> or <see cref="IOrganizationService"/> type to request respective service proxy instances.</typeparam>
+    /// <typeparam name="TProxy">Set a proxy return type to either <see cref="DiscoveryServiceProxy"/> or <see cref="OrganizationServiceProxy"/> type based on TService type.</typeparam>
     /// <remarks>
     /// Provides a means to reuse thread-safe service configurations and security tokens to open multiple client service proxies (channels)
     /// </remarks>
@@ -218,14 +218,14 @@ namespace Microsoft.Pfe.Xrm
         #region Uri Constructor(s)
 
         /// <summary>
-        /// Establishes a service configuration at Uri location using supplied AuthenticationCredentials
+        /// Establishes a service configuration at <see cref="Uri"/> location using supplied <see cref="AuthenticationCredentials"/>
         /// </summary>
         /// <param name="serviceUri">The service endpoint location</param>
         /// <param name="credentials">The auth credentials</param>
         /// <remarks>
-        /// AuthenticationCredentials can represent AD ClientCredentials, Claims ClientCredentials, or Cross-realm Claims ClientCredentials
-        /// The authCredentials may already contain a SecurityTokenResponse
-        /// For cross-realm (federated) scenarios it can contain a HomeRealm Uri by itself, or also include a SecurityTokenResponse from the federated realm
+        /// <see cref="AuthenticationCredentials"/> can represent AD, Claims, or Cross-realm Claims <see cref="ClientCredentials"/>
+        /// The authCredentials may already contain a <see cref="SecurityTokenResponse"/>
+        /// For cross-realm (federated) scenarios it can contain a HomeRealm Uri by itself, or also include a <see cref="SecurityTokenResponse"/> from the federated realm
         /// </remarks>
         protected XrmServiceManager(Uri serviceUri, AuthenticationCredentials credentials)
         {            
@@ -236,7 +236,7 @@ namespace Microsoft.Pfe.Xrm
         }
 
         /// <summary>
-        /// Establishes a service configuration of type TService at Uri location using supplied identity details
+        /// Establishes a service configuration of type TService at <see cref="Uri"/> location using supplied identity details
         /// </summary>
         /// <param name="serviceUri">The service endpoint location</param>
         /// <param name="username">The username of the identity to authenticate</param>
@@ -256,14 +256,14 @@ namespace Microsoft.Pfe.Xrm
         #region IServiceManagement<TService> Constructor(s)
 
         /// <summary>
-        /// Manages an established service configuration using supplied AuthenticationCredentials
+        /// Manages an established service configuration using supplied <see cref="AuthenticationCredentials"/>
         /// </summary>
         /// <param name="serviceManagement">The established service configuration management object</param>
         /// <param name="credentials">The auth credentials</param>
         /// <remarks>
-        /// AuthenticationCredentials can represent AD ClientCredentials, Claims ClientCredentials, or Cross-realm Claims ClientCredentials
-        /// The authCredentials may already contain a SecurityTokenResponse
-        /// For cross-realm (federated) scenarios it can contain a HomeRealm Uri by itself, or also include a SecurityTokenResponse from the federated realm
+        /// <see cref="AuthenticationCredentials"/> can represent AD, Claims, or Cross-realm Claims <see cref="ClientCredentials"/>
+        /// The authCredentials may already contain a <see cref="SecurityTokenResponse"/>
+        /// For cross-realm (federated) scenarios it can contain a HomeRealm <see cref="Uri"/> by itself, or also include a <see cref="SecurityTokenResponse"/> from the federated realm
         /// </remarks>
         protected XrmServiceManager(IServiceManagement<TService> serviceManagement, AuthenticationCredentials credentials)
         {                        
@@ -371,7 +371,7 @@ namespace Microsoft.Pfe.Xrm
         #endregion
 
         /// <summary>
-        /// The AuthenticationProviderType of the targeted endpoint
+        /// The <see cref="AuthenticationProviderType"/> of the targeted endpoint
         /// </summary>
         protected AuthenticationProviderType AuthenticationType
         {
@@ -431,7 +431,7 @@ namespace Microsoft.Pfe.Xrm
         }
 
         /// <summary>
-        /// Prepare and authenticate an OSDP/Office365 Authentication Credentials using UPN for SSO
+        /// Prepare and authenticate an OSDP/Office365 <see cref="AuthenticationCredentials"/> using UPN for SSO
         /// </summary>
         /// <param name="userPrincipalName">The user principal name (UPN)</param>
         private void AuthenticateSingleSignOnCredentials(string userPrincipalName)
@@ -509,11 +509,11 @@ namespace Microsoft.Pfe.Xrm
         /// Request a security token from the identity provider using the supplied credentials
         /// </summary>
         /// <remarks>
-        /// Invokes IServiceManagement<TService>.Authenticate() method to perform claims request
+        /// Invokes <see cref="IServiceManagement{TService}"/>.Authenticate() method to perform claims request
         /// Updates the stored credentials with the authentication response that includes the security token
         /// 
         /// Only performs this action if endpoint indicates a non-AD authentication provider scenario
-        /// IServiceManagement<TService>.Authenticate() handles multiple scenarios:
+        /// <see cref="IServiceManagement{TService}"/>.Authenticate() handles multiple scenarios:
         /// 1: Gets security token in current realm for AuthenticationCredentials.ClientCredentials.UserName
         /// 2: Gets security token in current realm by authenticating cross-realm for AuthenticationCredentials.ClientCredentials.UserName using AuthenticationCredentials.HomeRealm
         /// 3: Gets securtiy token in current realm using the cross-realm AuthenticationCredentials.SecurityTokenResponse from AuthenticationCredentials.HomeRealm
@@ -581,10 +581,10 @@ namespace Microsoft.Pfe.Xrm
         }
         
         /// <summary>
-        /// Sets up a new proxy connection of type TProxy using IServiceManagement<TService>
+        /// Sets up a new proxy connection of type TProxy using <see cref="IServiceManagement{TService}"/>
         /// </summary>
         /// <returns>An instance of a managed token TProxy 
-        /// i.e. DiscoveryServiceProxy or OrganizationServiceProxy</returns>
+        /// i.e. <see cref="DiscoveryServiceProxy"/> or <see cref="OrganizationServiceProxy"/></returns>
         /// <remarks>
         /// The proxy represents a client service channel to a service endpoint. 
         /// Proxy connections should be disposed of properly before they fall out of scope to free up the allocated service channel.

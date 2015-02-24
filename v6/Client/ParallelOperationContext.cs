@@ -17,6 +17,7 @@ namespace Microsoft.Pfe.Xrm
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.ServiceModel;
     using System.ServiceModel.Description;
     using System.Text;
 
@@ -31,7 +32,7 @@ namespace Microsoft.Pfe.Xrm
     /// <remarks>
     /// ASSUMPTION: The local reference temporarily points to a threadlocal instance shared across partitions, thus we do not dispose from the context directly
     /// </remarks>
-    internal sealed class ParallelDiscoveryOperationContext<TResponse> : ParallelOperationContext<ManagedTokenDiscoveryServiceProxy, TResponse>
+    internal sealed class ParallelDiscoveryOperationContext<TRequest, TResponse> : ParallelOperationContext<ManagedTokenDiscoveryServiceProxy, TResponse, ParallelDiscoveryOperationFailure<TRequest>>
     {
         public ParallelDiscoveryOperationContext(ManagedTokenDiscoveryServiceProxy proxy)
             : base(proxy) { }
@@ -44,8 +45,10 @@ namespace Microsoft.Pfe.Xrm
     /// <remarks>
     /// ASSUMPTION: The local reference temporarily points to a threadlocal instance shared across partitions, thus we do not dispose from the context directly
     /// </remarks>
-    internal sealed class ParallelOrganizationOperationContext<TResponse> : ParallelOperationContext<ManagedTokenOrganizationServiceProxy, TResponse>
+    internal sealed class ParallelOrganizationOperationContext<TRequest, TResponse> : ParallelOperationContext<ManagedTokenOrganizationServiceProxy, TResponse, ParallelOrganizationOperationFailure<TRequest>>
     {
+        public ParallelOrganizationOperationContext() { }
+        
         public ParallelOrganizationOperationContext(ManagedTokenOrganizationServiceProxy proxy)
             : base(proxy) {  }        
     }
@@ -56,8 +59,11 @@ namespace Microsoft.Pfe.Xrm
     /// implements ILocalResults<TResponse> for collecting partitioned results in parallel operations
     /// </summary>
     /// <typeparam name="TResponse">The expected response type to collect</typeparam>
-    public class ParallelOperationContext<TLocal, TResponse> : ILocalResults<TResponse>
+    internal class ParallelOperationContext<TLocal, TResponse, TFailure> : ILocalResults<TResponse, TFailure>
+        where TFailure : IParallelOperationFailure
     {
+        protected ParallelOperationContext() {  }
+        
         public ParallelOperationContext(TLocal local) { this.Local = local; }
 
         public TLocal Local { get; set; }
@@ -75,6 +81,21 @@ namespace Microsoft.Pfe.Xrm
                 }
 
                 return this.results;
+            }
+        }
+
+        private IList<TFailure> failures;
+
+        public IList<TFailure> Failures
+        {
+            get
+            {
+                if (this.failures == null)
+                {
+                    this.failures = new List<TFailure>();
+                }
+
+                return this.failures;
             }
         }
 
