@@ -9,4 +9,10 @@ Microsoft.Xrm.Portal.Files.dll
 Microsoft.Xrm.Sdk.Deployment.dll
 Microsoft.Xrm.Sdk.dll
 Microsoft.Xrm.Sdk.Workflow.dll
+Microsoft.Xrm.Tooling.Connector.dll
+Microsoft.Xrm.Tooling.CrmConnectControl.dll
+Microsoft.Xrm.Tooling.CrmConnector.Powershell.dll
+Microsoft.Xrm.Tooling.Ui.Resources.dll
+Microsoft.Xrm.Tooling.WebResourceUtility.dll
+
 

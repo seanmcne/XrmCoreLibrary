@@ -51,7 +51,11 @@ namespace Microsoft.Pfe.Xrm.Samples
                         try
                         {
                             //Issue create requests parallelized
-                            targets = ServiceManagerContext.Current.ParallelProxy.Create(this.Data.AccountCreateTargets).ToList();
+                            targets = ServiceManagerContext.Current.ParallelProxy.Create(this.Data.AccountCreateTargets,
+                                (target, ex) =>
+                                {
+                                    HandleFaultException(ex);
+                                }).ToList();
                         }
                         catch (AggregateException ae)
                         {
@@ -80,7 +84,11 @@ namespace Microsoft.Pfe.Xrm.Samples
                         try
                         {
                             //Issue create requests parallelized
-                            targets = ServiceManagerContext.Current.ParallelProxy.Create(targets).ToList();
+                            targets = ServiceManagerContext.Current.ParallelProxy.Create(targets,
+                                (t, ex) =>
+                                {
+                                    HandleException(String.Format("{0} entity encountered create fault: {1}", t.LogicalName, ex.Detail.Message));
+                                }).ToList();
                         }
                         catch (AggregateException ae)
                         {
@@ -111,7 +119,11 @@ namespace Microsoft.Pfe.Xrm.Samples
                         try
                         {
                             //Issue update requests parallelized
-                            ServiceManagerContext.Current.ParallelProxy.Update(targets);
+                            ServiceManagerContext.Current.ParallelProxy.Update(targets,
+                                (t, ex) =>
+                                {
+                                    HandleException(String.Format("{0} with Id={1} encountered update fault: ", t.LogicalName, t.Id, ex.Detail.Message));
+                                });
                         }
                         catch (AggregateException ae)
                         {
@@ -137,7 +149,11 @@ namespace Microsoft.Pfe.Xrm.Samples
                         try
                         {
                             //Issue execute requests parallelized
-                            ServiceManagerContext.Current.ParallelProxy.Execute(requests);
+                            ServiceManagerContext.Current.ParallelProxy.Execute(requests,
+                                (request, ex) =>
+                                {
+                                    HandleFaultException(ex);
+                                });
                         }
                         catch (AggregateException ae)
                         {
@@ -156,7 +172,11 @@ namespace Microsoft.Pfe.Xrm.Samples
             {
                 return () =>
                     {
-                        var results = ServiceManagerContext.Current.ParallelProxy.RetrieveMultiple(this.Data.RetrieveMultipleQueries, true);
+                        var results = ServiceManagerContext.Current.ParallelProxy.RetrieveMultiple(this.Data.RetrieveMultipleQueries, true,
+                            (query, ex) =>
+                            {
+                                HandleException(String.Format("{0} query encountered retrievemultiple fault: {1}", query.Key, ex.Detail.Message));
+                            });
 
                         EntityCollection accounts = results.Where(r => r.Key.Equals("accounts", StringComparison.OrdinalIgnoreCase)).Select(r => r.Value).FirstOrDefault();
                         EntityCollection contacts = results.Where(r => r.Key.Equals("contacts", StringComparison.OrdinalIgnoreCase)).Select(r => r.Value).FirstOrDefault();
@@ -186,7 +206,11 @@ namespace Microsoft.Pfe.Xrm.Samples
                             //This behavior is not exhibited in CRM 2013
 
                             //ServiceManagerContext.Current.ParallelProxy.MaxDegreeOfParallelism = 1;
-                            ServiceManagerContext.Current.ParallelProxy.Delete(this.Data.DeleteTargets);
+                            ServiceManagerContext.Current.ParallelProxy.Delete(this.Data.DeleteTargets,
+                                (t, ex) =>
+                                {
+                                    HandleException(String.Format("{0} with Id={1} encountered delete fault: {2}", t.LogicalName, t.Id, ex.Detail.Message));
+                                });
                             //ServiceManagerContext.Current.ParallelProxy.MaxDegreeOfParallelism = ParallelServiceProxy.MaxDegreeOfParallelismDefault;
                         }
                         catch (AggregateException ae)

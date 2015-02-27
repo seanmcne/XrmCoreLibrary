@@ -320,9 +320,8 @@ namespace Microsoft.Pfe.Xrm.Samples
         {
             this.ServiceManagement = SamplesConfig.CrmShouldDiscover
                 ? ServiceConfigurationFactory.CreateManagement<IOrganizationService>(ServiceManagerContext.ServiceLocations.OrganizationEndpointViaDiscovery) //Just use Xrm.Core discovery manager to keep things consistent
-                : ServiceConfigurationFactory.CreateManagement<IOrganizationService>(new Uri(String.Format("http://{0}/{1}/XRMServices/2011/Organization.svc", SamplesConfig.CrmDiscoveryHost, SamplesConfig.CrmOrganization)));
+                : ServiceConfigurationFactory.CreateManagement<IOrganizationService>(new Uri(String.Format("{0}/XRMServices/2011/Organization.svc", SamplesConfig.CrmOrganizationHost)));
 
-            //For purposes of this exercise, only handle on-prem auth scenarios (AD or federated/claims).
             if (this.ServiceManagement.AuthenticationType == AuthenticationProviderType.ActiveDirectory)
             {
                 using (var pw = SamplesConfig.GetCrmDecryptedPassword())
@@ -353,7 +352,10 @@ namespace Microsoft.Pfe.Xrm.Samples
                                     UserName = SamplesConfig.CrmUsername,
                                     Password = pw.ToUnsecureString()
                                 }
-                            }
+                            },
+                            UserPrincipalName = this.ServiceManagement.AuthenticationType == AuthenticationProviderType.OnlineFederation
+                                ? SamplesConfig.CrmUsername
+                                : null
                         });
                 }
             }
@@ -362,10 +364,7 @@ namespace Microsoft.Pfe.Xrm.Samples
         /// <summary>
         /// Allocate a new service channel to organization.svc
         /// </summary>
-        /// <returns></returns>
-        /// <remarks>
-        /// For purposes of this exercise, only handle on-prem auth scenarios (AD or federated/claims).
-        /// </remarks>
+        /// <returns>A instance of OrganizationServiceProxy representing a service channel</returns>
         private OrganizationServiceProxy GetProxy()
         {
             if (this.ServiceManagement.AuthenticationType == AuthenticationProviderType.ActiveDirectory)

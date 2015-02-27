@@ -433,6 +433,26 @@ The ID of the team, that corresponds to the Team.TeamId attribute, which is the 
 		<member name="M:Microsoft.Crm.Sdk.Messages.AddMembersTeamResponse.#ctor">
 			<summary>Initializes a new instance of the  <see cref="T:Microsoft.Crm.Sdk.Messages.AddMembersTeamResponse"></see> class.</summary>
 		</member>
+		<member name="T:Microsoft.Crm.Sdk.Messages.AddPrincipalToQueueRequest">
+			<summary>Contains the data to add the specified principal to the list of queue members. If the principal is a team, add each team member to the queue.</summary>
+		</member>
+		<member name="M:Microsoft.Crm.Sdk.Messages.AddPrincipalToQueueRequest.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.AddPrincipalToQueueRequest"></see> class.</summary>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.AddPrincipalToQueueRequest.Principal">
+			<summary>Gets or sets the principal to add to the queue. Required.</summary>
+			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.Entity"></see>The principal to add to the queue.</returns>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.AddPrincipalToQueueRequest.QueueId">
+			<summary>Gets or sets the ID of the queue. Required</summary>
+			<returns>Type: Returns_GuidThe ID of the queue.</returns>
+		</member>
+		<member name="T:Microsoft.Crm.Sdk.Messages.AddPrincipalToQueueResponse">
+			<summary>Contains the response from the <see cref="T:Microsoft.Crm.Sdk.Messages.AddPrincipalToQueueRequest"></see> message.This message was added with pn_crm_2013_service_pack_1_op_short and pn_v6_online_ur1_shortest.</summary>
+		</member>
+		<member name="M:Microsoft.Crm.Sdk.Messages.AddPrincipalToQueueResponse.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.AddPrincipalToQueueResponse"></see> class.</summary>
+		</member>
 		<member name="T:Microsoft.Crm.Sdk.Messages.AddPrivilegesRoleRequest">
 			<summary>Contains the data that is needed to  add a set of existing privileges to an existing role. </summary>
 		</member>
@@ -619,6 +639,22 @@ The ID of the queue item that is created in the destination queue,  which corres
 		<member name="P:Microsoft.Crm.Sdk.Messages.AddUserToRecordTeamResponse.AccessTeamId">
 			<summary>Gets the ID of the auto created access team. </summary>
 			<returns>Type: Returns_GuidThe ID of the auto created access team, which corresponds to the Team.TeamId attribute, which is the primary key for the Team entity.</returns>
+		</member>
+		<member name="T:Microsoft.Crm.Sdk.Messages.ApplyRoutingRuleRequest">
+			<summary>Contains the data that is needed to apply the active routing rule to an incident.</summary>
+		</member>
+		<member name="M:Microsoft.Crm.Sdk.Messages.ApplyRoutingRuleRequest.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.ApplyRoutingRuleRequest"></see> class.</summary>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.ApplyRoutingRuleRequest.Target">
+			<summary>Gets or sets the target incident to apply the routing rule to. Required.</summary>
+			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.EntityReference"></see>The target incident to apply the routing rule to.</returns>
+		</member>
+		<member name="T:Microsoft.Crm.Sdk.Messages.ApplyRoutingRuleResponse">
+			<summary>Contains the response from the <see cref="T:Microsoft.Crm.Sdk.Messages.ApplyRoutingRuleRequest"></see> message.This message was added with pn_crm_2013_service_pack_1_op_short and pn_v6_online_ur1_shortest.</summary>
+		</member>
+		<member name="M:Microsoft.Crm.Sdk.Messages.ApplyRoutingRuleResponse.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.ApplyRoutingRuleResponse"></see> class.</summary>
 		</member>
 		<member name="T:Microsoft.Crm.Sdk.Messages.AppointmentProposal">
 			<summary>Represents a proposed appointment time and date as a result of the <see cref="T:Microsoft.Crm.Sdk.Messages.SearchRequest"></see> message.</summary>
@@ -948,7 +984,7 @@ The date and time of the last audit record in the partition.</returns>
 		</member>
 		<member name="P:Microsoft.Crm.Sdk.Messages.AutoMapEntityRequest.EntityMapId">
 			<summary>Gets or sets the ID of the entity map to overwrite when the automated mapping is performed. Required.</summary>
-			<returns>Returns <see cref="T:System.Guid"></see>.</returns>
+			<returns>Type: Returns_GuidThe ID of the entity map.</returns>
 		</member>
 		<member name="T:Microsoft.Crm.Sdk.Messages.AutoMapEntityResponse">
 			<summary>Contains the response from the <see cref="T:Microsoft.Crm.Sdk.Messages.AutoMapEntityRequest"></see> class.</summary>
@@ -1007,7 +1043,7 @@ The date and time of the last audit record in the partition.</returns>
 			<returns>Type:<see cref="T:Microsoft.Crm.Sdk.Messages.ValidationResult"></see>The appointment validation results.</returns>
 		</member>
 		<member name="T:Microsoft.Crm.Sdk.Messages.BulkDeleteRequest">
-			<summary>Contains the data that is needed to  submit a bulk delete job that deletes selected records in bulk. This job runs asynchronously in the background without blocking other activities.</summary>
+			<summary>Contains the data that is needed to submit a bulk delete job that deletes selected records in bulk. This job runs asynchronously in the background without blocking other activities.</summary>
 		</member>
 		<member name="M:Microsoft.Crm.Sdk.Messages.BulkDeleteRequest.#ctor">
 			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.BulkDeleteRequest"></see> class.</summary>
@@ -1055,7 +1091,7 @@ The date and time of the last audit record in the partition.</returns>
 			<returns>Type: Returns_GuidThe ID of an asynchronous bulk delete job that performs a bulk deletion..</returns>
 		</member>
 		<member name="T:Microsoft.Crm.Sdk.Messages.BulkDetectDuplicatesRequest">
-			<summary>Contains the data that is needed to  submit an asynchronous system job that detects and logs multiple duplicate records.</summary>
+			<summary>Contains the data that is needed to submit an asynchronous system job that detects and logs multiple duplicate records.</summary>
 		</member>
 		<member name="M:Microsoft.Crm.Sdk.Messages.BulkDetectDuplicatesRequest.#ctor">
 			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.BulkDetectDuplicatesRequest"></see> class.</summary>
@@ -1069,8 +1105,8 @@ The date and time of the last audit record in the partition.</returns>
 			<returns>Type: Returns_StringThe name of the asynchronous system job that detects and logs multiple duplicate records. </returns>
 		</member>
 		<member name="P:Microsoft.Crm.Sdk.Messages.BulkDetectDuplicatesRequest.Query">
-			<summary>Gets or sets an array of queries to detect multiple duplicate records. Required.</summary>
-			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.Query.QueryExpression"></see>The array of queries to detect multiple duplicate records.</returns>
+			<summary>Gets or sets  the query criteria for detecting multiple duplicate records. Required.</summary>
+			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.Query.QueryExpression"></see>The query criteria for detecting multiple duplicate records.</returns>
 		</member>
 		<member name="P:Microsoft.Crm.Sdk.Messages.BulkDetectDuplicatesRequest.RecurrencePattern">
 			<summary>Gets or sets the recurrence pattern for the asynchronous system job that detects multiple duplicate records. Optional.</summary>
@@ -2223,16 +2259,16 @@ The addresses of the recipients of the email message.</returns>
 			<summary>Specifies the results of a scheduling operation using the <see cref="T:Microsoft.Crm.Sdk.Messages.ValidateRequest"></see>, <see cref="T:Microsoft.Crm.Sdk.Messages.BookRequest"></see>, or <see cref="T:Microsoft.Crm.Sdk.Messages.RescheduleRequest"></see> message.</summary>
 		</member>
 		<member name="M:Microsoft.Crm.Sdk.Messages.ErrorInfo.#ctor">
-			<summary>Initializes a new instance of the  <see cref="T:Microsoft.Crm.Sdk.Messages.ErrorInfo"></see> class.</summary>
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.ErrorInfo"></see> class.</summary>
 		</member>
 		<member name="M:Microsoft.Crm.Sdk.Messages.ErrorInfo.#ctor(System.String,Microsoft.Crm.Sdk.Messages.ResourceInfo[])">
-			<summary>Initializes a new instance of the  <see cref="T:Microsoft.Crm.Sdk.Messages.ErrorInfo"></see> class setting the error code and resource list.</summary>
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.ErrorInfo"></see> class setting the error code and resource list.</summary>
 			<param name="resourceList">Type: <see cref="T:Microsoft.Crm.Sdk.Messages.ResourceInfo"></see>[]. The array of information about a resource that has a scheduling problem for an appointment.</param>
 			<param name="errorCode">Type: Returns_String. The reason for a scheduling failure.</param>
 		</member>
 		<member name="P:Microsoft.Crm.Sdk.Messages.ErrorInfo.ErrorCode">
 			<summary>Gets or sets the reason for a scheduling failure.</summary>
-			<returns>Type: <see cref="T:Microsoft.Crm.Sdk.Messages.ErrorInfo"></see>The reason for a scheduling failure.</returns>
+			<returns>Type: Returns_StringThe reason for a scheduling failure.</returns>
 		</member>
 		<member name="P:Microsoft.Crm.Sdk.Messages.ErrorInfo.ExtensionData">
 			<summary>ExtensionData</summary>
@@ -2312,6 +2348,10 @@ The addresses of the recipients of the email message.</returns>
 			<summary>Gets or sets the ID of the record on which the workflow executes. Required.</summary>
 			<returns>Type: Returns_Guid. The ID of the record on which the workflow executes.</returns>
 		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.ExecuteWorkflowRequest.InputArguments">
+			<summary>internal</summary>
+			<returns>Returns <see cref="T:Microsoft.Crm.Sdk.Messages.InputArgumentCollection"></see>.</returns>
+		</member>
 		<member name="P:Microsoft.Crm.Sdk.Messages.ExecuteWorkflowRequest.WorkflowId">
 			<summary>Gets or sets the ID of the workflow to execute. Required.</summary>
 			<returns>Type: Returns_Guid. The ID of the workflow to execute.</returns>
@@ -2379,10 +2419,10 @@ The addresses of the recipients of the email message.</returns>
 			<returns>Type: Returns_StringThe XML representation of the exported data map.</returns>
 		</member>
 		<member name="T:Microsoft.Crm.Sdk.Messages.ExportSolutionRequest">
-			<summary>Contains the data that is needed to  export a solution. </summary>
+			<summary>Contains the data that is needed to export a solution. </summary>
 		</member>
 		<member name="M:Microsoft.Crm.Sdk.Messages.ExportSolutionRequest.#ctor">
-			<summary>Initializes a new instance of the  <see cref="T:Microsoft.Crm.Sdk.Messages.ExportSolutionRequest"></see> class</summary>
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.ExportSolutionRequest"></see> class</summary>
 		</member>
 		<member name="P:Microsoft.Crm.Sdk.Messages.ExportSolutionRequest.ExportAutoNumberingSettings">
 			<summary>Gets or sets whether auto numbering settings should be included in the solution being exported. Optional.</summary>
@@ -2427,6 +2467,10 @@ The addresses of the recipients of the email message.</returns>
 		<member name="P:Microsoft.Crm.Sdk.Messages.ExportSolutionRequest.SolutionName">
 			<summary>Gets or sets the unique name of the solution to be exported. Required.</summary>
 			<returns>Type: Returns_StringThe unique name of the solution to be exported. Required.</returns>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.ExportSolutionRequest.TargetVersion">
+			<summary>Get or set a value indicating the version that the exported solution will support. </summary>
+			<returns>Type: Returns_StringA value indicating the version that the exported solution will support. Optional.</returns>
 		</member>
 		<member name="T:Microsoft.Crm.Sdk.Messages.ExportSolutionResponse">
 			<summary>Contains the response from the <see cref="T:Microsoft.Crm.Sdk.Messages.ExportSolutionRequest"></see> class.</summary>
@@ -2593,6 +2637,26 @@ The addresses of the recipients of the email message.</returns>
 		<member name="P:Microsoft.Crm.Sdk.Messages.GenerateSalesOrderFromOpportunityResponse.Entity">
 			<summary>Gets the resulting sales order (order).</summary>
 			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.Entity"></see>The resulting sales order (order), which must be an instance of the SalesOrder class.</returns>
+		</member>
+		<member name="T:Microsoft.Crm.Sdk.Messages.GenerateSocialProfileRequest">
+			<summary>Contains the data to return an existing social profile record if one exists, otherwise generates a new one and returns it.</summary>
+		</member>
+		<member name="M:Microsoft.Crm.Sdk.Messages.GenerateSocialProfileRequest.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.GenerateSocialProfileRequest"></see> class.</summary>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.GenerateSocialProfileRequest.Entity">
+			<summary>Gets or sets the SocialProfile to return or generate.</summary>
+			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.Entity"></see>The SocialProfile to return or generate.</returns>
+		</member>
+		<member name="T:Microsoft.Crm.Sdk.Messages.GenerateSocialProfileResponse">
+			<summary>Contains the response from the <see cref="T:Microsoft.Crm.Sdk.Messages.GenerateSocialProfileRequest"></see> message.</summary>
+		</member>
+		<member name="M:Microsoft.Crm.Sdk.Messages.GenerateSocialProfileResponse.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.GenerateSocialProfileResponse"></see> class.</summary>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.GenerateSocialProfileResponse.Entity">
+			<summary>Gets the social profile returned by the message.</summary>
+			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.Entity"></see>The social profile returned by the message.</returns>
 		</member>
 		<member name="T:Microsoft.Crm.Sdk.Messages.GetAllTimeZonesWithDisplayNameRequest">
 			<summary>Contains the data that is needed to  retrieve all the time zone definitions for the specified locale and to return only the display name attribute.</summary>
@@ -2982,6 +3046,23 @@ The addresses of the recipients of the email message.</returns>
 			<summary>Gets the initialized instance.</summary>
 			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.Entity"></see>The initialized instance. To create a record, pass this value to the <see cref="M:Microsoft.Xrm.Sdk.IOrganizationService.Create(Microsoft.Xrm.Sdk.Entity)"></see> method or to a <see cref="T:Microsoft.Xrm.Sdk.Messages.CreateRequest"></see> message.</returns>
 		</member>
+		<member name="M:Microsoft.Crm.Sdk.Messages.InputArgumentCollection.Add(System.String,System.Object)">
+			<param name="value">Type: </param>
+			<param name="key">Type: </param>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.InputArgumentCollection.Arguments">
+			<returns>Type: <see cref="T:Microsoft.Crm.Sdk.Messages.InputArgument"></see>.</returns>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.InputArgumentCollection.Count">
+			<returns>Type: <see cref="T:System.Int32"></see>.</returns>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.InputArgumentCollection.ExtensionData">
+			<returns>Type: <see cref="T:System.Runtime.Serialization.ExtensionDataObject"></see>.</returns>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.InputArgumentCollection.Item(System.String)">
+			<returns>Type: <see cref="T:System.Object"></see>.</returns>
+			<param name="key">Type: </param>
+		</member>
 		<member name="T:Microsoft.Crm.Sdk.Messages.InstallSampleDataRequest">
 			<summary>Contains the data that is needed to  install the sample data.</summary>
 		</member>
@@ -3326,10 +3407,10 @@ The ID of the template that corresponds to the Template.TemplateId attribute, wh
 			<summary>deprecated</summary>
 		</member>
 		<member name="T:Microsoft.Crm.Sdk.Messages.MergeRequest">
-			<summary>Contains the data that is needed to  merge the information from two entity records of the same type.</summary>
+			<summary>Contains the data that is needed to merge the information from two entity records of the same type.</summary>
 		</member>
 		<member name="M:Microsoft.Crm.Sdk.Messages.MergeRequest.#ctor">
-			<summary>Initializes a new instance of the  <see cref="T:Microsoft.Crm.Sdk.Messages.MergeRequest"></see> class.</summary>
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.MergeRequest"></see> class.</summary>
 		</member>
 		<member name="P:Microsoft.Crm.Sdk.Messages.MergeRequest.PerformParentingChecks">
 			<summary>Gets or sets a value that indicates whether to check if the parent information is different for the two entity records. Required.</summary>
@@ -3344,7 +3425,7 @@ The ID of the template that corresponds to the Template.TemplateId attribute, wh
 			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.EntityReference"></see>The target of the merge operation.</returns>
 		</member>
 		<member name="P:Microsoft.Crm.Sdk.Messages.MergeRequest.UpdateContent">
-			<summary>Gets or sets additional entity attributes to be set during the merge operation. Optional.</summary>
+			<summary>Gets or sets additional entity attributes to be set during the merge operation for accounts, contacts, or leads. This property is not applied when merging Incidents. Optional.</summary>
 			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.Entity"></see>The additional entity attributes to be set during the merge operation.</returns>
 		</member>
 		<member name="T:Microsoft.Crm.Sdk.Messages.MergeResponse">
@@ -3483,6 +3564,32 @@ The ID of the template that corresponds to the Template.TemplateId attribute, wh
 		<member name="P:Microsoft.Crm.Sdk.Messages.ParseImportResponse.AsyncOperationId">
 			<summary>Gets an ID of the asynchronous job that parses the import files for this import.</summary>
 			<returns>Type: Returns_GuidID of the asynchronous job that parses the import files for this import.</returns>
+		</member>
+		<member name="T:Microsoft.Crm.Sdk.Messages.PickFromQueueRequest">
+			<summary>Contains the data that is needed to assign a queue item to a user and optionally remove the queue item from the queue.</summary>
+		</member>
+		<member name="M:Microsoft.Crm.Sdk.Messages.PickFromQueueRequest.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.PickFromQueueRequest"></see> class.</summary>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.PickFromQueueRequest.QueueItemId">
+			<summary>Gets or sets the</summary>
+			<returns>Type: Returns_Guid
+The QueueItem. This corresponds to the QueueItem.QueueItemId attribute, which is the primary key for the QueueItem entity.</returns>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.PickFromQueueRequest.RemoveQueueItem">
+			<summary>Gets or sets whether the queue item should be removed from the queue.</summary>
+			<returns>Type: Returns_Booleantrue if the queue item should be removed from the queue; otherwise, false.</returns>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.PickFromQueueRequest.WorkerId">
+			<summary>Gets or sets the user to assign the queue item to. Required.</summary>
+			<returns>Type: Returns_Guid
+The User. This corresponds to the SystemUser.SystemUserId attribute, which is the primary key for the SystemUser entity.</returns>
+		</member>
+		<member name="T:Microsoft.Crm.Sdk.Messages.PickFromQueueResponse">
+			<summary>Contains the response from the <see cref="T:Microsoft.Crm.Sdk.Messages.PickFromQueueRequest"></see> message.This message was added with pn_crm_2013_service_pack_1_op_short and pn_v6_online_ur1_shortest.</summary>
+		</member>
+		<member name="M:Microsoft.Crm.Sdk.Messages.PickFromQueueResponse.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.PickFromQueueResponse"></see> class.</summary>
 		</member>
 		<member name="T:Microsoft.Crm.Sdk.Messages.PrincipalAccess">
 			<summary>Contains access rights information for the security principal (user or team).</summary>
@@ -3782,10 +3889,10 @@ The ID of the resource specification that is represented by this party. This cor
 			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.EntityReferenceCollection"></see>The collection of references to the newly created account, contact, and opportunity records.</returns>
 		</member>
 		<member name="T:Microsoft.Crm.Sdk.Messages.QualifyMemberListRequest">
-			<summary>Contains the data that is needed to  qualify the specified list and either override the list members or remove them according to the specified option.</summary>
+			<summary>Contains the data that is needed to qualify the specified list and either override the list members or remove them according to the specified option.</summary>
 		</member>
 		<member name="M:Microsoft.Crm.Sdk.Messages.QualifyMemberListRequest.#ctor">
-			<summary>Initializes a new instance of the  <see cref="T:Microsoft.Crm.Sdk.Messages.QualifyMemberListRequest"></see> class.</summary>
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.QualifyMemberListRequest"></see> class.</summary>
 		</member>
 		<member name="P:Microsoft.Crm.Sdk.Messages.QualifyMemberListRequest.ListId">
 			<summary>Gets or sets the ID of the list to qualify. Required.</summary>
@@ -3958,6 +4065,40 @@ The ID of the resource specification that is represented by this party. This cor
 		<member name="P:Microsoft.Crm.Sdk.Messages.RelationshipAuditDetail.TargetRecords">
 			<summary>Provides the collection of relationship records that were added or removed.</summary>
 			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.DataCollection`1"></see>&lt;<see cref="T:Microsoft.Xrm.Sdk.EntityReference"></see>&gt;The collection of records.</returns>
+		</member>
+		<member name="T:Microsoft.Crm.Sdk.Messages.ReleaseToQueueRequest">
+			<summary>Contains the data that is needed to assign a queue item back to the queue owner so others can pick it.</summary>
+		</member>
+		<member name="M:Microsoft.Crm.Sdk.Messages.ReleaseToQueueRequest.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.ReleaseToQueueRequest"></see> class.</summary>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.ReleaseToQueueRequest.QueueItemId">
+			<summary>Gets or sets the id of the queue item. Required.</summary>
+			<returns>Type: Returns_Guid
+The queue item. This corresponds to the QueueItem.QueueItemId attribute, which is the primary key for the QueueItem entity.</returns>
+		</member>
+		<member name="T:Microsoft.Crm.Sdk.Messages.ReleaseToQueueResponse">
+			<summary>Contains the response from the <see cref="T:Microsoft.Crm.Sdk.Messages.ReleaseToQueueRequest"></see> message.This message was added with pn_crm_2013_service_pack_1_op_short and pn_v6_online_ur1_shortest.</summary>
+		</member>
+		<member name="M:Microsoft.Crm.Sdk.Messages.ReleaseToQueueResponse.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.ReleaseToQueueResponse"></see> class.</summary>
+		</member>
+		<member name="T:Microsoft.Crm.Sdk.Messages.RemoveFromQueueRequest">
+			<summary>Contains the data that is needed to remove a queue item from a queue.</summary>
+		</member>
+		<member name="M:Microsoft.Crm.Sdk.Messages.RemoveFromQueueRequest.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.RemoveFromQueueRequest"></see> class.</summary>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.RemoveFromQueueRequest.QueueItemId">
+			<summary>Gets or sets the ID of the queue item to remove from the queue. Required.The QueueItemId property corresponds to the QueueItem.QueueItemId attribute, which is the primary key for the QueueItem entity.</summary>
+			<returns>Type: Returns_Guid
+The QueueItemId. This corresponds to the QueueItem.QueueItemId attribute, which is the primary key for the QueueItem entity.</returns>
+		</member>
+		<member name="T:Microsoft.Crm.Sdk.Messages.RemoveFromQueueResponse">
+			<summary>Contains the response from the <see cref="T:Microsoft.Crm.Sdk.Messages.RemoveFromQueueRequest"></see> message.This message was added with pn_crm_2013_service_pack_1_op_short and pn_v6_online_ur1_shortest.</summary>
+		</member>
+		<member name="M:Microsoft.Crm.Sdk.Messages.RemoveFromQueueResponse.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.RemoveFromQueueResponse"></see> class.</summary>
 		</member>
 		<member name="T:Microsoft.Crm.Sdk.Messages.RemoveItemCampaignActivityRequest">
 			<summary>Contains the data that is needed to  remove an item from a campaign activity.</summary>
@@ -4214,6 +4355,32 @@ The ID of the resource specification that is represented by this party. This cor
 		<member name="P:Microsoft.Crm.Sdk.Messages.RenewContractResponse.Entity">
 			<summary>Gets the resulting contract.</summary>
 			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.Entity"></see>The resulting contract. This is an instance of the Contract class.</returns>
+		</member>
+		<member name="T:Microsoft.Crm.Sdk.Messages.RenewEntitlementRequest">
+			<summary>Contains the data that is needed to renew an entitlement.</summary>
+		</member>
+		<member name="M:Microsoft.Crm.Sdk.Messages.RenewEntitlementRequest.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.RenewEntitlementRequest"></see> class.</summary>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.RenewEntitlementRequest.EntitlementId">
+			<summary>Gets or sets the id of the entitlement to renew.</summary>
+			<returns>Type: Returns_Guid
+The Entitlement Id. This corresponds to the Entitlement.EntitlementId attribute, which is the primary key for the Entitlement entity.</returns>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.RenewEntitlementRequest.Status">
+			<summary>Gets or sets the StatusCode value for the renewed Entitlement.</summary>
+			<returns>Type: Returns_Int32
+The status value for the renewed Entitlement.</returns>
+		</member>
+		<member name="T:Microsoft.Crm.Sdk.Messages.RenewEntitlementResponse">
+			<summary>Contains the response from the <see cref="T:Microsoft.Crm.Sdk.Messages.RenewEntitlementRequest"></see> message.This message was added with pn_crm_2013_service_pack_1_op_short and pn_v6_online_ur1_shortest.</summary>
+		</member>
+		<member name="M:Microsoft.Crm.Sdk.Messages.RenewEntitlementResponse.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.RenewEntitlementResponse"></see> class.</summary>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.RenewEntitlementResponse.Entity">
+			<summary>Gets the renewed entitlement.</summary>
+			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.Entity"></see>The renewed entitlement.</returns>
 		</member>
 		<member name="T:Microsoft.Crm.Sdk.Messages.ReplacePrivilegesRoleRequest">
 			<summary>Contains the data that is needed to  replace the privilege set of an existing role.</summary>
@@ -5571,6 +5738,30 @@ The pn_SharePoint_short site collection URL of the object that is specified in t
 			<summary>Gets an array of privileges that the user holds.</summary>
 			<returns>Type: <see cref="T:Microsoft.Crm.Sdk.Messages.RolePrivilege"></see> arrayThe array of privileges that the user holds.</returns>
 		</member>
+		<member name="T:Microsoft.Crm.Sdk.Messages.RetrieveUserQueuesRequest">
+			<summary>Contains the data needed to retrieve all private queues of a specified user and optionally all public queues.</summary>
+		</member>
+		<member name="M:Microsoft.Crm.Sdk.Messages.RetrieveUserQueuesRequest.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.RetrieveUserQueuesRequest"></see> class.</summary>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.RetrieveUserQueuesRequest.IncludePublic">
+			<summary>Gets or sets whether the response should include public queues.</summary>
+			<returns>Type: Returns_Booleantrue if the response should include public queues; otherwise, false.</returns>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.RetrieveUserQueuesRequest.UserId">
+			<returns>Type: Returns_Guid
+The id of the user. This corresponds to the SystemUser.SystemUserId attribute, which is the primary key for the SystemUser entity.</returns>
+		</member>
+		<member name="T:Microsoft.Crm.Sdk.Messages.RetrieveUserQueuesResponse">
+			<summary>Contains the response from the <see cref="T:Microsoft.Crm.Sdk.Messages.RetrieveUserQueuesRequest"></see> message.</summary>
+		</member>
+		<member name="M:Microsoft.Crm.Sdk.Messages.RetrieveUserQueuesResponse.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.RetrieveUserQueuesResponse"></see> class.</summary>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.RetrieveUserQueuesResponse.EntityCollection">
+			<summary>Gets a collection of queues that match the properties of the request.</summary>
+			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.EntityCollection"></see>A collection of queues that match the properties of the request.</returns>
+		</member>
 		<member name="T:Microsoft.Crm.Sdk.Messages.RetrieveUserSettingsSystemUserRequest">
 			<summary>deprecated Use the <see cref="T:Microsoft.Xrm.Sdk.Messages.RetrieveMultipleRequest"></see> class.Contains the data needed to retrieve the user settings for the specified system user (user).</summary>
 		</member>
@@ -5771,6 +5962,27 @@ The ID of the privilege, which corresponds to the Privilege.PrivilegeID attribut
 		</member>
 		<member name="F:Microsoft.Crm.Sdk.Messages.RollupType.Related">
 			<summary>A rollup record that is directly related to a parent record and to any direct child of a parent record. Value = 1.</summary>
+		</member>
+		<member name="T:Microsoft.Crm.Sdk.Messages.RouteToRequest">
+			<summary>Contains the data that is needed to route a queue item to a queue, a user, or a team.</summary>
+		</member>
+		<member name="M:Microsoft.Crm.Sdk.Messages.RouteToRequest.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.RouteToRequest"></see> class.</summary>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.RouteToRequest.QueueItemId">
+			<summary>Gets or sets the id of the queue item to route. Required</summary>
+			<returns>Type: Returns_Guid
+The QueueItem id. This corresponds to the QueueItem.QueueItemId attribute, which is the primary key for the QueueItem entity.</returns>
+		</member>
+		<member name="P:Microsoft.Crm.Sdk.Messages.RouteToRequest.Target">
+			<summary>Gets or sets the target record to route the queue item to. Required.</summary>
+			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.EntityReference"></see>The target record to route the queue item to.</returns>
+		</member>
+		<member name="T:Microsoft.Crm.Sdk.Messages.RouteToResponse">
+			<summary>Contains the response from the <see cref="T:Microsoft.Crm.Sdk.Messages.RouteToRequest"></see> message.This message was added with pn_crm_2013_service_pack_1_op_short and pn_v6_online_ur1_shortest.</summary>
+		</member>
+		<member name="M:Microsoft.Crm.Sdk.Messages.RouteToResponse.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Crm.Sdk.Messages.RouteToResponse"></see> class.</summary>
 		</member>
 		<member name="T:Microsoft.Crm.Sdk.Messages.SearchByBodyKbArticleRequest">
 			<summary>Contains the data that is needed to  search for knowledge base articles that contain the specified body text.</summary>

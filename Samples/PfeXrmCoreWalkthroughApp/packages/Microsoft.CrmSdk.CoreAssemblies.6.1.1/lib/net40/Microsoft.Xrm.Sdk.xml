@@ -459,10 +459,10 @@ The current paging information. This is used in conjunction with <see cref="P:Mi
 			<summary>Identifies a record.</summary>
 		</member>
 		<member name="M:Microsoft.Xrm.Sdk.EntityReference.#ctor">
-			<summary>Initializes a new instance of the  <see cref="T:Microsoft.Xrm.Sdk.EntityReference"></see> class.</summary>
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Xrm.Sdk.EntityReference"></see> class.</summary>
 		</member>
 		<member name="M:Microsoft.Xrm.Sdk.EntityReference.#ctor(System.String,System.Guid)">
-			<summary>Initializes a new instance of the  <see cref="T:Microsoft.Xrm.Sdk.EntityReference"></see> class setting the logical name and entity ID.</summary>
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Xrm.Sdk.EntityReference"></see> class setting the logical name and entity ID.</summary>
 			<param name="logicalName">Type: Returns_String. The logical name of the entity.</param>
 			<param name="id">Type: Returns_Guid. The ID of the record.</param>
 		</member>
@@ -490,8 +490,8 @@ The ID of the record. </returns>
 			<returns>Type: Returns_StringThe logical name of the entity.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.EntityReference.Name">
-			<summary>Gets or sets the primary attribute of the entity.</summary>
-			<returns>Type: Returns_StringThe primary attribute of the entity.</returns>
+			<summary>Gets or sets the value of the primary attribute of the entity.</summary>
+			<returns>Type: Returns_StringThe value of the primary attribute of the entity.</returns>
 		</member>
 		<member name="T:Microsoft.Xrm.Sdk.EntityReferenceCollection">
 			<summary>Contains a collection of entity references.</summary>
@@ -1271,47 +1271,47 @@ The schema name for the entity relationship.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.BusinessUnitId">
 			<summary>Gets the global unique identifier of the business unit that the entity currently being processed by the event execution pipeline belongs to.</summary>
-			<returns>Type: Returns_Guid.</returns>
+			<returns>Type: Returns_GuidThe global unique identifier of the business unit.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.CorrelationId">
 			<summary>Gets the global unique identifier for tracking plug-in execution. </summary>
-			<returns>Type: Returns_Guid.</returns>
+			<returns>Type: Returns_GuidThe global unique identifier for tracking plug-in execution.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.Depth">
 			<summary>Gets the current depth of execution in the call stack.</summary>
-			<returns>Type: Returns_Int32.</returns>
+			<returns>Type: Returns_Int32The current depth of execution in the call stack.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.ExtensionData">
 			<summary>A structure that contains extra data.</summary>
-			<returns>Type: Returns_ExtensionDataObject.</returns>
+			<returns>Type: Returns_ExtensionDataObjectA structure that contains extra data.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.InitiatingUserId">
 			<summary>Gets the global unique identifier of the system user account under which the current pipeline is executing.</summary>
-			<returns>Type: Returns_Guid.</returns>
+			<returns>Type: Returns_GuidThe global unique identifier of the system user account.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.InputParameters">
 			<summary>Gets the parameters of the request message that triggered the event that caused the plug-in to execute.</summary>
-			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.ParameterCollection"></see>.</returns>
+			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.ParameterCollection"></see> The parameters of the request message that triggered the event.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.IsExecutingOffline">
 			<summary>Gets a value indicating if the plug-in is executing from the pn_crm_outlook_offline_access client while it is offline. </summary>
-			<returns>Type: Returns_Boolean.</returns>
+			<returns>Type: Returns_Booleantrue if the client is offline; otherwise false.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.IsInTransaction">
 			<summary>Gets a value indicating if the plug-in is executing within the database transaction.</summary>
-			<returns>Type: Returns_Boolean.</returns>
+			<returns>Type: Returns_Booleantrue if the plug-in is executing within the database transaction; otherwise, false.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.IsOfflinePlayback">
 			<summary>Gets a value indicating if the plug-in is executing as a result of the pn_crm_outlook_offline_access client transitioning from offline to online and synchronizing with the pn_microsoftcrm server.</summary>
-			<returns>Type: Returns_Boolean.</returns>
+			<returns>Type: Returns_Booleantrue if the plug-in is executing as a result of the client synchronizing with the pn_microsoftcrm server; otherwise, false.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.IsolationMode">
 			<summary>Gets a value indicating if the plug-in is executing in the sandbox.</summary>
-			<returns>Type: Returns_Int32. Valid values are 1 (none) or 2 (sandbox).</returns>
+			<returns>Type: Returns_Int32A value indicating if the plug-in is executing in the sandbox. Valid values are 1 (none) or 2 (sandbox).</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.MessageName">
 			<summary>Gets the name of the Web service message that is being processed by the event execution pipeline.</summary>
-			<returns>Type:  Returns_String.</returns>
+			<returns>Type:  Returns_StringThe name of the Web service message.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.Microsoft#Xrm#Sdk#IPluginExecutionContext#ParentContext">
 			<summary>internal</summary>
@@ -1319,71 +1319,71 @@ The schema name for the entity relationship.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.Mode">
 			<summary>Gets the mode of plug-in execution.</summary>
-			<returns>Type: Returns_Int32. Valid values are 0 (synchronous) and 1 (asynchronous).</returns>
+			<returns>Type: Returns_Int32The mode of plug-in execution. Valid values are 0 (synchronous) and 1 (asynchronous).</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.OperationCreatedOn">
 			<summary>Gets the date and time that the related System Job was created.</summary>
-			<returns>Type: Returns_DateTime.</returns>
+			<returns>Type: Returns_DateTimeThe date and time the related System Job was created.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.OperationId">
 			<summary>Gets the global unique identifier of the related System Job.</summary>
-			<returns>Type:  Returns_Guid.</returns>
+			<returns>Type:  Returns_GuidThe global unique identifier of the related System Job.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.OrganizationId">
 			<summary>Gets the global unique identifier of the organization that the entity belongs to and the plug-in executes under.</summary>
-			<returns>Type: Returns_Guid.</returns>
+			<returns>Type: Returns_GuidThe global unique identifier of the organization.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.OrganizationName">
 			<summary>Gets the unique name of the organization that the entity currently being processed belongs to and the plug-in executes under.</summary>
-			<returns>Type: Returns_String.</returns>
+			<returns>Type: Returns_StringThe unique name of the organization.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.OutputParameters">
 			<summary>Gets the parameters of the response message after the core platform operation has completed.</summary>
-			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.ParameterCollection"></see>.</returns>
+			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.ParameterCollection"></see>The parameters of the response message.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.OwningExtension">
 			<summary>Gets a reference to the related SdkMessageProcessingingStep or ServiceEndpoint.</summary>
-			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.EntityReference"></see>.</returns>
+			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.EntityReference"></see>The reference to the related SdkMessageProcessingingStep or ServiceEndpoint.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.ParentContext">
 			<summary>Gets the remote execution context from the parent operation.</summary>
-			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.RemoteExecutionContext"></see>.</returns>
+			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.RemoteExecutionContext"></see>The remote execution context from the parent operation.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.PostEntityImages">
 			<summary>Gets the properties of the primary entity after the core platform operation has been completed.</summary>
-			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.EntityImageCollection"></see>.</returns>
+			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.EntityImageCollection"></see>The properties of the primary entity.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.PreEntityImages">
 			<summary>Gets the properties of the primary entity before the core platform operation has begins.</summary>
-			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.EntityImageCollection"></see>.</returns>
+			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.EntityImageCollection"></see>The properties of the primary entity.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.PrimaryEntityId">
 			<summary>Gets the global unique identifier of the primary entity for which the pipeline is processing events.</summary>
-			<returns>Type: Returns_Guid.</returns>
+			<returns>Type: Returns_GuidThe global unique identifier of the primary entity.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.PrimaryEntityName">
 			<summary>Gets the name of the primary entity for which the pipeline is processing events.</summary>
-			<returns>Type: Returns_String.</returns>
+			<returns>Type: Returns_StringThe name of the primary entity.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.RequestId">
 			<summary>Gets the global unique identifier of the request being processed by the event execution pipeline.</summary>
-			<returns>Type: Returns_Nullable&lt;Returns_Guid&gt;.</returns>
+			<returns>Type: Returns_Nullable&lt;Returns_Guid&gt;The global unique identifier of the request.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.SecondaryEntityName">
 			<summary>Gets the name of the secondary entity that has a relationship with the primary entity.</summary>
-			<returns>Type: Returns_String.</returns>
+			<returns>Type: Returns_StringThe name of the secondary entity.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.SharedVariables">
 			<summary>Gets the custom properties that are shared between plug-ins.</summary>
-			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.ParameterCollection"></see>.</returns>
+			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.ParameterCollection"></see>The custom properties that are shared between plug-ins.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.Stage">
 			<summary>Gets the stage in the execution pipeline that a synchronous plug-in is registered for. </summary>
-			<returns>Type: Returns_Int32. Valid values are 10, 20, 40, and 50.</returns>
+			<returns>Type: Returns_Int32. Valid values are 10, 20, 40, and 50The stage in the execution pipeline that a synchronous plug-in is registered for.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.RemoteExecutionContext.UserId">
 			<summary>Gets the global unique identifier of the system user for whom the plug-in invokes Web service methods on behalf of.</summary>
-			<returns>Type: Returns_Guid.</returns>
+			<returns>Type: Returns_GuidThe global unique identifier of the system user.</returns>
 		</member>
 		<member name="T:Microsoft.Xrm.Sdk.SaveChangesException">
 			<summary>Represents an exception that occurred when saving changes to the <see cref="T:Microsoft.Xrm.Sdk.Client.OrganizationServiceContext"></see>.</summary>
@@ -1508,6 +1508,9 @@ The option that describes the save changes behavior.</returns>
 			<summary>Gets or sets the UPN that is an internet-style login name for a user based on the Internet standard RFC 822.</summary>
 			<returns>Type: Returns_StringThe UPN.</returns>
 		</member>
+		<member name="T:Microsoft.Xrm.Sdk.Client.AuthenticationHelpers">
+			<summary>internal</summary>
+		</member>
 		<member name="T:Microsoft.Xrm.Sdk.Client.AuthenticationProviderType">
 			<summary>Identifies the type of identity provider used for authentication.</summary>
 		</member>
@@ -1571,13 +1574,13 @@ The option that describes the save changes behavior.</returns>
 			<summary>Contains a policy configuration that identifies a Secure Token Service for use with claims authentication.</summary>
 		</member>
 		<member name="T:Microsoft.Xrm.Sdk.Client.ClientAuthenticationType">
-			<summary>Specifies the type of authentication used by an SDK client.</summary>
+			<summary>Specifies the type of authentication used by a client application.</summary>
 		</member>
 		<member name="F:Microsoft.Xrm.Sdk.Client.ClientAuthenticationType.Kerberos">
-			<summary>Kerberos authentication.</summary>
+			<summary>Kerberos authentication. Value = 0.</summary>
 		</member>
 		<member name="F:Microsoft.Xrm.Sdk.Client.ClientAuthenticationType.SecurityToken">
-			<summary>A security token for use with claims authentication.</summary>
+			<summary>A security token for use with claims authentication. Value = 1.</summary>
 		</member>
 		<member name="T:Microsoft.Xrm.Sdk.Client.CrossRealmIssuerEndpointCollection">
 			<summary>Contains a collection of <see cref="T:Microsoft.Xrm.Sdk.Client.IssuerEndpointDictionary"></see> objects.</summary>
@@ -1654,11 +1657,15 @@ The option that describes the save changes behavior.</returns>
 			<summary>Initializes a new instance of the IdentityProvider class.</summary>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.Client.IdentityProvider.IdentityProviderType">
-			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.Client.IdentityProviderType"></see>.</returns>
+			<summary>The type of identity provider used by an endpoint.</summary>
+			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.Client.IdentityProviderType"></see>The identity provider type. Value = 0 (ADFS), 1 (LiveId), 2 (OrgId).</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.Client.IdentityProvider.ServiceUrl">
 			<summary>Specifies the URL of the identity provider service.</summary>
 			<returns>Type: Returns_URI The URL of the identity provider service.</returns>
+		</member>
+		<member name="T:Microsoft.Xrm.Sdk.Client.IdentityProviderDictionary">
+			<summary>A collection of identity providers.</summary>
 		</member>
 		<member name="M:Microsoft.Xrm.Sdk.Client.IdentityProviderDictionary.#ctor">
 			<summary>Initializes an instance of the <see cref="T:Microsoft.Xrm.Sdk.Client.IdentityProviderDictionary"></see> class.</summary>
@@ -1681,6 +1688,18 @@ The option that describes the save changes behavior.</returns>
 		<member name="P:Microsoft.Xrm.Sdk.Client.IdentityProviderTrustConfiguration.Policy">
 			<summary>Gets or sets a policy configuration that identifies a Secure Token Service (STS).</summary>
 			<returns>Type: Returns_String The policy configuration that identifies a Secure Token Service (STS).</returns>
+		</member>
+		<member name="T:Microsoft.Xrm.Sdk.Client.IdentityProviderType">
+			<summary>Specifies the supported types of identity providers.</summary>
+		</member>
+		<member name="F:Microsoft.Xrm.Sdk.Client.IdentityProviderType.ADFS">
+			<summary>pn_Active_Directory Federation Services. Value = 0.</summary>
+		</member>
+		<member name="F:Microsoft.Xrm.Sdk.Client.IdentityProviderType.LiveId">
+			<summary>pn_Windows_Live ID. Value = 1.</summary>
+		</member>
+		<member name="F:Microsoft.Xrm.Sdk.Client.IdentityProviderType.OrgId">
+			<summary>OrgId, also known as User Id. Value = 2.</summary>
 		</member>
 		<member name="T:Microsoft.Xrm.Sdk.Client.IdentityProviderTypeDictionary">
 			<summary>Contains the available identity providers for a pn_microsoftcrm service.</summary>
@@ -2286,7 +2305,8 @@ The security token response.</returns>
 			<returns>Type:  Returns_URIThe name of the identity service.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.Client.OrgIdentityProviderTrustConfiguration.LivePartnerIdentifier">
-			<returns>Type: Returns_String.</returns>
+			<summary>The pn_Windows_Live ID provider that has a trust relationship  with the OrgId provider. This is related to the transition of pn_Windows_Live ID organizations to the pn_ms_online_services_environment.</summary>
+			<returns>Type: Returns_StringThe identifier of the pn_Windows_Live provider.</returns>
 		</member>
 		<member name="T:Microsoft.Xrm.Sdk.Client.PolicyConfiguration">
 			<summary>Contains a policy configuration that identifies a Secure Token Service (STS).</summary>
@@ -2305,10 +2325,10 @@ The security token response.</returns>
 			<summary>Enables early-bound entity types on a service proxy.</summary>
 		</member>
 		<member name="M:Microsoft.Xrm.Sdk.Client.ProxyTypesBehavior.#ctor">
-			<summary>Initializes a new instance of the  ProxyTypesBehavior class.</summary>
+			<summary>Initializes a new instance of the ProxyTypesBehavior class.</summary>
 		</member>
 		<member name="M:Microsoft.Xrm.Sdk.Client.ProxyTypesBehavior.#ctor(System.Reflection.Assembly)">
-			<summary>Initializes a new instance of the  ProxyTypesBehavior class using an assembly containing proxy types generated by the CrmSvcUtil utility.</summary>
+			<summary>Initializes a new instance of the ProxyTypesBehavior class using an assembly containing proxy types generated by the CrmSvcUtil utility.</summary>
 			<param name="proxyTypesAssembly">Type: Returns_Assembly. An assembly containing proxy types.</param>
 		</member>
 		<member name="M:Microsoft.Xrm.Sdk.Client.ProxyTypesBehavior.System#ServiceModel#Description#IEndpointBehavior#AddBindingParameters(System.ServiceModel.Description.ServiceEndpoint,System.ServiceModel.Channels.BindingParameterCollection)">
@@ -2512,13 +2532,27 @@ The security token response.</returns>
 		</member>
 		<member name="M:Microsoft.Xrm.Sdk.Client.ServiceConfigurationFactory.CreateConfiguration``1(System.Uri)">
 			<summary>Creates a service configuration.</summary>
-			<returns>Returns <see cref="T:Microsoft.Xrm.Sdk.Client.IServiceConfiguration`1"></see>.</returns>
+			<returns>Type:  <see cref="T:Microsoft.Xrm.Sdk.Client.IServiceConfiguration`1"></see>A service configuration object.</returns>
 			<param name="serviceUri">Specifies the service’s URI.</param>
+		</member>
+		<member name="M:Microsoft.Xrm.Sdk.Client.ServiceConfigurationFactory.CreateConfiguration``1(System.Uri,System.Boolean,System.Reflection.Assembly)">
+			<summary>Creates a service configuration</summary>
+			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.Client.IServiceConfiguration`1"></see>A service configuration object.</returns>
+			<param name="serviceUri">Specifies the web service’s URI.</param>
+			<param name="assembly">An assembly containing proxy types.</param>
+			<param name="enableProxyTypes">True to enable proxy types; otherwise, False.</param>
 		</member>
 		<member name="M:Microsoft.Xrm.Sdk.Client.ServiceConfigurationFactory.CreateManagement``1(System.Uri)">
 			<summary>Creates a service management.</summary>
-			<returns>Returns <see cref="T:Microsoft.Xrm.Sdk.Client.IServiceManagement`1"></see>.</returns>
+			<returns>Type:  <see cref="T:Microsoft.Xrm.Sdk.Client.IServiceManagement`1"></see>A service management object.</returns>
 			<param name="serviceUri">Specifies the service’s URI.</param>
+		</member>
+		<member name="M:Microsoft.Xrm.Sdk.Client.ServiceConfigurationFactory.CreateManagement``1(System.Uri,System.Boolean,System.Reflection.Assembly)">
+			<summary>Creates a service management.</summary>
+			<returns>Type:  <see cref="T:Microsoft.Xrm.Sdk.Client.IServiceManagement`1"></see>A service management object.</returns>
+			<param name="serviceUri">Specifies the service’s URI.</param>
+			<param name="assembly">An assembly containing proxy types.</param>
+			<param name="enableProxyTypes">True to enable proxy types; otherwise, False.</param>
 		</member>
 		<member name="T:Microsoft.Xrm.Sdk.Client.ServiceEndpointDictionary">
 			<summary>Contains a dictionary of Returns_ServiceEndpoint objects.</summary>
@@ -3039,7 +3073,7 @@ The security token response.</returns>
 			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.Discovery.OrganizationDetailCollection"></see>The details about the organization.</returns>
 		</member>
 		<member name="T:Microsoft.Xrm.Sdk.Discovery.RetrieveUserIdByExternalIdRequest">
-			<summary>Contains the data that is needed to retrieve the pn_CRM_2011 or pn_CRM_Online system user ID that is associated with a given identity provider ID.For pn_CRM_2011 (IFD), the identity provider is typically pn_Active_Directory_Fed_Svc2 (ADFS). For pn_CRM_Online, the identity provider can be pn_Windows_Live_ID or pn_MS_Online_Services.</summary>
+			<summary>Contains the data that is needed to retrieve the pn_crmv6 or pn_CRM_Online system user ID that is associated with a given identity provider ID.For pn_crmv6 (IFD), the identity provider is typically pn_Active_Directory_Fed_Svc2 (ADFS). For pn_CRM_Online, the identity provider can be pn_Windows_Live_ID or pn_MS_Online_Services.</summary>
 		</member>
 		<member name="M:Microsoft.Xrm.Sdk.Discovery.RetrieveUserIdByExternalIdRequest.#ctor">
 			<summary>Initializes a new instance of the RetrieveUserIdByExternalIdRequest class.</summary>
@@ -3490,16 +3524,16 @@ The target, which is the record from which the related records will be disassoci
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.Messages.ExecuteAsyncRequest.Request">
 			<summary>Gets or sets the request to execute asynchronously.</summary>
-			<returns>Returns <see cref="T:Microsoft.Xrm.Sdk.OrganizationRequest"></see>.</returns>
+			<returns>Returns <see cref="T:Microsoft.Xrm.Sdk.OrganizationRequest"></see>The request to execute asynchronously.</returns>
 		</member>
 		<member name="T:Microsoft.Xrm.Sdk.Messages.ExecuteAsyncResponse">
-			<summary>Contains the response from the xx class.</summary>
+			<summary>Contains the response from the <see cref="T:Microsoft.Xrm.Sdk.Messages.ExecuteAsyncRequest"></see> class.</summary>
 		</member>
 		<member name="M:Microsoft.Xrm.Sdk.Messages.ExecuteAsyncResponse.#ctor">
 			<summary>Initializes a new instance of the <see cref="T:Microsoft.Xrm.Sdk.Messages.ExecuteAsyncResponse"></see> class.</summary>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.Messages.ExecuteAsyncResponse.AsyncJobId">
-			<summary>Gets or sets the </summary>
+			<summary>Gets or sets the ID of the asynchronous job that was started from processing the <see cref="T:Microsoft.Xrm.Sdk.Messages.ExecuteAsyncRequest"></see>.</summary>
 			<returns>Type: Returns_GuidThe ID of the asynchronous job.</returns>
 		</member>
 		<member name="T:Microsoft.Xrm.Sdk.Messages.ExecuteMultipleRequest">
@@ -4965,6 +4999,10 @@ The value indicates whether a custom activity should appear in the activity menu
 			<summary>Gets or sets the label containing the display name for the entity.</summary>
 			<returns>Type <see cref="T:Microsoft.Xrm.Sdk.Label"></see>The label containing the display name for the entity.</returns>
 		</member>
+		<member name="P:Microsoft.Xrm.Sdk.Metadata.EntityMetadata.EnforceStateTransitions">
+			<summary>Gets whether the entity will enforce custom state transitions.</summary>
+			<returns>Type: Returns_Nullable&lt;Returns_Boolean&gt;true if the entity supports custom status transitions.; otherwise, false.</returns>
+		</member>
 		<member name="P:Microsoft.Xrm.Sdk.Metadata.EntityMetadata.IconLargeName">
 			<summary>Gets or sets the name of the image web resource for the large icon for the entity.</summary>
 			<returns>Type: Returns_String
@@ -5076,6 +5114,10 @@ A string identifying the solution version that the solution component was added 
 		<member name="P:Microsoft.Xrm.Sdk.Metadata.EntityMetadata.IsRenameable">
 			<summary>Gets or sets the property that determines whether the entity <see cref="P:Microsoft.Xrm.Sdk.Metadata.EntityMetadata.DisplayName"></see> and <see cref="P:Microsoft.Xrm.Sdk.Metadata.EntityMetadata.DisplayCollectionName"></see> can be changed by editing the entity in the application.</summary>
 			<returns>Type: <see cref="T:Microsoft.Xrm.Sdk.BooleanManagedProperty"></see>The property that determines whether the entity <see cref="P:Microsoft.Xrm.Sdk.Metadata.EntityMetadata.DisplayName"></see> and <see cref="P:Microsoft.Xrm.Sdk.Metadata.EntityMetadata.DisplayCollectionName"></see> can be changed by editing the entity in the application.</returns>
+		</member>
+		<member name="P:Microsoft.Xrm.Sdk.Metadata.EntityMetadata.IsStateModelAware">
+			<summary>Gets whether the entity supports setting custom state transitions.</summary>
+			<returns>Type: Returns_Nullable&lt;Returns_Boolean&gt;true if the entity supports custom status transitions.; otherwise, false.</returns>
 		</member>
 		<member name="P:Microsoft.Xrm.Sdk.Metadata.EntityMetadata.IsValidForAdvancedFind">
 			<summary>Gets or sets whether the entity is will be shown in Advanced Find.</summary>
@@ -5937,7 +5979,7 @@ The name of the state that does not change.</returns>
 			<summary>constructor_initializes<see cref="T:Microsoft.Xrm.Sdk.Metadata.StatusOptionMetadata"></see> class</summary>
 		</member>
 		<member name="M:Microsoft.Xrm.Sdk.Metadata.StatusOptionMetadata.#ctor(System.Int32,System.Nullable{System.Int32})">
-			<summary>Initializes a new instance of the  <see cref="T:Microsoft.Xrm.Sdk.Metadata.StatusOptionMetadata"></see> class</summary>
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Xrm.Sdk.Metadata.StatusOptionMetadata"></see> class</summary>
 			<param name="state">Type: Returns_Nullable&lt;Returns_Int32&gt;. 
 The state of the option.</param>
 			<param name="value">Type: Returns_Int32. 
@@ -5947,6 +5989,11 @@ The value of the option.</param>
 			<summary>Gets or sets the state that this status is associated with.</summary>
 			<returns>Type: Returns_Nullable&lt;Returns_Int32&gt;
 The state that this status is associated with.</returns>
+		</member>
+		<member name="P:Microsoft.Xrm.Sdk.Metadata.StatusOptionMetadata.TransitionData">
+			<summary>Gets or sets the status transitions allowed for this status.</summary>
+			<returns>Type: Returns_String
+The encoded XML document that defines the allowed transitions.</returns>
 		</member>
 		<member name="T:Microsoft.Xrm.Sdk.Metadata.StringAttributeMetadata">
 			<summary>Contains the metadata for an attribute of type String.</summary>
@@ -6387,7 +6434,7 @@ The condition operator.</returns>
 			<summary>internal</summary>
 		</member>
 		<member name="F:Microsoft.Xrm.Sdk.Query.ConditionOperator.Contains">
-			<summary>The string contains another string. Value = 0x31.</summary>
+			<summary>The string contains another string. Value = 0x31.You must use the Contains operator for only those attributes that are enabled for full-text indexing. Otherwise, you will receive a generic SQL error message while retrieving data. In a pn_microsoftcrm default installation, only the attributes of the KBArticle (article) entity are enabled for full-text indexing.</summary>
 		</member>
 		<member name="F:Microsoft.Xrm.Sdk.Query.ConditionOperator.DoesNotBeginWith">
 			<summary>The string does not begin with another string. Value = 0x37.</summary>
