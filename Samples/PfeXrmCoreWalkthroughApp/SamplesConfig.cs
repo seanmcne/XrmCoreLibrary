@@ -37,6 +37,7 @@ namespace Microsoft.Pfe.Xrm.Samples
             }
         }
         public static string CrmDiscoveryHost { get { return ConfigurationManager.AppSettings.Get("Crm.DiscoveryHost"); } }
+        public static string CrmOrganizationHost { get { return ConfigurationManager.AppSettings.Get("Crm.OrganizationHost"); } }
         public static string CrmOrganization { get { return ConfigurationManager.AppSettings.Get("Crm.Organization"); } }
         public static bool CrmShouldDiscover { get { return Boolean.Parse(ConfigurationManager.AppSettings.Get("Crm.ShouldDiscover")); } }
 

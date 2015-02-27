@@ -90,8 +90,8 @@ namespace Microsoft.Pfe.Xrm.Samples
                             using (var pw = SamplesConfig.GetCrmDecryptedPassword())
                             {
                                 organizationManager = SamplesConfig.CrmShouldDiscover
-                                    ? new OrganizationServiceManager(ServiceLocations.OrganizationEndpoint, SamplesConfig.CrmUsername, pw.ToUnsecureString())
-                                    : new OrganizationServiceManager(ServiceLocations.OrganizationEndpointViaDiscovery, SamplesConfig.CrmUsername, pw.ToUnsecureString());
+                                    ? new OrganizationServiceManager(ServiceLocations.OrganizationEndpointViaDiscovery, SamplesConfig.CrmUsername, pw.ToUnsecureString())
+                                    : new OrganizationServiceManager(ServiceLocations.OrganizationEndpoint, SamplesConfig.CrmUsername, pw.ToUnsecureString());
                             }
                         }
                     }
@@ -133,7 +133,7 @@ namespace Microsoft.Pfe.Xrm.Samples
             {
                 get
                 {
-                    return new Uri(String.Format(DiscoveryServiceManager.DiscoveryServiceUriFormat, SamplesConfig.CrmDiscoveryHost));
+                    return XrmServiceUriFactory.CreateDiscoveryServiceUri(SamplesConfig.CrmDiscoveryHost);
                 }
             }
 
@@ -141,7 +141,7 @@ namespace Microsoft.Pfe.Xrm.Samples
             {
                 get
                 {
-                    return new Uri(String.Format(OrganizationServiceManager.OrganizationServiceInternalUriFormat, SamplesConfig.CrmDiscoveryHost, SamplesConfig.CrmOrganization));
+                    return XrmServiceUriFactory.CreateOrganizationServiceUri(SamplesConfig.CrmOrganizationHost);
                 }
             }
 

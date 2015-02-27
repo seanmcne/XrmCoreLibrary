@@ -15,6 +15,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Threading;
 using System.Text;
 
 namespace Microsoft.Pfe.Xrm.Samples
@@ -23,9 +25,14 @@ namespace Microsoft.Pfe.Xrm.Samples
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Connecting to endpoint: {0}", SamplesConfig.CrmDiscoveryHost);
-            Console.WriteLine("Connecting to {0} organization. [Discovery={1}]", SamplesConfig.CrmOrganization, SamplesConfig.CrmShouldDiscover);
-            Console.WriteLine("Connecting as {0}", SamplesConfig.CrmUsername);
+            ThreadPool.SetMinThreads(10, 10); //Increase min threads available on-demand
+            ServicePointManager.DefaultConnectionLimit = 10000;
+            ServicePointManager.Expect100Continue = false;
+            ServicePointManager.UseNagleAlgorithm = false;
+            
+            Console.WriteLine("Target endpoint: {0}", SamplesConfig.CrmDiscoveryHost);
+            Console.WriteLine("Target organization: [Discovery={1}]", SamplesConfig.CrmOrganizationHost, SamplesConfig.CrmShouldDiscover);
+            Console.WriteLine("Authenticate as: {0}", SamplesConfig.CrmUsername);
             Console.WriteLine("Ready to execute CRM operations scenarios");
 
             do
