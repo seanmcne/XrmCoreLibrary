@@ -131,23 +131,26 @@ namespace Microsoft.Pfe.Xrm
             var allResults = new EntityCollection();
             var firstPage = true;
 
-            //Establish first page
-            if (query.PageInfo == null)
+            //Establish first page (only if TopCount not specified)
+            if (query.TopCount == null)
             {
-                query.PageInfo = new PagingInfo()
+                if (query.PageInfo == null)
                 {
-                    Count = 5000,
-                    PageNumber = 1,
-                    PagingCookie = null,
-                    ReturnTotalRecordCount = false
-                };
-            }
-            else if (query.PageInfo.PageNumber != 1
-                    || query.PageInfo.PagingCookie != null)
-            {
-                //Reset to first page
-                query.PageInfo.PageNumber = 1;
-                query.PageInfo.PagingCookie = null;
+                    query.PageInfo = new PagingInfo()
+                    {
+                        Count = 5000,
+                        PageNumber = 1,
+                        PagingCookie = null,
+                        ReturnTotalRecordCount = false
+                    };
+                }
+                else if (query.PageInfo.PageNumber != 1
+                        || query.PageInfo.PagingCookie != null)
+                {
+                    //Reset to first page
+                    query.PageInfo.PageNumber = 1;
+                    query.PageInfo.PagingCookie = null;
+                }
             }
 
             while (true)
@@ -201,10 +204,9 @@ namespace Microsoft.Pfe.Xrm
             var allResults = new EntityCollection();
             var firstPage = true;
             var pageNumber = 1;
-            var pageSize = query.GetPageSize();
 
-            //Establish the first page
-            query.SetPage(null, pageNumber, pageSize);
+            //Establish the first page (will be skipped if top count > 0)
+            query.SetPage(null, pageNumber);
 
             while (true)
             {
@@ -228,7 +230,7 @@ namespace Microsoft.Pfe.Xrm
                     //Get next page
                     pageNumber++;
 
-                    query.SetPage(page.PagingCookie, pageNumber, pageSize);
+                    query.SetPage(page.PagingCookie, pageNumber);
                 }
                 else
                 {
