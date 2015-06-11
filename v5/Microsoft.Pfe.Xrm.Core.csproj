@@ -73,13 +73,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client\AutoRefreshSecurityToken.cs" />
+    <Compile Include="Client\Enums.cs" />
     <Compile Include="Client\ILocalResults.cs" />
     <Compile Include="Client\ManagedTokenServiceProxy.cs" />
     <Compile Include="Client\ParallelOperationContext.cs" />
+    <Compile Include="Client\ParallelOperationFailure.cs" />
     <Compile Include="Client\ParallelServiceProxy.cs" />
     <Compile Include="Client\ServiceProxyOptions.cs" />
-    <Compile Include="Client\ThreadLocalServiceProxy.cs" />
     <Compile Include="Client\XrmServiceManager.cs" />
+    <Compile Include="Client\XrmServiceUriFactory.cs" />
     <Compile Include="Extensions\QueryExtensions.cs" />
     <Compile Include="Extensions\SecurityExtensions.cs" />
     <Compile Include="Extensions\ServiceProxyExtensions.cs" />
