@@ -301,9 +301,9 @@ namespace Microsoft.Pfe.Xrm
 
         #region Private
 
-        private Uri ServiceUri { get; set; }
         private IServiceManagement<TService> ServiceManagement { get; set; }
-        private AuthenticationCredentials Credentials { get; set; }        
+        private AuthenticationCredentials Credentials { get; set; }
+        private AuthenticationCredentials AuthenticatedCredentials { get; set; }
         
         private AuthenticationCredentials DefaultCredentials
         {       
@@ -345,8 +345,8 @@ namespace Microsoft.Pfe.Xrm
         {
             get
             {
-                if (this.Credentials != null
-                    && this.Credentials.SecurityTokenResponse != null)
+                if (this.AuthenticatedCredentials != null
+                    && this.AuthenticatedCredentials.SecurityTokenResponse != null)
                     return true;
 
                 return false;
@@ -361,7 +361,7 @@ namespace Microsoft.Pfe.Xrm
             get
             {                
                 if (this.HasToken
-                    && this.Credentials.SecurityTokenResponse.Response.Lifetime.Expires <= DateTime.UtcNow.AddMinutes(15))
+                    && this.AuthenticatedCredentials.SecurityTokenResponse.Response.Lifetime.Expires <= DateTime.UtcNow.AddMinutes(15))
                     return true;
 
                 return false;
@@ -371,13 +371,30 @@ namespace Microsoft.Pfe.Xrm
         #endregion
 
         /// <summary>
+        /// Current endpoint address
+        /// </summary>
+        public Uri ServiceUri { get; private set; }
+
+        /// <summary>
         /// The <see cref="AuthenticationProviderType"/> of the targeted endpoint
         /// </summary>
-        protected AuthenticationProviderType AuthenticationType
+        public AuthenticationProviderType AuthenticationType
         {
             get
             {
                 return this.ServiceManagement.AuthenticationType;
+            }
+        }
+
+        /// <summary>
+        /// True if targeted endpoint's authentication provider type is LiveId or OnlineFederation, otherwise False
+        /// </summary>
+        public bool IsCrmOnline
+        {
+            get
+            {
+                return this.AuthenticationType == AuthenticationProviderType.LiveId
+                    || this.AuthenticationType == AuthenticationProviderType.OnlineFederation;
             }
         }
         
@@ -504,6 +521,19 @@ namespace Microsoft.Pfe.Xrm
 
             RequestSecurityToken();
         }
+        
+        /// <summary>
+        /// Clears any existing (potentially expired) tokens and issues request for new security token
+        /// </summary>
+        private void RefreshSecurityToken()
+        {
+            // Clear potentially expired cross-realm token
+            this.Credentials.SecurityTokenResponse = null;
+            // Clear potentially expired previously issued token
+            this.AuthenticatedCredentials = null;
+
+            RequestSecurityToken();
+        }
 
         /// <summary>
         /// Request a security token from the identity provider using the supplied credentials
@@ -524,7 +554,7 @@ namespace Microsoft.Pfe.Xrm
             if (this.AuthenticationType != AuthenticationProviderType.ActiveDirectory
                 && this.Credentials != null)
             {
-                this.Credentials = this.ServiceManagement.Authenticate(this.Credentials);
+                this.AuthenticatedCredentials = this.ServiceManagement.Authenticate(this.Credentials);
             }
         }
 
@@ -554,11 +584,11 @@ namespace Microsoft.Pfe.Xrm
                 case AuthenticationProviderType.Federation:
                 case AuthenticationProviderType.OnlineFederation:
                 case AuthenticationProviderType.LiveId:
-                    //If we don't already have a token or token is expired, get a new token response
+                    //If we don't already have a token or token is expired, refresh the token
                     if (!this.HasToken
                         || this.TokenExpired)
                     {
-                        RequestSecurityToken();
+                        RefreshSecurityToken();
                     }
 
                     // Invokes ManagedTokenOrganizationServiceProxy or ManagedTokenDiscoveryServiceProxy 
@@ -572,7 +602,7 @@ namespace Microsoft.Pfe.Xrm
                             .Invoke(new object[] 
                         { 
                             this.ServiceManagement, 
-                            this.Credentials.SecurityTokenResponse 
+                            this.AuthenticatedCredentials.SecurityTokenResponse 
                         });
                 
                 default:                    
