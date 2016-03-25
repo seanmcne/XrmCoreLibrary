@@ -82,6 +82,7 @@
     <Compile Include="Client\ServiceProxyOptions.cs" />
     <Compile Include="Client\XrmServiceManager.cs" />
     <Compile Include="Client\XrmServiceUriFactory.cs" />
+    <Compile Include="Extensions\BatchRequestExtensions.cs" />
     <Compile Include="Extensions\QueryExtensions.cs" />
     <Compile Include="Extensions\SecurityExtensions.cs" />
     <Compile Include="Extensions\ServiceProxyExtensions.cs" />
