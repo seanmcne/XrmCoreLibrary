@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Microsoft.Pfe.Xrm.Core.Samples")]
-[assembly: AssemblyDescription("Sample code demonstrating how to use the PFE Core Library for Dynamics CRM 2013. Authored by the Microsoft Premier Field Engineering (PFE) Dynamics team.")]
+[assembly: AssemblyDescription("Sample code demonstrating how to use the PFE Core Library for Dynamics CRM 2016. Authored by the Microsoft Premier Field Engineering (PFE) Dynamics team.")]
 [assembly: AssemblyCompany("Microsoft Corporation")]
-[assembly: AssemblyProduct("PFE Core Library for Microsoft Dynamics CRM 2013")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2015")]
+[assembly: AssemblyProduct("PFE Core Library for Microsoft Dynamics CRM 2016")]
+[assembly: AssemblyCopyright("Copyright © Microsoft 2016")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -29,6 +29,6 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("6.1.1502.0")]
-[assembly: AssemblyFileVersion("6.1.1502.0")]
-[assembly: AssemblyInformationalVersion("6.1.1502.0")]
+[assembly: AssemblyVersion("8.0.1603.1")]
+[assembly: AssemblyFileVersion("8.0.1603.1")]
+[assembly: AssemblyInformationalVersion("8.0.1603.1")]
