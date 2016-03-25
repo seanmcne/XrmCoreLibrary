@@ -75,12 +75,13 @@ namespace Microsoft.Pfe.Xrm
         }
 
         /// <summary>
-        /// Renews the token (if it is near expiration or has expired)
+        /// Renews the token for non-AD scenarios (if it is near expiration or has expired)
         /// </summary>
         public void RenewTokenIfRequired()
         {
-            if (null != this._proxy.SecurityTokenResponse &&
-                DateTime.UtcNow.AddMinutes(15) >= this._proxy.SecurityTokenResponse.Response.Lifetime.Expires)
+            if (this._proxy.ServiceConfiguration.AuthenticationType != AuthenticationProviderType.ActiveDirectory
+                && this._proxy.SecurityTokenResponse != null
+                && DateTime.UtcNow.AddMinutes(15) >= this._proxy.SecurityTokenResponse.Response.Lifetime.Expires)
             {
                 try
                 {

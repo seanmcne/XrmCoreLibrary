@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Contains a set of common components for building solutions using the Dynamics CRM 2013 SDK. Authored by the Microsoft Premier Field Engineering (PFE) Dynamics team.")]
 [assembly: AssemblyCompany("Microsoft Corporation")]
 [assembly: AssemblyProduct("PFE Core Library for Microsoft Dynamics CRM 2013")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2015")]
+[assembly: AssemblyCopyright("Copyright © Microsoft 2016")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -29,6 +29,6 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("6.1.1506.0")]
-[assembly: AssemblyFileVersion("6.1.1506.0")]
-[assembly: AssemblyInformationalVersion("6.1.1506.0")]
+[assembly: AssemblyVersion("6.1.1603.1")]
+[assembly: AssemblyFileVersion("6.1.1603.1")]
+[assembly: AssemblyInformationalVersion("6.1.1603.1")]
