@@ -40,7 +40,7 @@ namespace Microsoft.Pfe.Xrm
         /// <param name="proxy">Proxy that will be used to authenticate the user</param>
         public AutoRefreshSecurityToken(TProxy proxy)
         {
-            if (null == proxy)
+            if (proxy == null)
             {
                 throw new ArgumentNullException("proxy");
             }
@@ -53,7 +53,7 @@ namespace Microsoft.Pfe.Xrm
         /// </summary>
         public void PrepareCredentials()
         {
-            if (null == this._proxy.ClientCredentials)
+            if (this._proxy.ClientCredentials == null)
             {
                 return;
             }
@@ -89,8 +89,8 @@ namespace Microsoft.Pfe.Xrm
                 }
                 catch (CommunicationException)
                 {
-                    if (null == this._proxy.SecurityTokenResponse ||
-                        DateTime.UtcNow >= this._proxy.SecurityTokenResponse.Response.Lifetime.Expires)
+                    if (this._proxy.SecurityTokenResponse == null
+                        || DateTime.UtcNow >= this._proxy.SecurityTokenResponse.Response.Lifetime.Expires)
                     {
                         throw;
                     }
