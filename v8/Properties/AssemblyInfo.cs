@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Microsoft.Pfe.Xrm.Core")]
-[assembly: AssemblyDescription("Contains a set of common components for building solutions using the Dynamics CRM 2016 SDK. Authored by the Microsoft Premier Field Engineering (PFE) Dynamics team.")]
+[assembly: AssemblyDescription("Contains a set of common components for building solutions using the Dynamics CRM SDK. Authored by the Microsoft Premier Field Engineering (PFE) Dynamics team.")]
 [assembly: AssemblyCompany("Microsoft Corporation")]
-[assembly: AssemblyProduct("PFE Core Library for Microsoft Dynamics CRM 2016")]
+[assembly: AssemblyProduct("PFE Core Library for Dynamics CRM")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2016")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -18,17 +18,3 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("bb894583-b17b-4c23-800f-e4f89a60770c")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("8.0.1603.1")]
-[assembly: AssemblyFileVersion("8.0.1603.1")]
-[assembly: AssemblyInformationalVersion("8.0.1603.1")]
