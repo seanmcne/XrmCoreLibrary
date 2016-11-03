@@ -232,7 +232,7 @@ namespace Microsoft.Pfe.Xrm
                     var proxy = this.ServiceManager.GetProxy();
                     proxy.SetProxyOptions(options);
 
-                    values.Add(proxy); //Track instance for disposal
+                    values.Add(proxy); // Track instance for disposal
 
                     return proxy;
                 };            
@@ -252,7 +252,7 @@ namespace Microsoft.Pfe.Xrm
                             }
                             catch (FaultException<DiscoveryServiceFault> fault)
                             {
-                                //Track faults locally
+                                // Track faults locally
                                 if (errorHandler != null)
                                 {
                                     context.Failures.Add(new ParallelDiscoveryOperationFailure<TRequest>(request, fault));
@@ -267,11 +267,11 @@ namespace Microsoft.Pfe.Xrm
                         },
                         (context) =>
                         {
-                            //Join results and faults together
+                            // Join results and faults together
                             Array.ForEach(context.Results.ToArray(), r => allResponses.Add(r));
                             Array.ForEach(context.Failures.ToArray(), f => allFailures.Add(f));
 
-                            //Remove temporary reference to ThreadLocal proxy
+                            // Remove temporary reference to ThreadLocal proxy
                             context.Local = null;
                         });
                 }
@@ -281,7 +281,7 @@ namespace Microsoft.Pfe.Xrm
                 }
             }
 
-            //Handle faults
+            // Handle faults
             if (errorHandler != null)
             {
                 foreach (var failure in allFailures)
@@ -849,7 +849,7 @@ namespace Microsoft.Pfe.Xrm
                     var proxy = this.ServiceManager.GetProxy();
                     proxy.SetProxyOptions(options);
 
-                    values.Add(proxy); //Track instance for disposal
+                    values.Add(proxy); // Track instance for disposal
 
                     return proxy;
                 };
@@ -869,7 +869,7 @@ namespace Microsoft.Pfe.Xrm
                             }
                             catch (FaultException<OrganizationServiceFault> fault)
                             {
-                                //Track faults locally                                
+                                // Track faults locally                                
                                 if (errorHandler != null)
                                 {
                                     context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, fault));
@@ -884,7 +884,7 @@ namespace Microsoft.Pfe.Xrm
                         },
                         (context) =>
                         {
-                            //Join faults together
+                            // Join faults together
                             Array.ForEach(context.Failures.ToArray(), f => allFailures.Add(f));
                         });
                 }
@@ -894,7 +894,7 @@ namespace Microsoft.Pfe.Xrm
                 }
             }
 
-            //Handle faults
+            // Handle faults
             if (errorHandler != null)
             {
                 foreach (var failure in allFailures)
@@ -925,13 +925,13 @@ namespace Microsoft.Pfe.Xrm
             var allResponses = new ConcurrentBag<TResponse>();
             var allFailures = new ConcurrentBag<ParallelOrganizationOperationFailure<TRequest>>();
 
-            //Inline method for initializing a new organization service channel
+            // Inline method for initializing a new organization service channel
             Func<ManagedTokenOrganizationServiceProxy> proxyInit = () =>
                 {
                     var proxy = this.ServiceManager.GetProxy();
                     proxy.SetProxyOptions(options);
 
-                    values.Add(proxy); //Track instance for disposal
+                    values.Add(proxy); // Track instance for disposal
 
                     return proxy;
                 };
@@ -951,7 +951,7 @@ namespace Microsoft.Pfe.Xrm
                             }
                             catch (FaultException<OrganizationServiceFault> fault)
                             {
-                                //Track faults locally
+                                // Track faults locally
                                 if (errorHandler != null)
                                 {
                                     context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, fault));
@@ -966,11 +966,11 @@ namespace Microsoft.Pfe.Xrm
                         },
                         (context) =>
                         {                                                                                                                
-                            //Join results and faults together
+                            // Join results and faults together
                             Array.ForEach(context.Results.ToArray(), r => allResponses.Add(r));
                             Array.ForEach(context.Failures.ToArray(), f => allFailures.Add(f));                            
 
-                            //Remove temporary reference to ThreadLocal proxy
+                            // Remove temporary reference to ThreadLocal proxy
                             context.Local = null;
                         });
                 }
@@ -980,7 +980,7 @@ namespace Microsoft.Pfe.Xrm
                 }
             }
 
-            //Handle faults
+            // Handle faults
             if (errorHandler != null)
             {
                 foreach(var failure in allFailures)
