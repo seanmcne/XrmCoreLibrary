@@ -35,7 +35,7 @@ namespace Microsoft.Pfe.Xrm
         /// <summary>
         /// Converts a collection of type <see cref="Entity"/> to <see cref="ExecuteMultipleRequest"/> batches of <see cref="CreateRequest"/>
         /// </summary>
-        /// <param name="requests">The collection of entities to batch as <see cref="CreateRequest"/></param>
+        /// <param name="requests">The collection of entities to partition into batches as <see cref="CreateRequest"/></param>
         /// <param name="batchSize">The size of each batch</param>
         /// <returns>A keyed collection of <see cref="ExecuteMultipleRequest"/>s representing the request batches</returns>
         /// <remarks>
@@ -49,7 +49,7 @@ namespace Microsoft.Pfe.Xrm
         /// <summary>
         /// Converts a collection of type <see cref="Entity"/> to <see cref="ExecuteMultipleRequest"/> batches of <see cref="CreateRequest"/>
         /// </summary>
-        /// <param name="requests">The collection of entities to batch as <see cref="CreateRequest"/></param>
+        /// <param name="requests">The collection of entities to partition into batches as <see cref="CreateRequest"/></param>
         /// <param name="batchSize">The size of each batch</param>
         /// <param name="continueOnError">True if each <see cref="ExecuteMultipleRequest"/> should continue processing when an <see cref="OrganizationServiceFault"/> is encountered</param>
         /// <param name="returnResponses">True if an <see cref="ExecuteMultipleResponse"/> should be returned after processing is complete</param>
@@ -74,7 +74,7 @@ namespace Microsoft.Pfe.Xrm
         /// <summary>
         /// Converts a collection of type <see cref="Entity"/> to <see cref="ExecuteMultipleRequest"/> batches of <see cref="UpdateRequest"/>
         /// </summary>
-        /// <param name="requests">The collection of entities to batch as <see cref="UpdateRequest"/></param>
+        /// <param name="requests">The collection of entities to partition into batches as <see cref="UpdateRequest"/></param>
         /// <param name="batchSize">The size of each batch</param>
         /// <returns>A keyed collection of <see cref="ExecuteMultipleRequest"/>s representing the request batches</returns>
         /// <remarks>
@@ -88,7 +88,7 @@ namespace Microsoft.Pfe.Xrm
         /// <summary>
         /// Converts a collection of type <see cref="Entity"/> to <see cref="ExecuteMultipleRequest"/> batches of <see cref="UpdateRequest"/>
         /// </summary>
-        /// <param name="requests">The collection of entities to batch as <see cref="UpdateRequest"/></param>
+        /// <param name="requests">The collection of entities to partition into batches as <see cref="UpdateRequest"/></param>
         /// <param name="batchSize">The size of each batch</param>
         /// <param name="continueOnError">True if each <see cref="ExecuteMultipleRequest"/> should continue processing when an <see cref="OrganizationServiceFault"/> is encountered</param>
         /// <param name="returnResponses">True if an <see cref="ExecuteMultipleResponse"/> should be returned after processing is complete</param>
@@ -113,7 +113,7 @@ namespace Microsoft.Pfe.Xrm
         /// <summary>
         /// Converts a collection of type <see cref="EntityReference"/> to <see cref="ExecuteMultipleRequest"/> batches of <see cref="DeleteRequest"/>
         /// </summary>
-        /// <param name="requests">The collection of entities to batch as <see cref="DeleteRequest"/></param>
+        /// <param name="requests">The collection of entities to partition into batches as <see cref="DeleteRequest"/></param>
         /// <param name="batchSize">The size of each batch</param>
         /// <returns>A keyed collection of <see cref="ExecuteMultipleRequest"/>s representing the request batches</returns>
         /// <remarks>
@@ -127,7 +127,7 @@ namespace Microsoft.Pfe.Xrm
         /// <summary>
         /// Converts a collection of type <see cref="Entity"/> to <see cref="ExecuteMultipleRequest"/> batches of <see cref="DeleteRequest"/>
         /// </summary>
-        /// <param name="requests">The collection of entities to batch as <see cref="DeleteRequest"/></param>
+        /// <param name="requests">The collection of entities to partition into batches as <see cref="DeleteRequest"/></param>
         /// <param name="batchSize">The size of each batch</param>
         /// <param name="continueOnError">True if each <see cref="ExecuteMultipleRequest"/> should continue processing when an <see cref="OrganizationServiceFault"/> is encountered</param>
         /// <param name="returnResponses">True if an <see cref="ExecuteMultipleResponse"/> should be returned after processing is complete</param>
@@ -153,7 +153,7 @@ namespace Microsoft.Pfe.Xrm
         /// Converts a collection of type <see cref="OrganizationRequest"/> to <see cref="ExecuteMultipleRequest"/> batches
         /// </summary>
         /// <typeparam name="T">The typeof<see cref="OrganizationRequest"/></typeparam>
-        /// <param name="requests">The collection of requests to batch</param>
+        /// <param name="requests">The collection of requests to partition into batches</param>
         /// <param name="batchSize">The size of each batch</param>
         /// <returns>A keyed collection of type <see cref="ExecuteMultipleRequest"/> representing the request batches</returns>
         /// <remarks>
@@ -169,7 +169,7 @@ namespace Microsoft.Pfe.Xrm
         /// Converts a collection of type <see cref="OrganizationRequest"/> to <see cref="ExecuteMultipleRequest"/> batches
         /// </summary>
         /// <typeparam name="T">The typeof<see cref="OrganizationRequest"/></typeparam>
-        /// <param name="requests">The collection of requests to batch</param>
+        /// <param name="requests">The collection of requests to partition into batches</param>
         /// <param name="batchSize">The size of each batch</param>
         /// <param name="continueOnError">True if each <see cref="ExecuteMultipleRequest"/> should continue processing when an <see cref="OrganizationServiceFault"/> is encountered</param>
         /// <param name="returnResponses">True if an <see cref="ExecuteMultipleResponse"/> should be returned after processing is complete</param>
@@ -184,7 +184,7 @@ namespace Microsoft.Pfe.Xrm
         /// Converts a collection of type <see cref="OrganizationRequest"/> to <see cref="ExecuteMultipleRequest"/> batches
         /// </summary>
         /// <typeparam name="T">The typeof<see cref="OrganizationRequest"/></typeparam>
-        /// <param name="requests">The collection of requests to batch</param>
+        /// <param name="requests">The collection of requests to partition into batches</param>
         /// <param name="batchSize">The size of each batch</param>
         /// <param name="batchSettings">The desired settings</param>
         /// <returns>A keyed collection of type <see cref="ExecuteMultipleRequest"/> representing the request batches</returns>
@@ -198,24 +198,40 @@ namespace Microsoft.Pfe.Xrm
             if (batchSettings == null)
                 throw new ArgumentNullException("batchSettings");
 
-            int batchCount = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(requests.Count()) / Convert.ToDecimal(batchSize)));
-            var batchRequests = new Dictionary<string, ExecuteMultipleRequest>(batchCount);
+            // Index each request
+            var indexedRequests = requests.Select((r, i) => new { Index = i, Value = r });
 
-            for (int i = 0; i < batchCount; i++)
+            // Partition the indexed requests by batch size 
+            var partitions = indexedRequests.GroupBy(ir => ir.Index / batchSize);
+
+            // Convert each partition to an ExecuteMultilpleRequest batch
+            IEnumerable<ExecuteMultipleRequest> batches = partitions.Select(p => p.Select(ir => ir.Value).AsBatch(batchSettings));
+
+            // Index each batch
+            var indexedBatches = batches.Select((b, i) => new { Index = i, Value = b });
+
+            // Return indexed batches as dictionary
+            return indexedBatches.ToDictionary(ib => ib.Index.ToString(), ib => ib.Value);
+        }
+
+        /// <summary>
+        /// Converts a collection of type <see cref="OrganizationRequest"/> to a single <see cref="ExecuteMultipleRequest"/> instance  
+        /// </summary>
+        /// <typeparam name="T">The typeof<see cref="OrganizationRequest"/></typeparam>
+        /// <param name="requests">The collection of requests representing the batch</param>
+        /// <param name="batchSettings">The desired settings</param>
+        /// <returns>A single <see cref="ExecuteMultipleRequest"/> instance</returns>
+        public static ExecuteMultipleRequest AsBatch<T>(this IEnumerable<T> requests, ExecuteMultipleSettings batchSettings)
+            where T : OrganizationRequest
+        {
+            var batch = new OrganizationRequestCollection();
+            batch.AddRange(requests);
+
+            return new ExecuteMultipleRequest()
             {
-                var batch = new OrganizationRequestCollection();
-                batch.AddRange(requests.Skip(i * batchSize).Take(batchSize));
-
-                var emr = new ExecuteMultipleRequest()
-                {
-                    Requests = batch,
-                    Settings = batchSettings
-                };
-
-                batchRequests.Add(i.ToString(), emr);
-            }
-
-            return batchRequests;
-        }        
+                Requests = batch,
+                Settings = batchSettings
+            };
+        }
     }
 }
