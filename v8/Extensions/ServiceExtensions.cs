@@ -67,7 +67,7 @@ namespace Microsoft.Pfe.Xrm
         /// <param name="shouldRetrieveAllPages">True = perform iterative paged query requests, otherwise return first page only</param>
         /// <param name="maxPageCount">An upper limit on the maximum number of entity records that should be retrieved as the query results - useful when the total size of result set is unknown and size may cause OutOfMemoryException</param>
         /// <param name="pagedOperation">An operation to perform on each page of results as it's retrieved</param>
-        /// <returns>An EntityCollection containing the results of the query</returns>
+        /// <returns>An EntityCollection containing the results of the query. Details reflect the last page retrieved (e.g. MoreRecords, PagingCookie, etc.)</returns>
         /// <remarks>
         /// CRM limits query response to paged result sets of 5,000. This method encapsulates the logic for performing subsequent 
         /// query requests so that all results can be retrieved.
@@ -86,7 +86,7 @@ namespace Microsoft.Pfe.Xrm
         /// <param name="query">The QueryExpression query to be executed</param>
         /// <param name="maxResultCount">An upper limit on the maximum number of entity records that should be retrieved as the query results - useful when the total size of result set is unknown and size may cause OutOfMemoryException</param>
         /// <param name="pagedOperation">An operation to perform on each page of results as it's retrieved</param>
-        /// <returns>An EntityCollection containing the results of the query</returns>
+        /// <returns>An EntityCollection containing the results of the query. Details reflect the last page retrieved (e.g. MoreRecords, PagingCookie, etc.)</returns>
         /// <remarks>
         /// CRM limits query response to paged result sets of 5,000. This method encapsulates the logic for performing subsequent 
         /// query requests so that all results can be retrieved.
@@ -106,7 +106,7 @@ namespace Microsoft.Pfe.Xrm
         /// <param name="shouldRetrieveAllPages">True = perform iterative paged query requests, otherwise return first page only</param>
         /// <param name="maxResultCount">An upper limit on the maximum number of entity records that should be retrieved as the query results - useful when the total size of result set is unknown and size may cause OutOfMemoryException</param>
         /// <param name="pagedOperation">An operation to perform on each page of results as it's retrieved</param>
-        /// <returns>An EntityCollection containing the results of the query</returns>
+        /// <returns>An EntityCollection containing the results of the query. Details reflect the last page retrieved (e.g. MoreRecords, PagingCookie, etc.)</returns>
         /// <remarks>
         /// CRM limits query response to paged result sets of 5,000. This method encapsulates the logic for performing subsequent 
         /// query requests so that all results can be retrieved.
@@ -145,18 +145,19 @@ namespace Microsoft.Pfe.Xrm
         /// <param name="shouldRetrieveAllPages">True = perform iterative paged query requests, otherwise return first page only</param>
         /// <param name="maxResultCount">An upper limit on the maximum number of entity records that should be retrieved as the query results - useful when the total size of result set is unknown and size may cause OutOfMemoryException</param>
         /// <param name="pagedOperation">An operation to perform on each page of results as it's retrieved</param>
-        /// <returns>An EntityCollection containing the results of the query</returns>
+        /// <returns>An EntityCollection containing the results of the query. Details reflect the last page retrieved (e.g. MoreRecords, PagingCookie, etc.)</returns>
         /// <remarks>
         /// CRM limits query response to paged result sets of 5,000. This method encapsulates the logic for performing subsequent 
         /// query requests so that all results can be retrieved.
         /// </remarks>
         private static EntityCollection RetrieveMultiple(this IOrganizationService service, QueryExpression query, bool shouldRetrieveAllPages, long maxResultCount, Action<EntityCollection> pagedOperation)
         {
-            // Establish first page (only if TopCount not specified)
+            // Establish page info (only if TopCount not specified)
             if (query.TopCount == null)
             {
                 if (query.PageInfo == null)
-                {                    
+                {
+                    // Default to first page
                     query.PageInfo = new PagingInfo()
                     {                        
                         Count = QueryExtensions.DefaultPageSize,
@@ -165,8 +166,8 @@ namespace Microsoft.Pfe.Xrm
                         ReturnTotalRecordCount = false
                     };
                 }
-                else if (query.PageInfo.PageNumber != 1
-                        || query.PageInfo.PagingCookie != null)
+                else if (query.PageInfo.PageNumber <= 1
+                         || query.PageInfo.PagingCookie == null)
                 {
                     // Reset to first page
                     query.PageInfo.PageNumber = 1;
@@ -187,7 +188,7 @@ namespace Microsoft.Pfe.Xrm
             while (true)
             {
                 // Retrieve the page
-                var page = service.RetrieveMultiple(query);
+                EntityCollection page = service.RetrieveMultiple(query);
 
                 // Capture the page
                 if (totalResultCount == 0)
@@ -226,6 +227,7 @@ namespace Microsoft.Pfe.Xrm
                 }
                 else
                 {
+                    allResults.CopyFrom(page);
                     break;
                 }
             }
@@ -241,16 +243,16 @@ namespace Microsoft.Pfe.Xrm
         /// <param name="shouldRetrieveAllPages">True = perform iterative paged query requests, otherwise return first page only</param>
         /// <param name="maxResultCount">An upper limit on the maximum number of entity records that should be retrieved as the query results - useful when the total size of result set is unknown and size may cause OutOfMemoryException</param>
         /// <param name="pagedOperation">An operation to perform on each page of results as it's retrieved</param>
-        /// <returns>An EntityCollection containing the results of the query</returns>
+        /// <returns>An EntityCollection containing the results of the query. Details reflect the last page retrieved (e.g. MoreRecords, PagingCookie, etc.)</returns>
         /// <remarks>
         /// CRM limits query response to paged result sets of 5,000. This method encapsulates the logic for performing subsequent 
         /// query requests so that all results can be retrieved.
         /// </remarks>
         private static EntityCollection RetrieveMultiple(this IOrganizationService service, FetchExpression fetch, bool shouldRetrieveAllPages, long maxResultCount, Action<EntityCollection> pagedOperation)
         {
-            int pageNumber = 1;
-            
             XElement fetchXml = fetch.ToXml();
+            int pageNumber = fetchXml.GetFetchXmlPageNumber();
+            string pageCookie = fetchXml.GetFetchXmlPageCookie();
             int pageSize = fetchXml.GetFetchXmlPageSize(QueryExtensions.DefaultPageSize);
 
             // Establish the first page based on lesser of initial/default page size or max result count (will be skipped if top count > 0)
@@ -259,7 +261,18 @@ namespace Microsoft.Pfe.Xrm
                 pageSize = Convert.ToInt32(maxResultCount);                
             }
 
-            fetchXml.SetFetchXmlPage(null, pageNumber, pageSize);            
+            if (pageNumber <= 1
+                || String.IsNullOrWhiteSpace(pageCookie))
+            {
+                // Ensure start with first page
+                fetchXml.SetFetchXmlPage(null, 1, pageSize);
+            }
+            else
+            {
+                // Start with specified page
+                fetchXml.SetFetchXmlPage(pageCookie, pageNumber, pageSize);
+            }
+                      
             fetch.Query = fetchXml.ToString();
 
             // Track local long value to avoid expensive IEnumerable<T>.LongCount() method calls
@@ -269,7 +282,7 @@ namespace Microsoft.Pfe.Xrm
             while (true)
             {
                 // Retrieve the page
-                var page = service.RetrieveMultiple(fetch);
+                EntityCollection page = service.RetrieveMultiple(fetch);
 
                 // Capture the page
                 if (totalResultCount == 0)
@@ -309,6 +322,7 @@ namespace Microsoft.Pfe.Xrm
                 }
                 else
                 {
+                    allResults.CopyFrom(page);
                     break;
                 }
             }

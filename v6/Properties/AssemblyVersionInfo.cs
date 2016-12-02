@@ -10,6 +10,6 @@
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("6.1.1611.0301")]
-[assembly: AssemblyFileVersion("6.1.1611.0301")]
-[assembly: AssemblyInformationalVersion("6.1.1611.0301")]
+[assembly: AssemblyVersion("6.1.1612.0101")]
+[assembly: AssemblyFileVersion("6.1.1612.0101")]
+[assembly: AssemblyInformationalVersion("6.1.1612.0101")]

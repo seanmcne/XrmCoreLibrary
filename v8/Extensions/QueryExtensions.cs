@@ -103,6 +103,41 @@ namespace Microsoft.Pfe.Xrm
         }
 
         /// <summary>
+        /// Gets the page number specificed in the 'page' attribute of a FetchXML query
+        /// </summary>
+        /// <param name="fetchXml">The XElement representing the fetch query</param>
+        /// <returns>The fetch page number as an integer value, returns '1' if page not specified</returns>
+        public static int GetFetchXmlPageNumber(this XElement fetchXml)
+        {
+            int pageNumber = 1;
+            XAttribute pageAttribute = fetchXml.Attribute("page");
+
+            if (pageAttribute != null)
+            {
+                Int32.TryParse(pageAttribute.Value, out pageNumber);
+            }
+
+            return pageNumber;
+        }
+
+        /// <summary>
+        /// Gets the paging cookie specified in the 'paging-cookie' attribute of a FetchXML query
+        /// </summary>
+        /// <param name="fetchXml">The XElement representing the fetch query</param>
+        /// <returns>The fetch paging cookie string value, returns emtpty string if not specified</returns>
+        public static string GetFetchXmlPageCookie(this XElement fetchXml)
+        {
+            XAttribute cookieAttribute = fetchXml.Attribute("paging-cookie");
+
+            if (cookieAttribute != null)
+            {
+                return cookieAttribute.Value;
+            }
+
+            return String.Empty;
+        }
+
+        /// <summary>
         /// Sets the paging info in a FetchXML query
         /// </summary>
         /// <param name="fe">The expression of a FetchXML query</param>
@@ -161,6 +196,52 @@ namespace Microsoft.Pfe.Xrm
                 fetchXml.SetAttributeValue("page", pageNumber);
                 fetchXml.SetAttributeValue("count", count);
             }
+        }
+
+
+        /// <summary>
+        /// Copies the details from one EntityCollection page to another
+        /// </summary>
+        /// <param name="target">The copy target</param>
+        /// <param name="source">The copy source</param>
+        public static void CopyFrom(this EntityCollection target, EntityCollection source)
+        {
+            if (source != null)
+            {
+                target.EntityName = source.EntityName;
+                target.MinActiveRowVersion = source.MinActiveRowVersion;
+                target.MoreRecords = source.MoreRecords;
+                target.PagingCookie = source.PagingCookie;
+                target.TotalRecordCount = source.TotalRecordCount;
+                target.TotalRecordCountLimitExceeded = source.TotalRecordCountLimitExceeded;
+            }
+        }
+
+        /// <summary>
+        /// Extracts the page number from the paging cookie returned with the EntityCollection result
+        /// </summary>
+        /// <param name="results">The current result</param>
+        /// <returns>The page attribute of the paging cookie as an integer, otherwise '1' if cookie is null or empty</returns>
+        public static int PageNumber(this EntityCollection results)
+        {
+            int pageNumber = 1;
+
+            if (!String.IsNullOrWhiteSpace(results.PagingCookie))
+            {
+                XElement cookie = XElement.Parse(results.PagingCookie, LoadOptions.PreserveWhitespace);
+
+                if (cookie != null)
+                {
+                    XAttribute page = cookie.Attribute("page");
+
+                    if (page != null)
+                    {
+                        Int32.TryParse(page.Value, out pageNumber);                       
+                    }
+                }
+            }
+
+            return pageNumber;
         }
     }
 }
