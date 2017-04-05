@@ -5,8 +5,8 @@ The Disassociate method accepts a list of disassociate requests. A method overlo
 ##### Method Overloads 
 
 ```c#
-public void Disassociate(IEnumerable<DisassociateRequest> requests)
-public void Disassociate(IEnumerable<DisassociateRequest> requests, OrganizationServiceProxyOptions options)
+public void Disassociate(IEnumerable<DisassociateRequest> requests);
+public void Disassociate(IEnumerable<DisassociateRequest> requests, OrganizationServiceProxyOptions options);
 ```
 
 Each of the above methods also provides an optional exception handling parameter of type **Action<TRequest, FaultException<OrganizationServiceFault>>**.
