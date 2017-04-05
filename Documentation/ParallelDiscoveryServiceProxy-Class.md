@@ -2,19 +2,19 @@
 
 The ParallelDiscoveryServiceProxy class provides a set of methods syntactically similar to IDiscoveryService, but with the ability to submit the requests in parallel using multiple threads.  Each method implementation leverages .NET Task Parallel Library (TPL) to partition and dispatch the work.  
 
-There is no need to instantiate this class directly because the [DiscoveryServiceManager](DiscoveryServiceManager-Class) class contains a [ParallelProxy](Discovery-ParallelProxy-Property) property referencing an instance of this class.  It is immediately available on every instance of DiscoveryServiceManager and should be used for executing parallelized request operations.
+There is no need to instantiate this class directly because the [DiscoveryServiceManager](DiscoveryServiceManager-Class.md) class contains a [ParallelProxy](Discovery-ParallelProxy-Property.md) property referencing an instance of this class.  It is immediately available on every instance of DiscoveryServiceManager and should be used for executing parallelized request operations.
 
 **Namespace**: Microsoft.Pfe.Xrm
 **Assembly**: Microsoft.Pfe.Xrm.Core.dll
 
 ##### Properties
 
-* [MaxDegreeOfParallelism](Discovery-MaxDegreeOfParallelism-Property)
+* [MaxDegreeOfParallelism](Discovery-MaxDegreeOfParallelism-Property.md)
 
 ##### Methods
 
-* [Execute](Discovery-Execute-Method)
-Each method provides an overload that accepts an instance of [DiscoveryServiceProxyOptions](DiscoveryServiceProxyOptions-Class) class.
+* [Execute](Discovery-Execute-Method.md)
+Each method provides an overload that accepts an instance of [DiscoveryServiceProxyOptions](DiscoveryServiceProxyOptions-Class.md) class.
 
 ##### Exception Handling
 

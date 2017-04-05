@@ -2,26 +2,26 @@
 
 The ParallelOrganizationServiceProxy class provides a set of methods syntactically similar to IOrganizationService, but with the ability to submit the requests in parallel using multiple threads.  Each method implementation leverages .NET Task Parallel Library (TPL) to partition and dispatch the work.  
 
-There is no need to instantiate this class directly because the [OrganizationServiceManager](OrganizationServiceManager-Class) class contains a [ParallelProxy](ParallelProxy-Property) property referencing an instance of this class.  It is immediately available on every instance of OrganizationServiceManager and should be used for executing parallelized request operations.
+There is no need to instantiate this class directly because the [OrganizationServiceManager](OrganizationServiceManager-Class.md) class contains a [ParallelProxy](ParallelProxy-Property.md) property referencing an instance of this class.  It is immediately available on every instance of OrganizationServiceManager and should be used for executing parallelized request operations.
 
 **Namespace**: Microsoft.Pfe.Xrm
 **Assembly**: Microsoft.Pfe.Xrm.Core.dll
 
 ##### Properties
 
-* [MaxDegreeOfParallelism](MaxDegreeOfParallelism-Property)
+* [MaxDegreeOfParallelism](MaxDegreeOfParallelism-Property.md)
 
 ##### Methods
 
-* [Create](Create-Method)
-* [Update](Update-Method)
-* [Delete](Delete-Method)
-* [Associate](Associate-Method)
-* [Disassociate](Disassociate-Method)
-* [Retrieve](Retrieve-Method)
-* [RetrieveMultiple](RetrieveMultiple-Method)
-* [Execute](Execute-Method)
-Each method provides an overload that accepts an instance of [OrganizationServiceProxyOptions](OrganizationServiceProxyOptions-Class) class.
+* [Create](Create-Method.md)
+* [Update](Update-Method.md)
+* [Delete](Delete-Method.md)
+* [Associate](Associate-Method.md)
+* [Disassociate](Disassociate-Method.md)
+* [Retrieve](Retrieve-Method.md)
+* [RetrieveMultiple](RetrieveMultiple-Method.md)
+* [Execute](Execute-Method.md)
+Each method provides an overload that accepts an instance of [OrganizationServiceProxyOptions](OrganizationServiceProxyOptions-Clas.mds) class.
 
 ##### Exception Handling
 

@@ -1,6 +1,6 @@
 This property provides the underlying authentication provider type of the endpoint currently targeted by the service manager instance.
 
-```C#
+```c#
 /// <summary>
 /// The <see cref="AuthenticationProviderType"/> of the targeted endpoint
 /// </summary>

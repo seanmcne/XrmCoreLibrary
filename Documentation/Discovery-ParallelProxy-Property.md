@@ -2,7 +2,7 @@
 
 This property references an instance of [ParallelDiscoveryServiceProxy](ParallelDiscoveryServiceProxy-class) class and is available immediately upon instantiation of a new DiscoveryServiceManager.  This property should be used for executing parallelized request operations.  
 
-{code:c#}
+```c#
 public ParallelDiscoveryServiceProxy ParallelProxy
 {
     get
@@ -15,4 +15,4 @@ public ParallelDiscoveryServiceProxy ParallelProxy
         return this.parallelProxy;
     }
 } 
-{code:c#}
+```

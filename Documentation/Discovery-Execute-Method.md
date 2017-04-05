@@ -10,7 +10,7 @@ The Execute method accepts any type of request in the **Microsoft.Xrm.Sdk.Discov
 
 ##### Method Overloads
 
-{code:c#}
+```c#
 public IEnumerable<DiscoveryResponse> Execute(IEnumerable<DiscoveryRequest> requests)
 public IEnumerable<DiscoveryResponse> Execute(IEnumerable<DiscoveryRequest> requests, DiscoveryServiceProxyOptions options)
 public IEnumerable<TResponse> Execute<TRequest, TResponse>(IEnumerable<TRequest> requests)
@@ -27,7 +27,7 @@ public IDictionary<string, TResponse> Execute<TRequest, TResponse>(IDictionary<s
 public IDictionary<string, TResponse> Execute<TRequest, TResponse>(IDictionary<string, TRequest> requests, DiscoveryServiceProxyOptions options)
     where TRequest : DiscoveryRequest
     where TResponse : DiscoveryResponse
-{code:c#}
+```
 
 Each of the above methods also provides an optional exception handling parameter of type **Action<TRequest, FaultException<DiscoveryServiceFault>>**.
 
@@ -35,14 +35,14 @@ Each of the above methods also provides an optional exception handling parameter
 
 Each example represents a method of a sample class that contains the following property
 
-{code:c#}
+```c#
 DiscoveryServiceManager Manager { get; set; }
-{code:c#}
+```
 
 1. +How to Execute discovery requests in parallel+
 Demonstrates parallelized execution of multiple discovery requests.  Note, this scenario would only be applicable if needing to discover a set of organizations not representative of all organizations that the authenticated user belongs to in the deployment.  Otherwise, a single **RetrieveOrganizationsRequest** could be executed in lieu of these parallelized individual organization discovery requests.
 
-{code:c#}
+```c#
 public List<DiscoveryResponse> ParallelExecuteDiscoveryRequests(string[]() organizationNames)
 {            
     List<DiscoveryResponse> responses = null;
@@ -71,12 +71,12 @@ public List<DiscoveryResponse> ParallelExecuteDiscoveryRequests(string[]() organ
 
     return responses;
 }
-{code:c#}
+```
 
 2. +How to Execute retrieve user by UPN in parallel+
 Demonstrates parallelized execution of multiple RetrieveUserByExternalIdRequest.  This example uses the IDictionary<TKey, TValue> method to demonstrate how a key (UPN) can be used to correlate the discovery request to its response.
 
-{code:c#}
+```c#
 public void ParallelExecuteRetrieveByUpnRequests(Guid organizationId, string[]() upns)
 {
     var requests = new Dictionary<string, RetrieveUserIdByExternalIdRequest>();
@@ -108,12 +108,12 @@ public void ParallelExecuteRetrieveByUpnRequests(Guid organizationId, string[]()
         // Handle exceptions
     }
 }
-{code:c#}
+```
 
 3. +How to use the optional exception handler delegate+
 Demonstrates a parallelized execution of multiple discovery requests with an optional delegate exception handling function. The delegate is provided the original request and the fault exception encountered. It is executed on the calling thread after all parallel operations are complete.
 
-{code:c#}
+```c#
 public Dictionary<string, RetrieveUserIdByExternalIdResponse> ParallelExecuteRequestsWithExceptionHandler(Dictionary<string, RetrieveUserIdByExternalIdRequest> requests)
 {
     int errorCount = 0;
@@ -138,4 +138,4 @@ public Dictionary<string, RetrieveUserIdByExternalIdResponse> ParallelExecuteReq
 
     return responses;
 }
-{code:c#}
+```

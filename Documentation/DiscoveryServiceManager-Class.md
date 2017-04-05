@@ -23,7 +23,7 @@ Discovery is not required for connecting to Organization.svc endpoints, but may 
 1. +Basic Connection to CRM Discovery.svc+
 Demonstrates a basic connection to Discovery.svc using a username and password
 
-{code:c#}
+```c#
 var serverUri = XrmServiceUriFactory.CreateDiscoveryServiceUri("https://mycrmserver:5555");
 var discoManager = new DiscoveryServiceManager(serverUri, "username", "password");
 
@@ -31,18 +31,18 @@ using (var discoProxy = discoManager.GetProxy())
 {
     //Do discovery requests...
 }
-{code:c#}
+```
 
 2. +Basic Connection to CRM Online Discovery.svc+
 Demonstrates an online-federated connection to Discovery.svc using a userprincipalname and password
 
-{code:c#}
+```c#
 var discoManager = new DiscoveryServiceManager(XrmServiceUriFactory.DiscoveryServiceOnlineO365NAUri, "username@mydomain.onmicrosoft.com", "password");
 
 using (var discoProxy = discoManager.GetProxy())
 {
     //Do discovery requests...
 }
-{code:c#}
+```
 
 The DiscoveryServiceManager class supports all of the same authentication strategies as the OrganizationServieManager class.  For examples of other possible scenarios, reference the [OrganizationServiceManager Class](OrganizationServiceManager-Class) documentation.

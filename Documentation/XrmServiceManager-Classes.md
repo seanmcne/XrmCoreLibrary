@@ -6,5 +6,5 @@ XrmServiceManager classes also contains multiple Uri formatting string constants
 
 There are two primary XrmServiceManager classes that simplify connecting to CRM service endpoints:
 
-* [DiscoveryServiceManager Class](DiscoveryServiceManager-Class)
-* [OrganizationServiceManager Class](OrganizationServiceManager-Class)
+* [DiscoveryServiceManager Class](DiscoveryServiceManager-Class.md)
+* [OrganizationServiceManager Class](OrganizationServiceManager-Class.md)

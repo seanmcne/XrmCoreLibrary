@@ -6,10 +6,10 @@ _**IMPORTANT**: Use the Retrieve method only under special circumstances when +m
 
 ##### Method Overloads 
 
-{code:c#}
-public IEnumerable<Entity> Retrieve(IEnumerable<RetrieveRequest> requests)
-public IEnumerable<Entity> Retrieve(IEnumerable<RetrieveRequest> requests, OrganizationServiceProxyOptions options)
-{code:c#}
+```c#
+public IEnumerable<Entity> Retrieve(IEnumerable<RetrieveRequest> requests);
+public IEnumerable<Entity> Retrieve(IEnumerable<RetrieveRequest> requests, OrganizationServiceProxyOptions options);
+```
 
 Each of the above methods also provides an optional exception handling parameter of type **Action<TRequest, FaultException<OrganizationServiceFault>>**.
 
@@ -17,14 +17,14 @@ Each of the above methods also provides an optional exception handling parameter
 
 Each example represents a method of a sample class that contains the following property
 
-{code:c#}
+```c#
 OrganizationServiceManager Manager { get; set; }
-{code:c#}
+```
 
 1. +How to Retrieve entities in parallel+
 Demonstrates a parallelized submission of multiple retrieve requests
 
-{code:c#}
+```c#
 public List<Entity> ParallelRetrieve(List<RetrieveRequest> requests)
 {
     List<Entity> responses = null;
@@ -45,12 +45,12 @@ public List<Entity> ParallelRetrieve(List<RetrieveRequest> requests)
 
     return responses;
 }
-{code:c#}
+```
 
 2. +How to use the optional exception handler delegate+
 Demonstrates a parallelized submission of multiple retrieve requests with an optional delegate exception handling function. The delegate is provided the original request and the fault exception encountered. It is executed on the calling thread after all parallel operations are complete.
 
-{code:c#}
+```c#
 public List<Entity> ParallelRetrieveWithExceptionHandler(List<RetrieveRequest> requests)
 {
     int errorCount = 0;
@@ -74,4 +74,4 @@ public List<Entity> ParallelRetrieveWithExceptionHandler(List<RetrieveRequest> r
 
     return responses;
 }
-{code:c#}
+```

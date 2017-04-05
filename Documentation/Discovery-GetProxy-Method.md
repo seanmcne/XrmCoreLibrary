@@ -4,7 +4,7 @@ This method returns an instance of ManagedTokenDiscoveryServiceProxy which repre
 
 Callers of this method should be sure to dispose of the proxy instance before it falls out of scope or implement IDisposable if the calling type has a member that references the proxy instance.
 
-{code:c#}
+```c#
 public TProxy GetProxy()
 {
     return this.GetProxy<TProxy>();
@@ -58,4 +58,4 @@ protected T GetProxy<T>()
             throw new NotSupportedException(string.Format("{0} authentication type is not supported", this.ServiceManagement.AuthenticationType));
     }
 }
-{code:c#}
+```

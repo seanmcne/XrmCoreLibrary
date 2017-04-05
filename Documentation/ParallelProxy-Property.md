@@ -1,8 +1,8 @@
 #### OrganizationServiceManager.ParallelProxy Property
 
-This property references an instance of [ParallelOrganizationServiceProxy](ParallelOrganizationServiceProxy-class) class and is available immediately upon instantiation of a new OrganizationServiceManager.  This property should be used for executing parallelized request operations.  
+This property references an instance of [ParallelOrganizationServiceProxy](ParallelOrganizationServiceProxy-class.md) class and is available immediately upon instantiation of a new OrganizationServiceManager.  This property should be used for executing parallelized request operations.  
 
-{code:c#}
+```c#
 public ParallelOrganizationServiceProxy ParallelProxy
 {
     get
@@ -15,4 +15,4 @@ public ParallelOrganizationServiceProxy ParallelProxy
         return this.parallelProxy;
     }
 } 
-{code:c#}
+```

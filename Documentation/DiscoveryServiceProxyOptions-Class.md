@@ -9,21 +9,21 @@ This class provides the ability to set additional options on the service proxy i
 
 * **Timeout** -Set this property to the desired timeout duration, overriding the default 2-minute request timeout on each channel.  
 
-{code:c#}
+```c#
 public class DiscoveryServiceProxyOptions : ServiceProxyOptions { }
 
 public class ServiceProxyOptions
 {
     public TimeSpan Timeout { get; set; }
 }
-{code:c#}
+```
 
 ##### Usage Examples
 
 1. +How to use DiscoveryServiceProxyOptions when making parallel requests+
 Demonstrates a parallelized submission of multiple discovery requests with service proxy options specifying an increase of the channel timeout to 5 minutes.
 
-{code:c#}
+```c#
 public IEnumerable<DiscoveryResponse> ParallelExecuteWithOptions(List<DiscoveryRequest> requests)
 {
     IEnumerable<DiscoveryResponse> responses = null;
@@ -44,4 +44,4 @@ public IEnumerable<DiscoveryResponse> ParallelExecuteWithOptions(List<DiscoveryR
 
     return responses;
 }
-{code:c#}
+```

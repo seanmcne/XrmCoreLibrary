@@ -1,6 +1,6 @@
 #### ParallelOrganizationServiceProxy.Execute() Method
 
-The Execute method accepts a list of organization requests which can be a mix of organization request types. A method overload accepts an instance of [OrganizationServiceProxyOptions](OrganizationServiceProxyOptions-Class) to control proxy channel behaviors. Each Execute method returns a list of the organization response returned from each request. 
+The Execute method accepts a list of organization requests which can be a mix of organization request types. A method overload accepts an instance of [OrganizationServiceProxyOptions](OrganizationServiceProxyOptions-Class.md) to control proxy channel behaviors. Each Execute method returns a list of the organization response returned from each request. 
 
 There is also a set of generic Execute methods where you can specify a request/response type pair. Using these methods allows you to create a more specifically typed list of requests and provides a list of responses directly cast to the specified type. Unless submitting a mix of OrganizationRequest types, the generic methods are preferred.
 
@@ -10,24 +10,28 @@ The Execute method accepts any type of request in the **Microsoft.Xrm.Sdk.Messag
 
 ##### Method Overloads
 
-{code:c#}
-public IEnumerable<OrganizationResponse> Execute(IEnumerable<OrganizationRequest> requests)
-public IEnumerable<OrganizationResponse> Execute(IEnumerable<OrganizationRequest> requests, OrganizationServiceProxyOptions options)
+```c#
+public IEnumerable<OrganizationResponse> Execute(IEnumerable<OrganizationRequest> requests){}
+public IEnumerable<OrganizationResponse> Execute(IEnumerable<OrganizationRequest> requests, OrganizationServiceProxyOptions options){}
 public IEnumerable<TResponse> Execute<TRequest, TResponse>(IEnumerable<TRequest> requests)
     where TRequest : OrganizationRequest
     where TResponse : OrganizationResponse
+	{}
 public IEnumerable<TResponse> Execute<TRequest, TResponse>(IEnumerable<TRequest> requests, OrganizationServiceProxyOptions options)
     where TRequest : OrganizationRequest
     where TResponse : OrganizationResponse
-public IDictionary<string, OrganizationResponse> Execute(IDictionary<string, OrganizationRequest> requests)
-public IDictionary<string, OrganizationResponse> Execute(IDictionary<string, OrganizationRequest> requests, OrganizationServiceProxyOptions options)
+	{}
+public IDictionary<string, OrganizationResponse> Execute(IDictionary<string, OrganizationRequest> requests){}
+public IDictionary<string, OrganizationResponse> Execute(IDictionary<string, OrganizationRequest> requests, OrganizationServiceProxyOptions options){}
 public IDictionary<string, TResponse> Execute<TRequest, TResponse>(IDictionary<string, TRequest> requests)
     where TRequest : OrganizationRequest
     where TResponse : OrganizationResponse
+	{}
 public IDictionary<string, TResponse> Execute<TRequest, TResponse>(IDictionary<string, TRequest> requests, OrganizationServiceProxyOptions options)
     where TRequest : OrganizationRequest
     where TResponse : OrganizationResponse
-{code:c#}
+	{}
+```
 
 Each of the above methods also provides an optional exception handling parameter of type **Action<TRequest, FaultException<OrganizationServiceFault>>**.
 
@@ -35,14 +39,14 @@ Each of the above methods also provides an optional exception handling parameter
 
 Each sample represents a method of a sample class that contains the following property
 
-{code:c#}
+```c#
 OrganizationServiceManager Manager { get; set; }
-{code:c#}
+```
 
 1. +Parallel Execute SetStateRequest Sample+
 Demonstrates parallelized execution of multiple set state requests
 
-{code:c#}
+```c#
 public void ParallelExecuteSetStateRequests(Guid[]() accountIds)
 {
     var requests = new List<OrganizationRequest>();
@@ -68,12 +72,12 @@ public void ParallelExecuteSetStateRequests(Guid[]() accountIds)
         // Handle exceptions
     }
 }
-{code:c#}
+```
 
 2. +Parallel Generic Execute Requests Sample+
 Demonstrates parallelized execution of multiple team privilege requests using generic method
 
-{code:c#}
+```c#
 public IDictionary<Guid, RetrieveTeamPrivilegesResponse> ParallelGenericExecuteRequests(Guid[]() teamIds)
 {
     IDictionary<Guid, RetrieveTeamPrivilegesResponse> responses = null;
@@ -108,12 +112,12 @@ public IDictionary<Guid, RetrieveTeamPrivilegesResponse> ParallelGenericExecuteR
 
     return responses;
 }
-{code:c#}
+```
 
 3. +Parallel ExecuteMultipleRequest Sample+
 Demonstrates how ExecuteMultipleRequests should be parallelized via generic Execute method. 
 
-{code:c#}
+```c#
 public IDictionary<string, ExecuteMultipleResponse> ParallelExecuteMultiple(IDictionary<string, ExecuteMultipleRequest> requests)
 {
     IDictionary<string, ExecuteMultipleResponse> responses = null;
@@ -137,12 +141,12 @@ public IDictionary<string, ExecuteMultipleResponse> ParallelExecuteMultiple(IDic
 
     return responses;
 }
-{code:c#}
+```
 
 4. +How to use the optional exception handler delegate+
 Demonstrates a parallelized submission of multiple execute requests with an optional delegate exception handling function. The delegate is provided the original request and the fault exception encountered. It is executed on the calling thread after all parallel operations are complete.
 
-{code:c#}
+```c#
 public void ParallelExecuteRequestsWithExceptionHandler(List<AssignRequest> requests)
 {
     int errorCount = 0;
@@ -166,4 +170,4 @@ public void ParallelExecuteRequestsWithExceptionHandler(List<AssignRequest> requ
 
     Console.WriteLine("{0} errors encountered during execute of parallel assign requests.", errorCount);
 }
-{code:c#}
+```

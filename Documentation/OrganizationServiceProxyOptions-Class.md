@@ -1,6 +1,6 @@
 #### OrganizationServiceProxyOptions Class
 
-This class provides the ability to set additional options on the service proxy instances that are created within parallelized request operations of the [ParallelOrganizationServiceProxy ](ParallelOrganizationServiceProxy-Class) class.  
+This class provides the ability to set additional options on the service proxy instances that are created within parallelized request operations of the [ParallelOrganizationServiceProxy ](ParallelOrganizationServiceProxy-Class.md) class.  
 
 **Namespace**: Microsoft.Pfe.Xrm
 **Assembly**: Microsoft.Pfe.Xrm.Core.dll
@@ -11,7 +11,7 @@ This class provides the ability to set additional options on the service proxy i
 * **CallerId** - Set this property to the unique identifier of system user that should be impersonated on each proxy channel.  Standard pre-requisite permissions apply.
 * **Timeout** - Set this property to the desired timeout duration, overriding the default 2-minute request timeout on each channel.  Especially useful for long-running request types such as ExecuteMultipleRequest.
 
-{code:c#}
+```c#
 public class OrganizationServiceProxyOptions : ServiceProxyOptions
 {
     public bool ShouldEnableProxyTypes { get; set; }
@@ -22,14 +22,14 @@ public class ServiceProxyOptions
 {
     public TimeSpan Timeout { get; set; }
 }
-{code:c#}
+```
 
 ##### Usage Examples
 
 1. +How to use OrganizationServiceProxyOptions when making parallel requests+
 Demonstrates a parallelized submission of multiple create requests with service proxy options specifying a callerId to impersonate, that the ProxyTypesBehavior should be enabled, and increases the channel timeout to 5 minutes.
 
-{code:c#}
+```c#
 public List<Entity> ParallelCreateWithOptions(List<Entity> targets, Guid callerId)
 {
     var options = new OrganizationServiceProxyOptions()
@@ -55,4 +55,4 @@ public List<Entity> ParallelCreateWithOptions(List<Entity> targets, Guid callerI
 
     return targets;
 }
-{code:c#}
+```

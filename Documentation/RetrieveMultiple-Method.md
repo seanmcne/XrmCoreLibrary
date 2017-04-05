@@ -4,12 +4,12 @@ The RetrieveMultiple method accepts a keyed collection of queries (QueryExpressi
 
 ##### Method Overloads
 
-{code:c#}
+```c#
 public IDictionary<string, EntityCollection> RetrieveMultiple(IDictionary<string, QueryBase> queries)
 public IDictionary<string, EntityCollection> RetrieveMultiple(IDictionary<string, QueryBase> queries, OrganizationServiceProxyOptions options)
 public IDictionary<string, EntityCollection> RetrieveMultiple(IDictionary<string, QueryBase> queries, bool shouldRetrieveAllPages)
 public IDictionary<string, EntityCollection> RetrieveMultiple(IDictionary<string, QueryBase> queries, bool shouldRetrieveAllPages, OrganizationServiceProxyOptions options)
-{code:c#}
+```
 
 Each of the above methods also provides an optional exception handling parameter of type **Action<TRequest, FaultException<OrganizationServiceFault>>**.
 
@@ -17,14 +17,14 @@ Each of the above methods also provides an optional exception handling parameter
 
 Each example represents a method of a sample class that contains the following property
 
-{code:c#}
+```c#
 OrganizationServiceManager Manager { get; set; }
-{code:c#}
+```
 
 1. +How to execute RetrieveMultiple queries in parallel+
 Demonstrates parallelized submission of multiple queries
 
-{code:c#}
+```c#
 public IDictionary<string, EntityCollection> ParallelRetrieveMultiple(IDictionary<string, QueryBase> queries)
 {
     IDictionary<string, EntityCollection> results = null;
@@ -48,12 +48,12 @@ public IDictionary<string, EntityCollection> ParallelRetrieveMultiple(IDictionar
 
     return results;
 }
-{code:c#}
+```
 
 2. +How to execute RetrieveMultiple queries returning all pages in parallel+
 Demonstrates parallelized submission of multiple queries where all pages of results are retrieved for each query
 
-{code:c#}
+```c#
 public IDictionary<string, EntityCollection> ParallelRetrieveMultipleAllPages(IDictionary<string, QueryBase> queries)
 {
     IDictionary<string, EntityCollection> results = null;
@@ -77,12 +77,12 @@ public IDictionary<string, EntityCollection> ParallelRetrieveMultipleAllPages(ID
 
     return results;
 }
-{code:c#}
+```
 
 3. How to execute many RetrieveMultiple query types in parallel+
 Demonstrates parallelized submission of multiple queries. Queries can be mix of QueryExpression and FetchXML
 
-{code:c#}
+```c#
 public IDictionary<string, EntityCollection> ParallelRetrieveMultipleFull()
 {
     IDictionary<string, EntityCollection> results = null;
@@ -131,12 +131,12 @@ public IDictionary<string, EntityCollection> ParallelRetrieveMultipleFull()
 
     return results;
 } 
-{code:c#}
+```
 
 4. +How to use the optional exception handler delegate+
 Demonstrates a parallelized submission of multiple queries with an optional delegate exception handling function. The delegate is provided the original request and the fault exception encountered. It is executed on the calling thread after all parallel operations are complete.
 
-{code:c#}
+```c#
 public IDictionary<string, EntityCollection> ParallelRetrieveMultipleWithExceptionHandler(IDictionary<string, QueryBase> queries)
 {
     int errorCount = 0;
@@ -160,4 +160,4 @@ public IDictionary<string, EntityCollection> ParallelRetrieveMultipleWithExcepti
 
     return results;
 }
-{code:c#}
+```
