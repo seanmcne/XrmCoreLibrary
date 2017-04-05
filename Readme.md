@@ -7,7 +7,7 @@ The purpose of this project is to distribute the PFE Dynamics Core Library for D
 
 ###### [Release History](/Documentation/Release-History.md)
 ###### [Known Issues](/Documentation/Known-Issues.md)
-###### [Documentation](Documentation)
+###### [Documentation](Documentation/Documentation.md)
 
 ###### NuGet Packages
 As an alternative to downloading the binaries or source code from this project, you can get signed versions of V8 (2016), V7 (2015), V6 (2013) and V5 (2011) libraries via NuGet packages:
