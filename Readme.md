@@ -1,12 +1,12 @@
-: !! "Just what I need, _another_ CRM SDK library."  @_@
+# "Just what I need, _another_ CRM SDK library."  @_@
 
 _We know you're thinking that, because we would be too._ We promise, no intention to reinvent the wheel, over-engineer, or self-aggrandize here.  Rather, we hope that openly sharing the result of our journey, educating and mentoring others, will at best offer you insight into new techniques or at a minimum, validate what you already know.
 
 ###### Project Description
 The purpose of this project is to distribute the PFE Dynamics Core Library for Dynamics CRM source code to the customer/partner community. We developed this library in response to requests from customers and partners for whom we've delivered sample/prototype solutions built on Dynamics CRM that serve an educational purpose.  In delivering those solutions, we repeatedly encountered the need to implement known best-practices when authenticating and interacting with CRM services regardless of the solution context.  Since consolidating those techniques into a reusable library, we've seen customer and partners' solutions that reference our library simultaneously increase performance and reduce code. 
 
-###### [Release History](Release-History)
-###### [Known Issues](Known-Issues)
+###### [Release History](/Documentation/Release-History.md)
+###### [Known Issues](/Documentation/Known-Issues.md)
 ###### [Documentation](Documentation)
 
 ###### NuGet Packages
