@@ -1,6 +1,6 @@
 #### ParallelOrganizationServiceProxy.Associate() Method
 
-The Associate method accepts a list of associate requests. A method overload accepts an instance of [OrganizationServiceProxyOptions](OrganizationServiceProxyOptions-Class) to control proxy channel behaviors.  Nothing is returned by either method.
+The Associate method accepts a list of associate requests. A method overload accepts an instance of [OrganizationServiceProxyOptions](OrganizationServiceProxyOptions-Class.md) to control proxy channel behaviors.  Nothing is returned by either method.
 
 ##### Method Overloads
 
