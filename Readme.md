@@ -17,7 +17,7 @@ As an alternative to downloading the binaries or source code from this project, 
 * [PFE Dynamics Core Library for Dynamics CRM 2013 on NuGet](https://www.nuget.org/packages/Microsoft.Pfe.Xrm.CoreV6/)
 * [PFE Dynamics Core Library for Dynamics CRM 2011 on NuGet](https://www.nuget.org/packages/Microsoft.Pfe.Xrm.CoreV5/)
 ###### Feedback
-Please let us know what's working, what isn't, as well as suggestions for new capabilities by [submitting a new issue](https://pfexrmcore.codeplex.com/workitem/create)
+Please let us know what's working, what isn't, as well as suggestions for new capabilities by [submitting a new issue](https://github.com/seanmcne/XrmCoreLibrary/issues)
 
 ###### Connect
 In addition to providing feedback on this project site, we'd love to hear directly from you!  See what we're up to via our MSDN blog, [CRM in the Field](http://blogs.msdn.com/b/crminthefield/) or follow us on Twitter: [@maustinjones](http://www.twitter.com/maustinjones/), [@seanmcne](http://www.twitter.com/seanmcne), [@pfedynamics](http://www.twitter.com/pfedynamics)
