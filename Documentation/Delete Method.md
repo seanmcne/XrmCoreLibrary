@@ -4,10 +4,10 @@ The Delete method accepts a list of entities representing the targets of each de
 
 ##### Method Overloads
 
-{code:c#}
-public void Delete(IEnumerable<EntityReference> targets)
-public void Delete(IEnumerable<EntityReference> targets, OrganizationServiceProxyOptions options)
-{code:c#}
+```C#
+public void Delete(IEnumerable<EntityReference> targets);
+public void Delete(IEnumerable<EntityReference> targets, OrganizationServiceProxyOptions options);
+```
 
 Each of the above methods also provides an optional exception handling parameter of type **Action<TRequest, FaultException<OrganizationServiceFault>>**.
 
@@ -15,14 +15,14 @@ Each of the above methods also provides an optional exception handling parameter
 
 Each example represents a method of a sample class that contains the following property
 
-{code:c#}
+```C#
 OrganizationServiceManager Manager { get; set; }
-{code:c#}
+```
 
 1. +How to Delete entities in parallel+
 Demonstrates a parallelized submission of multiple delete requests
 
-{code:c#}
+```C#
 public void ParallelDelete(List<EntityReference> targets)
 {
     try
@@ -34,12 +34,12 @@ public void ParallelDelete(List<EntityReference> targets)
         // Handle exceptions
     }
 }
-{code:c#}
+```
 
 2. +How to use the optional exception handler delegate+
 Demonstrates a parallelized submission of multiple delete requests with an optional delegate exception handling function. The delegate is provided the original request and the fault exception encountered. It is executed on the calling thread after all parallel operations are complete.
 
-{code:c#}
+```C#
 public void ParallelDeleteWithExceptionHandler(List<EntityReference> targets)
 {
     int errorCount = 0;
@@ -60,4 +60,4 @@ public void ParallelDeleteWithExceptionHandler(List<EntityReference> targets)
 
     Console.WriteLine("{0} errors encountered during parallel delete.", errorCount);
 }
-{code:c#}
+```
