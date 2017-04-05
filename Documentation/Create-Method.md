@@ -19,7 +19,7 @@ Each of the above methods also provides an optional exception handling parameter
 
 Each example represents a method of a sample class that contains the following property
 
-{code:c#}
+```c#
 OrganizationServiceManager Manager { get; set; }
 {code:c#}
 
