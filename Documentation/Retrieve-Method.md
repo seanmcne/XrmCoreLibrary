@@ -1,6 +1,6 @@
 #### ParallelOrganizationServiceProxy.Retrieve() Method
 
-The Retrieve method accepts a list of retrieve requests representing individual entities to retrieve. A method overload accepts an instance of [OrganizationServiceProxyOptions](OrganizationServiceProxyOptions-Class) to control proxy channel behaviors.  Each  method returns a list of the retrieved entities.
+The Retrieve method accepts a list of retrieve requests representing individual entities to retrieve. A method overload accepts an instance of [OrganizationServiceProxyOptions](OrganizationServiceProxyOptions-Class.md) to control proxy channel behaviors.  Each  method returns a list of the retrieved entities.
 
 _**IMPORTANT**: Use the Retrieve method only under special circumstances when +multiple entity types+ must be retrieved by their unique identifier.  Otherwise for better performance, issue a single query with a condition expression specifying a **ConditionOperartor.In** for an array of System.**Guid**'s._
 

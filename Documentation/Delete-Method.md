@@ -1,12 +1,12 @@
 #### ParallelOrganizationServiceProxy.Delete() Method
 
-The Delete method accepts a list of entities representing the targets of each delete request. A method overload accepts an instance of [OrganizationServiceProxyOptions](OrganizationServiceProxyOptions-Class) to control proxy channel behaviors.  Nothing is returned by either method.
+The Delete method accepts a list of entities representing the targets of each delete request. A method overload accepts an instance of [OrganizationServiceProxyOptions](OrganizationServiceProxyOptions-Class.md) to control proxy channel behaviors.  Nothing is returned by either method.
 
 ##### Method Overloads
 
 ```c#
-public void Delete(IEnumerable<EntityReference> targets)
-public void Delete(IEnumerable<EntityReference> targets, OrganizationServiceProxyOptions options)
+public void Delete(IEnumerable<EntityReference> targets);
+public void Delete(IEnumerable<EntityReference> targets, OrganizationServiceProxyOptions options);
 ```
 
 Each of the above methods also provides an optional exception handling parameter of type **Action<TRequest, FaultException<OrganizationServiceFault>>**.

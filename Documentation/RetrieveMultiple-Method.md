@@ -1,6 +1,6 @@
 #### ParallelOrganizationServiceProxy.RetrieveMultiple() Method
 
-The RetrieveMultiple method accepts a keyed collection of queries (QueryExpression or FetchExpression) that will be used to retrieve multiple entity records.  Method overloads allow for retrieving all pages (RetrieveMultiple extension method) and accept an instance of [OrganizationServiceProxyOptions](OrganizationServiceProxyOptions-Class) to control proxy channel behaviors.  Each method returns a keyed collection of the EntityCollections from the executed queries.  The purpose of using keyed collections is that the key can be used to correlate the originating query to its EntityCollection result set.
+The RetrieveMultiple method accepts a keyed collection of queries (QueryExpression or FetchExpression) that will be used to retrieve multiple entity records.  Method overloads allow for retrieving all pages (RetrieveMultiple extension method) and accept an instance of [OrganizationServiceProxyOptions](OrganizationServiceProxyOptions-Class.md) to control proxy channel behaviors.  Each method returns a keyed collection of the EntityCollections from the executed queries.  The purpose of using keyed collections is that the key can be used to correlate the originating query to its EntityCollection result set.
 
 ##### Method Overloads
 

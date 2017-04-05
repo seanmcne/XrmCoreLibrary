@@ -5,8 +5,8 @@ The Associate method accepts a list of associate requests. A method overload acc
 ##### Method Overloads
 
 ```c#
-public void Associate(IEnumerable<AssociateRequest> requests)
-public void Associate(IEnumerable<AssociateRequest> requests, OrganizationServiceProxyOptions options)
+public void Associate(IEnumerable<AssociateRequest> requests);
+public void Associate(IEnumerable<AssociateRequest> requests, OrganizationServiceProxyOptions options);
 ```
 
 Each of the above methods also provides an optional exception handling parameter of type **Action<TRequest, FaultException<OrganizationServiceFault>>**.
