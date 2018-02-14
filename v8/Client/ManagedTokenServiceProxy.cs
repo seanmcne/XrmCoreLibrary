@@ -31,18 +31,26 @@ namespace Microsoft.Pfe.Xrm
     {
         private AutoRefreshSecurityToken<DiscoveryServiceProxy, IDiscoveryService> _proxyManager;
 
-        public ManagedTokenDiscoveryServiceProxy(IServiceManagement<IDiscoveryService> serviceManagement,
-            SecurityTokenResponse securityTokenResponse)
-            : base(serviceManagement, securityTokenResponse)
+        public ManagedTokenDiscoveryServiceProxy(IServiceManagement<IDiscoveryService> serviceManagement, ClientCredentials credentials)
+            : base(serviceManagement, credentials)
         {
             this._proxyManager = new AutoRefreshSecurityToken<DiscoveryServiceProxy, IDiscoveryService>(this);
         }
 
+        /// <summary>
+        /// Constructor with an authenticated security token that will renew using on the supplied credentials
+        /// </summary>
+        /// <param name="serviceManagement">The service configuration</param>
+        /// <param name="securityTokenResponse">The existing security token response from prior authentication request</param>
+        /// <param name="credentials">The credentails of the identity being used for authentication</param>
+        /// <remarks>
+        /// The credentials are required for proxy to perform subsequent authentice requests to obtain new valid tokens
+        /// </remarks>
         public ManagedTokenDiscoveryServiceProxy(IServiceManagement<IDiscoveryService> serviceManagement,
-            ClientCredentials credentials)
-            : base(serviceManagement, credentials)
-        {
-            this._proxyManager = new AutoRefreshSecurityToken<DiscoveryServiceProxy, IDiscoveryService>(this);
+            SecurityTokenResponse securityTokenResponse, ClientCredentials credentials)
+            : this(serviceManagement, credentials)
+        {            
+            this.SecurityTokenResponse = securityTokenResponse;
         }
 
         protected override void AuthenticateCore()
@@ -65,18 +73,26 @@ namespace Microsoft.Pfe.Xrm
     {
         private AutoRefreshSecurityToken<OrganizationServiceProxy, IOrganizationService> _proxyManager;
 
-        public ManagedTokenOrganizationServiceProxy(IServiceManagement<IOrganizationService> serviceManagement,
-            SecurityTokenResponse securityTokenResponse)
-            : base(serviceManagement, securityTokenResponse)
+        public ManagedTokenOrganizationServiceProxy(IServiceManagement<IOrganizationService> serviceManagement, ClientCredentials credentials)
+            : base(serviceManagement, credentials)
         {
             this._proxyManager = new AutoRefreshSecurityToken<OrganizationServiceProxy, IOrganizationService>(this);
         }
 
+        /// <summary>
+        /// Constructor with an authenticated security token that will renew using on the supplied credentials
+        /// </summary>
+        /// <param name="serviceManagement">The service configuration</param>
+        /// <param name="securityTokenResponse">The existing security token response from prior authentication request</param>
+        /// <param name="credentials">The credentails of the identity being used for authentication</param>
+        /// <remarks>
+        /// The credentials are required for proxy to perform subsequent authentice requests to obtain new valid tokens
+        /// </remarks>
         public ManagedTokenOrganizationServiceProxy(IServiceManagement<IOrganizationService> serviceManagement,
-            ClientCredentials credentials)
-            : base(serviceManagement, credentials)
-        {
-            this._proxyManager = new AutoRefreshSecurityToken<OrganizationServiceProxy, IOrganizationService>(this);
+            SecurityTokenResponse securityTokenResponse, ClientCredentials credentials)
+            : this(serviceManagement, credentials)
+        {            
+            this.SecurityTokenResponse = securityTokenResponse;
         }
 
         protected override void AuthenticateCore()

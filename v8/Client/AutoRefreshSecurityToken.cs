@@ -15,15 +15,10 @@
 namespace Microsoft.Pfe.Xrm
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Runtime.Serialization;
     using System.ServiceModel;
-    using System.ServiceModel.Description;
     using System.Text;
-
-    using Microsoft.Xrm.Sdk;
-    using Microsoft.Xrm.Sdk.Client;    
+    using Microsoft.Xrm.Sdk.Client;
+    using Microsoft.Pfe.Xrm.Diagnostics;
 
     /// <summary>
     /// Class that handles renewing the <see cref="SecurityTokenResponse"/> if expired
@@ -80,22 +75,37 @@ namespace Microsoft.Pfe.Xrm
         public void RenewTokenIfRequired()
         {
             if (this._proxy.ServiceConfiguration.AuthenticationType != AuthenticationProviderType.ActiveDirectory
-                && this._proxy.SecurityTokenResponse != null
-                && DateTime.UtcNow.AddMinutes(15) >= this._proxy.SecurityTokenResponse.Response.Lifetime.Expires)
+                && this._proxy.SecurityTokenResponse != null)
             {
-                try
-                {
-                    this._proxy.Authenticate();
-                }
-                catch (CommunicationException)
-                {
-                    if (this._proxy.SecurityTokenResponse == null
-                        || DateTime.UtcNow >= this._proxy.SecurityTokenResponse.Response.Lifetime.Expires)
-                    {
-                        throw;
-                    }
+                DateTime? expiresOn = this._proxy.SecurityTokenResponse.Response.Lifetime.Expires;
 
-                    // Ignore the exception 
+                if (DateTime.UtcNow.AddMinutes(15) >= expiresOn)
+                {
+                    string expiresOnValue = expiresOn.HasValue 
+                        ? expiresOn.Value.ToString("u") 
+                        : String.Empty;
+
+                    XrmCoreEventSource.Log.SecurityTokenRefreshRequired(expiresOnValue);
+  
+                    try
+                    {
+                        this._proxy.Authenticate();
+                    }
+                    catch (Exception ex)
+                    {
+                        StringBuilder messageBuilder = ex.ToErrorMessageString();
+
+                        XrmCoreEventSource.Log.SecurityTokenRefreshFailure(expiresOnValue, messageBuilder.ToString());
+
+                        if (ex is CommunicationException
+                            && (this._proxy.SecurityTokenResponse == null
+                                || DateTime.UtcNow >= this._proxy.SecurityTokenResponse.Response.Lifetime.Expires))
+                        {
+                            throw;
+                        }
+
+                        // Ignore the exception 
+                    }
                 }
             }
         }

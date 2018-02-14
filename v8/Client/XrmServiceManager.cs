@@ -21,11 +21,12 @@ namespace Microsoft.Pfe.Xrm
     using System.ServiceModel.Description;
     using System.Text;
 
-    using Microsoft.Crm.Services.Utility;
     using Microsoft.Xrm;
     using Microsoft.Xrm.Sdk;
     using Microsoft.Xrm.Sdk.Client;
     using Microsoft.Xrm.Sdk.Discovery;
+
+    using Microsoft.Pfe.Xrm.Diagnostics;
 
     /// <summary>
     /// Wrapper class for managing the service configuration of the Dynamics CRM Discovery.svc endpoint
@@ -439,9 +440,6 @@ namespace Microsoft.Pfe.Xrm
                     return;
 
                 case AuthenticationProviderType.LiveId:
-                    this.AuthenticateLiveIdCredentials(new ClientCredentials() { UserName = { UserName = username, Password = password } });
-                    return;
-
                 default:                                       
                     throw new NotSupportedException(string.Format("{0} authentication type is not supported", this.ServiceManagement.AuthenticationType));
             }
@@ -494,21 +492,6 @@ namespace Microsoft.Pfe.Xrm
         /// <summary>
         /// Prepare and authenticate client credentials and supporting device credentials for LiveID scenario
         /// </summary>
-        /// <param name="clientCredentials">The client credentials (Microsoft Account)</param>
-        /// <remarks>Implicitly registers device credentials using deviceidmanager.cs helper</remarks>
-        private void AuthenticateLiveIdCredentials(ClientCredentials clientCredentials)
-        {
-            //Attempt to call .LoadOrRegisterDevice using IssuerEndpoint to load existing and/or persist to file.
-            var deviceCredentials = this.ServiceManagement.IssuerEndpoints.ContainsKey("Username")
-                ? DeviceIdManager.LoadOrRegisterDevice(this.ServiceManagement.IssuerEndpoints["Username"].IssuerAddress.Uri)
-                : DeviceIdManager.LoadOrRegisterDevice();
-
-            AuthenticateLiveIdCredentials(clientCredentials, deviceCredentials);
-        }
-
-        /// <summary>
-        /// Prepare and authenticate client credentials and supporting device credentials for LiveID scenario
-        /// </summary>
         /// <param name="clientCredentials">The client credentials</param>
         /// <param name="deviceCredentials">The supporting device credentials</param>
         private void AuthenticateLiveIdCredentials(ClientCredentials clientCredentials, ClientCredentials deviceCredentials)
@@ -554,14 +537,34 @@ namespace Microsoft.Pfe.Xrm
             if (this.AuthenticationType != AuthenticationProviderType.ActiveDirectory
                 && this.Credentials != null)
             {
-                this.AuthenticatedCredentials = this.ServiceManagement.Authenticate(this.Credentials);
+                // Get the username value supplied with the credentials
+                string username = !String.IsNullOrEmpty(this.Credentials.UserPrincipalName)
+                    ? this.Credentials.UserPrincipalName
+                    : this.Credentials.ClientCredentials.UserName != null
+                        ? this.Credentials.ClientCredentials.UserName.UserName
+                        : "Unspecified";
+
+                XrmCoreEventSource.Log.SecurityTokenRequested(username);
+
+                try
+                {
+                    this.AuthenticatedCredentials = this.ServiceManagement.Authenticate(this.Credentials);
+                }
+                catch (Exception ex)
+                {
+                    StringBuilder messageBuilder = ex.ToErrorMessageString();
+
+                    XrmCoreEventSource.Log.SecurityTokenRequestFailure(username, messageBuilder.ToString());
+
+                    throw;
+                }
             }
         }
 
         #endregion
 
         protected T GetProxy<T>()
-        {
+        {            
             // Obtain discovery/organization service proxy based on Authentication Type
             switch (this.ServiceManagement.AuthenticationType)
             {
@@ -592,17 +595,19 @@ namespace Microsoft.Pfe.Xrm
                     }
 
                     // Invokes ManagedTokenOrganizationServiceProxy or ManagedTokenDiscoveryServiceProxy 
-                    // (IServiceManagement<TService>, SecurityTokenResponse) constructor.
+                    // (IServiceManagement<TService>, SecurityTokenResponse, ClientCredentials) constructor.
                     return (T)typeof(T)
                         .GetConstructor(new Type[] 
                         { 
-                            typeof(IServiceManagement<TService>), 
-                            typeof(SecurityTokenResponse) 
+                            typeof(IServiceManagement<TService>),                            
+                            typeof(SecurityTokenResponse),
+                            typeof(ClientCredentials),
                         })
                             .Invoke(new object[] 
                         { 
-                            this.ServiceManagement, 
-                            this.AuthenticatedCredentials.SecurityTokenResponse 
+                            this.ServiceManagement,                            
+                            this.AuthenticatedCredentials.SecurityTokenResponse,
+                            this.Credentials.ClientCredentials
                         });
                 
                 default:                    
@@ -621,7 +626,7 @@ namespace Microsoft.Pfe.Xrm
         /// </remarks>
         public TProxy GetProxy()
         {
-            return this.GetProxy<TProxy>();
+            return this.GetProxy<TProxy>();                          
         }        
 
         #endregion

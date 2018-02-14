@@ -1,96 +1,43 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B1349E30-C33E-4F11-B560-F48918B8F573}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Pfe.Xrm</RootNamespace>
+    <TargetFramework>net462</TargetFramework>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>msftpfedynamics-private.pfx</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
     <AssemblyName>Microsoft.Pfe.Xrm.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <RootNamespace>Microsoft.Pfe.Xrm.Core</RootNamespace>
+    <Company>Microsoft Corporation</Company>
+    <Product>PFE Core Library for Dynamics 365</Product>
+    <Copyright>Copyright © Microsoft 2018</Copyright>
+    <Description>Contains a set of common components for building solutions using the Dynamics 365 SDK. Authored in partnership between Microsoft Premier Field Engineering (PFE) and core engineering teams.</Description>
+    <PackageId>Microsoft.Pfe.Xrm.CoreV8</PackageId>
+    <PackageLicenseUrl>https://pfexrmcore.codeplex.com/license</PackageLicenseUrl>
+    <PackageProjectUrl>https://pfexrmcore.codeplex.com</PackageProjectUrl>
+    <AssemblyVersion>8.2.1802.0801</AssemblyVersion>
+    <FileVersion>8.2.1802.0801</FileVersion>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>- Dynamics 365 SDK Libraries were updated to the latest SDK version 9.0.0.7.
+
+
+- The project framework target has been increased to .NET version to 4.6.2 which is important to ensure TLS 1.2 functions by default without the need for other workarounds.
+
+
+- If you're currently using .NET 4.5.2 please retarget your project to .NET 4.6.2.
+
+
+- For the time being we've included a 4.5.2 framework targeted dll for compatability, please prioritize updating your apps to framework 4.6.2
+
+
+- If you're currently using .NET 4.5.2 please retarget your project to .NET 4.6.2</PackageReleaseNotes>
+    <Version>8.2.1802.0801</Version>
+    <Authors>seanmcne,maustinjones,pfedynamics</Authors>
+    <PackageTags>Dynamics CRM 2018 SDK XRM PFE Dynamics365</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Crm.Sdk.Proxy, Version=8.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.CrmSdk.CoreAssemblies.8.1.0.2\lib\net452\Microsoft.Crm.Sdk.Proxy.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.IdentityModel.6.1.7600.16394\lib\net35\Microsoft.IdentityModel.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Xrm.Sdk, Version=8.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.CrmSdk.CoreAssemblies.8.1.0.2\lib\net452\Microsoft.Xrm.Sdk.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.DirectoryServices" />
-    <Reference Include="System.DirectoryServices.AccountManagement" />
-    <Reference Include="System.IdentityModel" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Security" />
+    <PackageReference Include="Microsoft.CrmSdk.CoreAssemblies" Version="9.0.0.7" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.ServiceModel" />
-    <Reference Include="System.ServiceModel.Web" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Client\AutoRefreshSecurityToken.cs" />
-    <Compile Include="Client\Enums.cs" />
-    <Compile Include="Client\ILocalResults.cs" />
-    <Compile Include="Client\ManagedTokenServiceProxy.cs" />
-    <Compile Include="Client\ParallelOperationContext.cs" />
-    <Compile Include="Client\ParallelOperationFailure.cs" />
-    <Compile Include="Client\ParallelServiceProxy.cs" />
-    <Compile Include="Client\ServiceProxyOptions.cs" />
-    <Compile Include="Client\XrmServiceManager.cs" />
-    <Compile Include="Client\XrmServiceUriFactory.cs" />
-    <Compile Include="Extensions\BatchRequestExtensions.cs" />
-    <Compile Include="Extensions\QueryExtensions.cs" />
-    <Compile Include="Extensions\SecurityExtensions.cs" />
-    <Compile Include="Extensions\ServiceExtensions.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\AssemblyVersionInfo.cs" />
-    <Compile Include="Sdk\deviceidmanager.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
