@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net462</TargetFramework>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>msftpfedynamics-private.pfx</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+    <AssemblyName>Microsoft.Pfe.Xrm.Core</AssemblyName>
+    <RootNamespace>Microsoft.Pfe.Xrm.Core</RootNamespace>
+    <Company>Microsoft Corporation</Company>
+    <Product>PFE Core Library for Dynamics 365</Product>
+    <Copyright>Copyright © Microsoft 2018</Copyright>
+    <Description>Contains a set of common components for building solutions using the Dynamics 365 SDK. Authored in partnership between Microsoft Premier Field Engineering (PFE) and core engineering teams.</Description>
+    <PackageId>Microsoft.Pfe.Xrm.CoreV8</PackageId>
+    <PackageLicenseUrl>https://pfexrmcore.codeplex.com/license</PackageLicenseUrl>
+    <PackageProjectUrl>https://pfexrmcore.codeplex.com</PackageProjectUrl>
+    <AssemblyVersion>9.0.0.0801</AssemblyVersion>
+    <FileVersion>9.0.0.0801</FileVersion>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>- Dynamics 365 SDK Libraries were updated to the latest SDK version 9.0.2.4.
+
+
+- The project framework target has been increased to .NET version to 4.6.2 which is important to ensure TLS 1.2 functions by default without the need for other workarounds.
+
+
+- If you're currently using .NET 4.5.2 please retarget your project to .NET 4.6.2.
+
+
+- For the time being we've included a 4.5.2 framework targeted dll for compatability, please prioritize updating your apps to framework 4.6.2
+
+
+- If you're currently using .NET 4.5.2 please retarget your project to .NET 4.6.2</PackageReleaseNotes>
+    <Version>9.0.0.0801</Version>
+    <Authors>seanmcne,maustinjones,pfedynamics</Authors>
+    <PackageTags>Dynamics CRM 2018 SDK XRM PFE Dynamics365</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CrmSdk.CoreAssemblies" Version="9.0.2.4" />
+    <PackageReference Include="Microsoft.CrmSdk.XrmTooling.CoreAssembly" Version="9.0.2.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.ServiceModel" />
+  </ItemGroup>
+</Project>
