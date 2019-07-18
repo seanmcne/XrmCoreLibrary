@@ -31,6 +31,8 @@ namespace Microsoft.Pfe.Xrm
     using System.Reflection;
     using System.Data;
     using System.Diagnostics;
+    using Microsoft.Rest;
+    using System.Security.Cryptography.X509Certificates;
 
 
     /// <summary>
@@ -129,9 +131,6 @@ namespace Microsoft.Pfe.Xrm
             }
         }
 
-
-        #region Uri Constructor(s)
-
         /// <summary>
         /// Establishes a service configuration of type TService at <see cref="Uri"/> location using supplied identity details
         /// </summary>
@@ -149,25 +148,13 @@ namespace Microsoft.Pfe.Xrm
             }
 
             var connectionstring = $"Username={username};Password={password};Url={environmentUri.AbsoluteUri};AuthType=OAuth;ClientId={applicationId};redirecturi={redirectUri};SkipDiscovery=True";
-            CrmServiceClient svcClient;
-            try
-            {
-                this.ServiceClient = new CrmServiceClient(connectionstring);
-            }
-            catch (InvalidOperationException e)
-            {
-                //retry one more time in the event of an invalid operation exception
-                this.ServiceClient = new CrmServiceClient(connectionstring);
-            }
+            
+            this.ServiceClient = new CrmServiceClient(connectionstring);
         }
 
         #endregion
 
-        #endregion
-
-        #region Properties
-
-        #region Private
+        #region Private Properties
 
         /// <summary>
         /// Copy of the CrmService Client that has been initialized
@@ -187,6 +174,7 @@ namespace Microsoft.Pfe.Xrm
 
         #endregion
 
+        #region Public Properties
         /// <summary>
         /// Current endpoint address
         /// </summary>
@@ -208,6 +196,36 @@ namespace Microsoft.Pfe.Xrm
         }
 
         /// <summary>
+        /// Override the default (3) maximum retries when throttling events are encountered
+        /// </summary>
+        public int MaxRetryCount
+        {
+            get
+            {
+                return this.ServiceClient.MaxRetryCount; 
+            }
+            set
+            {
+                this.ServiceClient.MaxRetryCount = value; 
+            } 
+        }
+
+        /// <summary>
+        /// Override the default timespan to wait when throttling events are encountered
+        /// </summary>
+        public TimeSpan RetryPauseTime
+        {
+            get
+            {
+                return this.ServiceClient.RetryPauseTime;
+            }
+            set
+            {
+                this.ServiceClient.RetryPauseTime = value; 
+            }
+        }
+
+        /// <summary>
         /// True if targeted endpoint's authentication provider type is LiveId or OnlineFederation, otherwise False
         /// </summary>
         public bool IsCrmOnline
@@ -224,6 +242,7 @@ namespace Microsoft.Pfe.Xrm
         {
             get { return ServiceClient != null; }
         }
+
         public FileVersionInfo AdalVersion
         {
             get;
@@ -239,7 +258,7 @@ namespace Microsoft.Pfe.Xrm
 
         #region Methods
 
-        protected T GetProxy<T>()
+        protected Microsoft.Xrm.Tooling.Connector.CrmServiceClient GetProxy<CrmServiceClient>()
         {
             if (this.ServiceClient.ActiveAuthenticationType != Microsoft.Xrm.Tooling.Connector.AuthenticationType.ExternalTokenManagement)
             {
@@ -255,7 +274,7 @@ namespace Microsoft.Pfe.Xrm
                     XrmCoreEventSource.Log.LogError($"ADAL Version {AdalVersion.FileVersion} is not matching the expected version of 2.x. Certain functions may not work as expected if you're not using the AuthOverrideHook.");
                 }
                 else if (AdalVersion != null
-                        && (AdalVersion.FileMajorPart == 2 && (AdalVersion.FileMinorPart != 22 || AdalVersion.FileBuildPart != 302111727)))
+                        && (AdalVersion.FileMajorPart == 2 && (AdalVersion.FileMinorPart != 22 || AdalVersion.FileBuildPart != 30211 || AdalVersion.FilePrivatePart != 1727)))
                 {
                     XrmCoreEventSource.Log.LogInformation($"ADAL Version {AdalVersion.FileVersion} is not matching the expected version of 2.x or specifically, 2.22.302111727.");
                 }
@@ -269,20 +288,32 @@ namespace Microsoft.Pfe.Xrm
                         || this.ServiceClient.ActiveAuthenticationType == Microsoft.Xrm.Tooling.Connector.AuthenticationType.Certificate 
                         || this.ServiceClient.ActiveAuthenticationType == Microsoft.Xrm.Tooling.Connector.AuthenticationType.ExternalTokenManagement)
                     {
-                        var svcClientClone = ((T)typeof(T).GetMethod("Clone", new Type[0]).Invoke(ServiceClient, null));
+                        #region remove reflection as it's no longer needed
+                        //var svcClientClone = ((T)typeof(T).GetMethod("Clone", new Type[0]).Invoke(ServiceClient, null));
+                        //PropertyInfo propSessionId = svcClientClone.GetType().GetProperty("SessionTrackingId", BindingFlags.Public | BindingFlags.Instance);
+                        //if (propSessionId != null && propSessionId.CanWrite)
+                        //{
+                        //    var sessionTrackingGuid = Guid.NewGuid();
+                        //    XrmCoreEventSource.Log.ServiceClientCloneRequested(sessionTrackingGuid.ToString());
+                        //    propSessionId.SetValue(svcClientClone, sessionTrackingGuid, null);
+                        //}
+                        //else
+                        //{
+                        //    XrmCoreEventSource.Log.ServiceClientCloneRequested("null");
+                        //}
+                        #endregion 
 
-                        PropertyInfo propSessionId = svcClientClone.GetType().GetProperty("SessionTrackingId", BindingFlags.Public | BindingFlags.Instance);
+                        //cloning
+                        var svcClientClone = ServiceClient.Clone();
 
-                        if (propSessionId != null && propSessionId.CanWrite)
-                        {
-                            var sessionTrackingGuid = Guid.NewGuid();
-                            XrmCoreEventSource.Log.ServiceClientCloneRequested(sessionTrackingGuid.ToString());
-                            propSessionId.SetValue(svcClientClone, sessionTrackingGuid, null);
-                        }
-                        else
-                        {
-                            XrmCoreEventSource.Log.ServiceClientCloneRequested("null");
-                        }
+                        var sessionTrackingGuid = Guid.NewGuid();
+                        XrmCoreEventSource.Log.ServiceClientCloneRequested(sessionTrackingGuid.ToString());
+                        svcClientClone.SessionTrackingId = sessionTrackingGuid;
+
+                        //cloned objects don't inherit the same settings, fixing that in code for now
+                        svcClientClone.RetryPauseTime = this.ServiceClient.RetryPauseTime;
+                        svcClientClone.MaxRetryCount = this.ServiceClient.MaxRetryCount; 
+
                         return svcClientClone;
                     }
                     else
@@ -305,9 +336,9 @@ namespace Microsoft.Pfe.Xrm
         /// The proxy represents a client service channel to a service endpoint. 
         /// Proxy connections should be disposed of properly before they fall out of scope to free up the allocated service channel.
         /// </remarks>
-        public TProxy GetProxy()
+        public CrmServiceClient GetProxy()
         {
-            return this.GetProxy<TProxy>();                          
+            return this.GetProxy<CrmServiceClient>();                          
         }        
 
         #endregion

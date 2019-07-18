@@ -44,15 +44,12 @@ namespace Microsoft.Pfe.Xrm
         public ParallelOrganizationServiceProxy(OrganizationServiceManager serviceManager)
             : base(serviceManager) {  }
 
-        public ParallelOrganizationServiceProxy(OrganizationServiceManager serviceManager, int maxDegreeOfParallelism, int maxThrottleRetries)
-            : base(serviceManager, maxDegreeOfParallelism, maxThrottleRetries) {  }
+        public ParallelOrganizationServiceProxy(OrganizationServiceManager serviceManager, int maxDegreeOfParallelism)
+            : base(serviceManager, maxDegreeOfParallelism) {  }
 
         #endregion
 
         #region Properties
-        private const int ThrottleRateLimitExceededErrorCode = -2147015902;
-        private const int ThrottleTimeLimitExceededErrorCode = -2147015903;
-        private const int ThrottleConcurrencyLimitExceededErrorCode = -2147015898;
 
         #endregion
 
@@ -596,65 +593,53 @@ namespace Microsoft.Pfe.Xrm
                         },
                         (request, loopState, index, context) =>
                         {
-                            var retryCount = 0;
-                            do
+                            try
                             {
-                                try
+                                XrmCoreEventSource.Log.ParallelCoreOperationStart("ExecuteOperation"); 
+                                operation(request, threadLocalProxy.Value);
+                                XrmCoreEventSource.Log.ParallelCoreOperationCompleted("ExecuteOperation"); 
+                            }
+                            catch (FaultException<OrganizationServiceFault> fault)
+                            {
+                                XrmCoreEventSource.Log.LogError(fault.ToErrorMessageString().ToString());
+                                // Track faults locally
+                                if (errorHandler != null)
                                 {
-                                    XrmCoreEventSource.Log.ParallelCoreOperationStart("ExecuteOperation"); 
-                                    operation(request, threadLocalProxy.Value);
-                                    XrmCoreEventSource.Log.ParallelCoreOperationCompleted("ExecuteOperation"); 
-                                    break;
+                                    context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, fault));
                                 }
-                                catch (FaultException<OrganizationServiceFault> e) when (IsTransientError(e) && ++retryCount < this.MaxThrottleRetries)
+                                else
                                 {
-                                    //log an event and apply delay
-                                    LogAndApplyDelay(e, retryCount);
+                                    throw;
                                 }
-                                catch (FaultException<OrganizationServiceFault> fault)
+                            }
+                            catch (Exception exception) 
+                                when (exception is System.TimeoutException || exception is System.Net.WebException)
+                            {
+                                XrmCoreEventSource.Log.LogError(exception.ToErrorMessageString().ToString());
+
+                                var errorDetails = new ErrorDetailCollection();
+
+                                foreach (KeyValuePair<string, object> dataElement in exception.Data)
                                 {
-                                    XrmCoreEventSource.Log.LogError(fault.ToErrorMessageString().ToString());
-                                    // Track faults locally
-                                    if (errorHandler != null)
-                                    {
-                                        context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, fault));
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        throw;
-                                    }
+                                    errorDetails.Add(dataElement);
                                 }
-                                catch (Exception exception) 
-                                    when (exception is System.TimeoutException || exception is System.Net.WebException)
+
+                                var orgFaultMock = new FaultException<OrganizationServiceFault>(new OrganizationServiceFault()
                                 {
-                                    XrmCoreEventSource.Log.LogError(exception.ToErrorMessageString().ToString());
+                                    ErrorCode = exception.HResult,
+                                    ErrorDetails = errorDetails
+                                });
 
-                                    var errorDetails = new ErrorDetailCollection();
-
-                                    foreach (KeyValuePair<string, object> dataElement in exception.Data)
-                                    {
-                                        errorDetails.Add(dataElement);
-                                    }
-
-                                    var orgFaultMock = new FaultException<OrganizationServiceFault>(new OrganizationServiceFault()
-                                    {
-                                        ErrorCode = exception.HResult,
-                                        ErrorDetails = errorDetails
-                                    });
-
-                                    // Track faults locally
-                                    if (errorHandler != null)
-                                    {
-                                        context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, orgFaultMock));
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        throw;
-                                    }
+                                // Track faults locally
+                                if (errorHandler != null)
+                                {
+                                    context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, orgFaultMock));
                                 }
-                            } while (retryCount < this.MaxThrottleRetries && retryCount > 0); //avoiding the while(true) pattern..
+                                else
+                                {
+                                    throw;
+                                }
+                            }
                             return context;
                         },
                         (context) =>
@@ -719,64 +704,52 @@ namespace Microsoft.Pfe.Xrm
                         },
                         (request, loopState, index, context) =>
                         {
-                            var retryCount = 0;
-                            do
+                            try
                             {
-                                try
+                                XrmCoreEventSource.Log.ParallelCoreOperationStart("ExecuteOperationWithResponse");
+                                coreOperation(request, context);
+                                XrmCoreEventSource.Log.ParallelCoreOperationCompleted("ExecuteOperationWithResponse");
+                            }
+                            catch (FaultException<OrganizationServiceFault> fault)
+                            {
+                                XrmCoreEventSource.Log.LogError(fault.ToErrorMessageString().ToString());
+                                // Track faults locally
+                                if (errorHandler != null)
                                 {
-                                    XrmCoreEventSource.Log.ParallelCoreOperationStart("ExecuteOperationWithResponse");
-                                    coreOperation(request, context);
-                                    XrmCoreEventSource.Log.ParallelCoreOperationCompleted("ExecuteOperationWithResponse");
-                                    break;
+                                    context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, fault));
                                 }
-                                catch (FaultException<OrganizationServiceFault> e) when (IsTransientError(e) && ++retryCount < this.MaxThrottleRetries)
+                                else
                                 {
-                                    //log an event and apply delay
-                                    LogAndApplyDelay(e, retryCount);
+                                    throw;
                                 }
-                                catch (FaultException<OrganizationServiceFault> fault)
-                                {
-                                    XrmCoreEventSource.Log.LogError(fault.ToErrorMessageString().ToString());
-                                    // Track faults locally
-                                    if (errorHandler != null)
-                                    {
-                                        context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, fault));
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        throw;
-                                    }
-                                }
-                                catch (Exception exception)
-                                    when (exception is System.TimeoutException || exception is System.Net.WebException)
-                                {
-                                    XrmCoreEventSource.Log.LogError(exception.ToErrorMessageString().ToString()); 
-                                    var errorDetails = new ErrorDetailCollection();
+                            }
+                            catch (Exception exception)
+                                when (exception is System.TimeoutException || exception is System.Net.WebException)
+                            {
+                                XrmCoreEventSource.Log.LogError(exception.ToErrorMessageString().ToString()); 
+                                var errorDetails = new ErrorDetailCollection();
 
-                                    foreach (KeyValuePair<string, object> dataElement in exception.Data)
-                                    {
-                                        errorDetails.Add(dataElement);
-                                    }
-
-                                    var orgFaultMock = new FaultException<OrganizationServiceFault>(new OrganizationServiceFault()
-                                    {
-                                        ErrorCode = exception.HResult,
-                                        ErrorDetails = errorDetails
-                                    });
-
-                                    // Track faults locally
-                                    if (errorHandler != null)
-                                    {
-                                        context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, orgFaultMock));
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        throw;
-                                    }
+                                foreach (KeyValuePair<string, object> dataElement in exception.Data)
+                                {
+                                    errorDetails.Add(dataElement);
                                 }
-                            } while (retryCount < this.MaxThrottleRetries && retryCount > 0); //avoiding the while(true) pattern..
+
+                                var orgFaultMock = new FaultException<OrganizationServiceFault>(new OrganizationServiceFault()
+                                {
+                                    ErrorCode = exception.HResult,
+                                    ErrorDetails = errorDetails
+                                });
+
+                                // Track faults locally
+                                if (errorHandler != null)
+                                {
+                                    context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, orgFaultMock));
+                                }
+                                else
+                                {
+                                    throw;
+                                }
+                            }
 
                             return context;
                         },
@@ -808,43 +781,6 @@ namespace Microsoft.Pfe.Xrm
             return allResponses;
         }
 
-        private static void LogAndApplyDelay(FaultException<OrganizationServiceFault> e, int retryCount)
-        {
-            TimeSpan delay = new TimeSpan();
-
-            switch (e.Detail.ErrorCode)
-            {
-                case ThrottleRateLimitExceededErrorCode:
-                    // Use Retry-After delay when specified
-                    if (e.Detail.ErrorDetails.Contains("Retry-After"))
-                        delay = (TimeSpan)e.Detail.ErrorDetails["Retry-After"];
-                    else
-                        delay = TimeSpan.FromSeconds(Math.Pow(2, retryCount));
-                    XrmCoreEventSource.Log.ThrottleEventGeneric($"RateLimitExceeded: {e.Detail.ErrorCode} retry-after: {delay.TotalMilliseconds}");
-                    break;
-                case ThrottleConcurrencyLimitExceededErrorCode:
-                    // else use exponential backoff delay
-                    delay = TimeSpan.FromSeconds(Math.Pow(2, retryCount));
-                    XrmCoreEventSource.Log.ThrottleEventGeneric($"ConcurrencyLimitExceeded: {e.Detail.ErrorCode} retry-after: {delay.TotalMilliseconds}");
-                    break;
-                case ThrottleTimeLimitExceededErrorCode:
-                    // else use exponential backoff delay
-                    delay = TimeSpan.FromSeconds(Math.Pow(2, retryCount));
-                    XrmCoreEventSource.Log.ThrottleEventGeneric($"TimeLimitExceeded: {e.Detail.ErrorCode} retry-after: {delay.TotalMilliseconds}");
-                    break;
-
-            }
-            Thread.Sleep(delay);
-        }
-
-        private static bool IsTransientError(FaultException<OrganizationServiceFault> ex)
-        {
-            // You can add more transient fault codes to retry here
-            return ex.Detail.ErrorCode == ThrottleRateLimitExceededErrorCode ||
-                   ex.Detail.ErrorCode == ThrottleTimeLimitExceededErrorCode ||
-                   ex.Detail.ErrorCode == ThrottleConcurrencyLimitExceededErrorCode;
-        }
-
         #endregion 
     }
 
@@ -862,7 +798,7 @@ namespace Microsoft.Pfe.Xrm
         private ParallelServiceProxy() { throw new NotImplementedException(); }
 
         protected ParallelServiceProxy(T serviceManager)
-            : this(serviceManager, ParallelServiceProxy.MaxDegreeOfParallelismDefault, ParallelServiceProxy.MaxRetriesDefault) { }
+            : this(serviceManager, ParallelServiceProxy.MaxDegreeOfParallelismDefault) { }
 
         protected ParallelServiceProxy(T serviceManager, int maxDegreeOfParallelism)
         {
@@ -870,19 +806,16 @@ namespace Microsoft.Pfe.Xrm
             this.MaxDegreeOfParallelism = maxDegreeOfParallelism;
         }
 
-        protected ParallelServiceProxy(T serviceManager, int maxDegreeOfParallelism, int maximumThrottleRetries)
+        protected ParallelServiceProxy(T serviceManager, int maxDegreeOfParallelism, int ThrottleRetryCountOverride, TimeSpan ThrottleRetryDelayOverride)
         {
             this.ServiceManager = serviceManager;
             this.MaxDegreeOfParallelism = maxDegreeOfParallelism;
-            this.maxThrottleRetries = maximumThrottleRetries;
         }
         #endregion
 
         #region Fields
 
         private int maxDegreeOfParallelism;
-
-        private int maxThrottleRetries;
 
         #endregion
 
@@ -905,23 +838,6 @@ namespace Microsoft.Pfe.Xrm
                 ValidateDegreeOfParallelism(value);
 
                 this.maxDegreeOfParallelism = value;
-            }
-        }
-
-        /// <summary>
-        /// Override the default (3) maximum retries when throttling events are encountered
-        /// </summary>
-        public int MaxThrottleRetries
-        {
-            get
-            {
-                return this.maxThrottleRetries;
-            }
-            set
-            {
-                ValidateMaximumRetries(value);
-
-                this.maxThrottleRetries = value;
             }
         }
 
@@ -958,22 +874,11 @@ namespace Microsoft.Pfe.Xrm
                 throw new ArgumentOutOfRangeException(string.Format("The provided MaxDegreeOfParallelism={0} is not valid. Argument must be -1 or greater than 0.", maxDegree));
         }
 
-        /// <summary>
-        /// Ensures a valid max retry value is provided
-        /// </summary>
-        /// <param name="maxRetries">The max degree of parallelism</param>
-        /// <exception cref="ArgumentOutOfRangeException">An exception will be thrown if value is less than 0</exception>
-        protected void ValidateMaximumRetries(int maxRetries)
-        {
-            if (maxRetries < 0)
-                throw new ArgumentOutOfRangeException($"The provided value for MaximumRetries={maxRetries} is not valid. Argument must be 0 or greater than 0.");
-        }
         #endregion
     }
 
     public abstract class ParallelServiceProxy
     {
         public const int MaxDegreeOfParallelismDefault = -1;
-        public const int MaxRetriesDefault = 3;
     }
 }
