@@ -18,24 +18,80 @@ namespace Microsoft.Pfe.Xrm
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using System.Xml.Linq;
 
+
+    using Microsoft.Pfe.Xrm.Diagnostics;
     using Microsoft.Xrm.Sdk;
     using Microsoft.Xrm.Sdk.Client;
     using Microsoft.Xrm.Sdk.Query;
-    using System.Xml.Linq;
+    using System.ServiceModel;
+    using Microsoft.Xrm.Tooling.Connector;
 
-    public static class DiscoveryServiceExtensions
+    public static class ServiceProxyExtensions
     {
         /// <summary>
-        /// Helper method for assigning common proxy-specific settings such as channel timeout
+        /// Ensures credentials are structured properly for the authentication type
         /// </summary>
-        /// <param name="proxy">The service proxy</param>
-        /// <param name="options">The options to configure on the service proxy</param>
-        public static void SetProxyOptions(this DiscoveryServiceProxy proxy, DiscoveryServiceProxyOptions options)
+        public static void EnsureCredentials<TService>(this ServiceProxy<TService> proxy)
+            where TService : class
         {
-            if (!options.Timeout.Equals(TimeSpan.Zero)
-                && options.Timeout > TimeSpan.Zero)
-                proxy.Timeout = options.Timeout;
+            if (proxy.ClientCredentials == null)
+            {
+                return;
+            }
+
+            switch (proxy.ServiceConfiguration.AuthenticationType)
+            {
+                case AuthenticationProviderType.ActiveDirectory:
+                    proxy.ClientCredentials.UserName.UserName = null;
+                    proxy.ClientCredentials.UserName.Password = null;
+                    break;
+                case AuthenticationProviderType.Federation:
+                case AuthenticationProviderType.OnlineFederation:
+                case AuthenticationProviderType.LiveId:
+                    proxy.ClientCredentials.Windows.ClientCredential = null;
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        /// <summary>
+        /// Ensures the security token for non-AD scenarios is valid and renews if it near expiration or expired
+        /// </summary>
+        public static void EnsureValidToken<TService>(this ServiceProxy<TService> proxy)
+            where TService : class
+        {
+            if (proxy.ServiceConfiguration.AuthenticationType != AuthenticationProviderType.ActiveDirectory
+                && proxy.SecurityTokenResponse != null)
+            {
+                DateTime validTo = proxy.SecurityTokenResponse.Token.ValidTo;
+
+                if (DateTime.UtcNow.AddMinutes(15) >= validTo)
+                {
+                    //XrmCoreEventSource.Log.SecurityTokenRefreshRequired(validTo.ToString("u"), true);
+
+                    try
+                    {
+                        proxy.Authenticate();
+                    }
+                    catch (Exception ex)
+                    {
+                        StringBuilder messageBuilder = ex.ToErrorMessageString();
+
+                        //XrmCoreEventSource.Log.SecurityTokenRefreshFailure(validTo.ToString("u"), messageBuilder.ToString());
+
+                        // Rethrow if current token is lost during authentication attempt
+                        // or if current token has expired
+                        if (proxy.SecurityTokenResponse == null
+                            || DateTime.UtcNow >= validTo)
+                        {
+                            throw;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -46,17 +102,39 @@ namespace Microsoft.Pfe.Xrm
         /// </summary>
         /// <param name="proxy">The service proxy</param>
         /// <param name="options">The options to configure on the service proxy</param>
-        public static void SetProxyOptions(this OrganizationServiceProxy proxy, OrganizationServiceProxyOptions options)
+        //public static void SetProxyOptions(this OrganizationServiceProxy proxy, OrganizationServiceProxyOptions options)
+        //{
+        //    if (!options.CallerId.Equals(Guid.Empty))
+        //        proxy.CallerId = options.CallerId;
+
+        //    if (options.ShouldEnableProxyTypes)
+        //        proxy.EnableProxyTypes();
+
+        //    if (!options.Timeout.Equals(TimeSpan.Zero)
+        //        && options.Timeout > TimeSpan.Zero)
+        //        proxy.Timeout = options.Timeout;
+        //}
+
+        /// <summary>
+        /// Helper method for assigning common proxy-specific settings for impersonation, early-bound types, and channel timeout
+        /// </summary>
+        /// <param name="proxy">The service proxy</param>
+        /// <param name="options">The options to configure on the service proxy</param>
+        public static void SetProxyOptions(this CrmServiceClient proxy, OrganizationServiceProxyOptions options)
         {
             if (!options.CallerId.Equals(Guid.Empty))
+            {
                 proxy.CallerId = options.CallerId;
+            }
 
-            if (options.ShouldEnableProxyTypes)
-                proxy.EnableProxyTypes();
-            
-            if (!options.Timeout.Equals(TimeSpan.Zero)
-                && options.Timeout > TimeSpan.Zero)
-                proxy.Timeout = options.Timeout;
+            if (!options.Timeout.Equals(TimeSpan.Zero) && options.Timeout > TimeSpan.Zero)
+            {
+                proxy.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.OpenTimeout = options.Timeout; 
+                proxy.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.CloseTimeout = options.Timeout; 
+                proxy.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.ReceiveTimeout = options.Timeout; 
+                proxy.OrganizationWebProxyClient.ChannelFactory.Endpoint.Binding.SendTimeout = options.Timeout;
+            }
+                
         }
 
         /// <summary>
@@ -159,7 +237,7 @@ namespace Microsoft.Pfe.Xrm
                 {
                     // Default to first page
                     query.PageInfo = new PagingInfo()
-                    {                        
+                    {
                         Count = QueryExtensions.DefaultPageSize,
                         PageNumber = 1,
                         PagingCookie = null,
@@ -171,7 +249,7 @@ namespace Microsoft.Pfe.Xrm
                 {
                     // Reset to first page
                     query.PageInfo.PageNumber = 1;
-                    query.PageInfo.PagingCookie = null; 
+                    query.PageInfo.PagingCookie = null;
                 }
 
                 // Limit initial page size to max result if less than current page size. No risk of conversion overflow.
@@ -194,16 +272,16 @@ namespace Microsoft.Pfe.Xrm
                 if (totalResultCount == 0)
                 {
                     // First page
-                    allResults = page;                  
+                    allResults = page;
                 }
                 else
-                {                    
+                {
                     allResults.Entities.AddRange(page.Entities);
                 }
-                
+
                 // Invoke the paged operation if non-null
                 pagedOperation?.Invoke(page);
-                
+
                 // Update the count of pages retrieved and processed
                 totalResultCount = totalResultCount + page.Entities.Count;
 
@@ -258,7 +336,7 @@ namespace Microsoft.Pfe.Xrm
             // Establish the first page based on lesser of initial/default page size or max result count (will be skipped if top count > 0)
             if (pageSize > maxResultCount)
             {
-                pageSize = Convert.ToInt32(maxResultCount);                
+                pageSize = Convert.ToInt32(maxResultCount);
             }
 
             if (pageNumber <= 1
@@ -272,7 +350,7 @@ namespace Microsoft.Pfe.Xrm
                 // Start with specified page
                 fetchXml.SetFetchXmlPage(pageCookie, pageNumber, pageSize);
             }
-                      
+
             fetch.Query = fetchXml.ToString();
 
             // Track local long value to avoid expensive IEnumerable<T>.LongCount() method calls
@@ -315,10 +393,10 @@ namespace Microsoft.Pfe.Xrm
                     // No risk of coversion overflow.
                     if (pageSize > remainder)
                     {
-                        pageSize = Convert.ToInt32(remainder);                        
-                    }                    
+                        pageSize = Convert.ToInt32(remainder);
+                    }
 
-                    fetch.SetPage(page.PagingCookie, pageNumber, pageSize);                    
+                    fetch.SetPage(page.PagingCookie, pageNumber, pageSize);
                 }
                 else
                 {

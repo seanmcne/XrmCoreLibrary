@@ -10,34 +10,12 @@
     /// </summary>
     public static class XrmServiceUriFactory
     {
-        public const string DiscoveryServicePath = @"/XRMServices/2011/Discovery.svc";
         public const string OrganizationServicePath = @"/XRMServices/2011/Organization.svc";
         public const string OrganizationDataServicePath = @"/XRMServices/2011/OrganizationData.svc";
         public const string OrganizationWebServicePath = @"/XRMServices/2011/Organization.svc/Web";
         public const string OrganizationServiceOnlineNAUriFormat = "https://{0}.api.crm.dynamics.com";
         public const string OrganizationServiceOnlineEMEAUriFormat = "https://{0}.api.crm4.dynamics.com";
         public const string OrganizationServiceOnlineAPACUriFormat = "https://{0}.api.crm5.dynamics.com";
-
-        public static Uri DiscoveryServiceOnlineO365NAUri = new Uri("https://disco.crm.dynamics.com/XRMServices/2011/Discovery.svc");
-        public static Uri DiscoveryServiceOnlineLiveNAUri = new Uri("https://dev.crm.dynamics.com/XRMServices/2011/Discovery.svc");
-        public static Uri DiscoveryServiceOnlineO365EMEAUri = new Uri("https://disco.crm4.dynamics.com/XRMServices/2011/Discovery.svc");
-        public static Uri DiscoveryServiceOnlineLiveEMEAUri = new Uri("https://dev.crm4.dynamics.com/XRMServices/2011/Discovery.svc");
-        public static Uri DiscoveryServiceOnlineO365APACUri = new Uri("https://disco.crm5.dynamics.com/XRMServices/2011/Discovery.svc");
-        public static Uri DiscoveryServiceOnlineLiveAPACUri = new Uri("https://dev.crm5.dynamics.com/XRMServices/2011/Discovery.svc");
-
-        /// <summary>
-        /// Creates a Discovery.svc <see cref="Uri"/> instance based on the specified location
-        /// </summary>
-        /// <param name="location">The scheme, host, and port # (if applicable) representing location of Discovery.svc</param>
-        /// <returns>A new instance of <see cref="Uri"/> for the Discovery.svc</returns>
-        /// <remarks>
-        /// EXAMPLES: https://hostname:5555, https://hostname
-        /// The Discovery.svc endpoint path is not necessary as this will be appended
-        /// </remarks>
-        public static Uri CreateDiscoveryServiceUri(string location)
-        {            
-            return XrmServiceUriFactory.CreateServiceUri(location, XrmServiceType.Discovery);
-        }
 
         /// <summary>
         /// Creates an Organization.svc <see cref="Uri"/> instance based on the specified location
@@ -148,8 +126,7 @@
                 var pathBuilder = new StringBuilder(128);
 
                 //If we detect something other than XRMServices in the second path segment, assume it's the organization name and preserve it for non-discovery locations. 
-                if (serviceType != XrmServiceType.Discovery
-                    && providedUri.Segments.Length > 1
+                if (providedUri.Segments.Length > 1
                     && !providedUri.Segments[1].Equals(@"XRMServices/", StringComparison.OrdinalIgnoreCase))
                 {
                     pathBuilder.Append(providedUri.Segments[0]);
@@ -159,9 +136,6 @@
                 //Append path to the XRM service endpoint location based on endpoint type specified
                 switch (serviceType)
                 {
-                    case XrmServiceType.Discovery:
-                        pathBuilder.Append(XrmServiceUriFactory.DiscoveryServicePath);
-                        break;
                     case XrmServiceType.Organization:
                         pathBuilder.Append(XrmServiceUriFactory.OrganizationServicePath);
                         break;

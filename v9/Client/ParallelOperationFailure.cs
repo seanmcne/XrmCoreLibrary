@@ -20,19 +20,9 @@ namespace Microsoft.Pfe.Xrm
     using System.ServiceModel;    
     using System.Text;
     using System.Threading.Tasks;
-
     using Microsoft.Xrm.Sdk;
 
-    /// <summary>
-    /// Represents an <see cref="IDiscoveryRequest"/> operation failure during parallel execution
-    /// </summary>
-    /// <typeparam name="TRequest">The originating request type</typeparam>
-    internal class ParallelDiscoveryOperationFailure<TRequest> : ParallelOperationFailure<TRequest, DiscoveryServiceFault>
-    {
-        public ParallelDiscoveryOperationFailure(TRequest request, FaultException<DiscoveryServiceFault> fault)
-            : base(request, fault) {  }
-    }
-    
+ 
     /// <summary>
     /// Represents an <see cref="IOrganizationService"/> operation failure during parallel execution
     /// </summary>

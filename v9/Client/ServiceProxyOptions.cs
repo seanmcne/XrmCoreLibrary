@@ -23,15 +23,11 @@ namespace Microsoft.Pfe.Xrm
     using Microsoft.Xrm.Sdk.Client;
 
     /// <summary>
-    /// Class that contains configurable options for <see cref="DiscoveryServiceProxy"/> requests
-    /// </summary>
-    public class DiscoveryServiceProxyOptions : ServiceProxyOptions { }
-    
-    /// <summary>
     /// Class that contains configurable options for <see cref="OrganizationServiceProxy"/> requests
     /// </summary>
     public class OrganizationServiceProxyOptions : ServiceProxyOptions
     {
+        [Obsolete("When creating the original service client object, pass the proxy types in to enable proxy types", true)]
         public bool ShouldEnableProxyTypes { get; set; }
         public Guid CallerId { get; set; }
     }

@@ -22,276 +22,13 @@ namespace Microsoft.Pfe.Xrm
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-
+    using Microsoft.Pfe.Xrm.Diagnostics;
     using Microsoft.Xrm.Sdk;
     using Microsoft.Xrm.Sdk.Client;
-    using Microsoft.Xrm.Sdk.Discovery;
     using Microsoft.Xrm.Sdk.Messages;
     using Microsoft.Xrm.Sdk.Query;
-
-    /// <summary>
-    /// Class for executing concurrent <see cref="IDiscoveryService"/> operations
-    /// </summary>
-    /// <remarks>
-    /// During parallel operations, <see cref="DiscoveryServiceProxy"/> instances are aligned with individual data partitions
-    /// using a thread local class variable to avoid service channel thread-safety issues.
-    /// </remarks>
-    public class ParallelDiscoveryServiceProxy : ParallelServiceProxy<DiscoveryServiceManager>
-    {
-        #region Constructor(s)
-
-        public ParallelDiscoveryServiceProxy(DiscoveryServiceManager serviceManager)
-            : base(serviceManager) { }
-
-        public ParallelDiscoveryServiceProxy(DiscoveryServiceManager serviceManager, int maxDegreeOfParallelism)
-            : base(serviceManager, maxDegreeOfParallelism) { }
-
-        #endregion
-
-        #region Multi-threaded IDiscoveryService Operations
-
-        #region IDiscoveryService.Execute()
-
-        /// <summary>
-        /// Performs data parallelism on a keyed collection of type <see cref="DiscoveryRequest"/> to execute <see cref="IDiscoveryService"/>.Execute() requests concurrently
-        /// </summary>
-        /// <param name="requests">The keyed collection requests to be submitted</param>
-        /// <param name="errorHandler">An optional error handling operation. Handler will be passed the request that failed along with the corresponding <see cref="FaultException{OrganizationServiceFault}"/></param>        
-        /// <returns>A keyed collection of type <see cref="DiscoveryResponse"/> containing response to the <see cref="DiscoveryRequest"/></returns>
-        /// <exception cref="AggregateException">callers should catch <see cref="AggregateException"/> to handle exceptions raised by individual requests</exception>
-        public IDictionary<string, DiscoveryResponse> Execute(IDictionary<string, DiscoveryRequest> requests, Action<KeyValuePair<string, DiscoveryRequest>, FaultException<DiscoveryServiceFault>> errorHandler = null)
-        {
-            return this.Execute(requests, new DiscoveryServiceProxyOptions(), errorHandler);
-        }
-
-        /// <summary>
-        /// Performs data parallelism on a keyed collection of type <see cref="DiscoveryRequest"/> to execute <see cref="IDiscoveryService"/>.Execute() requests concurrently
-        /// </summary>
-        /// <param name="requests">The keyed collection of requests to be submitted</param>
-        /// <param name="options">The configurable options for the parallel <see cref="DiscoveryServiceProxy"/> requests</param>
-        /// <param name="errorHandler">An optional error handling operation. Handler will be passed the request that failed along with the corresponding <see cref="FaultException{OrganizationServiceFault}"/></param>        
-        /// <returns>A keyed collection of type <see cref="DiscoveryResponse"/> containing response to the <see cref="DiscoveryRequest"/></returns>
-        /// <exception cref="AggregateException">callers should catch <see cref="AggregateException"/> to handle exceptions raised by individual requests</exception>
-        public IDictionary<string, DiscoveryResponse> Execute(IDictionary<string, DiscoveryRequest> requests, DiscoveryServiceProxyOptions options, Action<KeyValuePair<string, DiscoveryRequest>, FaultException<DiscoveryServiceFault>> errorHandler = null)
-        {
-            return this.ExecuteOperationWithResponse<KeyValuePair<string, DiscoveryRequest>, KeyValuePair<string, DiscoveryResponse>>(requests, options,
-                (request, context) =>
-                {
-                    var response = context.Local.Execute(request.Value);
-
-                    //Collect the result from each iteration in this partition
-                    context.Results.Add(new KeyValuePair<string, DiscoveryResponse>(request.Key, response));
-                },
-                errorHandler)
-                .ToDictionary(r => r.Key, r => r.Value);
-        }
-
-        /// <summary>
-        /// Performs data parallelism on a keyed collection of type TRequest to execute <see cref="IDiscoveryService"/>.Execute() requests concurrently
-        /// </summary>
-        /// <typeparam name="TRequest">The request type that derives from <see cref="DiscoveryRequest"/></typeparam>
-        /// <typeparam name="TResponse">The response type that derives from <see cref="DiscoveryResponse"/></typeparam>
-        /// <param name="requests">The keyed collection of requests to be executed</param>
-        /// <param name="errorHandler">An optional error handling operation. Handler will be passed the request that failed along with the corresponding <see cref="FaultException{OrganizationServiceFault}"/></param>        
-        /// <returns>A keyed collection of type TResponse containing the responses to each executed request</returns>
-        /// <exception cref="AggregateException">callers should catch <see cref="AggregateException"/> to handle exceptions raised by individual requests</exception>
-        public IDictionary<string, TResponse> Execute<TRequest, TResponse>(IDictionary<string, TRequest> requests, Action<KeyValuePair<string, TRequest>, FaultException<DiscoveryServiceFault>> errorHandler = null)
-            where TRequest : DiscoveryRequest
-            where TResponse : DiscoveryResponse
-        {
-            return this.Execute<TRequest, TResponse>(requests, new DiscoveryServiceProxyOptions(), errorHandler);
-        }
-
-        /// <summary>
-        /// Performs data parallelism on a keyed collection of type TRequest to execute <see cref="IDiscoveryService"/>.Execute() requests concurrently
-        /// </summary>
-        /// <typeparam name="TRequest">The request type that derives from <see cref="DiscoveryRequest"/></typeparam>
-        /// <typeparam name="TResponse">The response type that derives from <see cref="DiscoveryResponse"/></typeparam>
-        /// <param name="requests">The keyed collection of requests to be executed</param>
-        /// <param name="options">The configurable options for the parallel <see cref="DiscoveryServiceProxy"/> requests</param>
-        /// <param name="errorHandler">An optional error handling operation. Handler will be passed the request that failed along with the corresponding <see cref="FaultException{OrganizationServiceFault}"/></param>        
-        /// <returns>A keyed collection of type TResponse containing the responses to each executed request</returns>
-        /// <exception cref="AggregateException">callers should catch <see cref="AggregateException"/> to handle exceptions raised by individual requests</exception>
-        public IDictionary<string, TResponse> Execute<TRequest, TResponse>(IDictionary<string, TRequest> requests, DiscoveryServiceProxyOptions options, Action<KeyValuePair<string, TRequest>, FaultException<DiscoveryServiceFault>> errorHandler = null)
-            where TRequest : DiscoveryRequest
-            where TResponse : DiscoveryResponse
-        {
-            return this.ExecuteOperationWithResponse<KeyValuePair<string, TRequest>, KeyValuePair<string, TResponse>>(requests, options,
-                (request, context) =>
-                {
-                    var response = (TResponse)context.Local.Execute(request.Value);
-
-                    context.Results.Add(new KeyValuePair<string, TResponse>(request.Key, response));
-                },
-                errorHandler)
-                .ToDictionary(r => r.Key, r => r.Value);
-        }
-        
-        /// <summary>
-        /// Performs data parallelism on a collection of type <see cref="DiscoveryRequest"/> to execute <see cref="IDiscoveryService"/>.Execute() requests concurrently
-        /// </summary>
-        /// <param name="requests">The requests to be submitted</param>
-        /// <param name="errorHandler">An optional error handling operation. Handler will be passed the request that failed along with the corresponding <see cref="FaultException{OrganizationServiceFault}"/></param>        
-        /// <returns>A collection of type <see cref="DiscoveryResponse"/> containing response to the <see cref="DiscoveryRequest"/></returns>
-        /// <exception cref="AggregateException">callers should catch <see cref="AggregateException"/> to handle exceptions raised by individual requests</exception>
-        public IEnumerable<DiscoveryResponse> Execute(IEnumerable<DiscoveryRequest> requests, Action<DiscoveryRequest, FaultException<DiscoveryServiceFault>> errorHandler = null)
-        {
-            return this.Execute(requests, new DiscoveryServiceProxyOptions(), errorHandler);
-        }
-
-        /// <summary>
-        /// Performs data parallelism on a collection of type <see cref="DiscoveryRequest"/> to execute <see cref="IDiscoveryService"/>.Execute() requests concurrently
-        /// </summary>
-        /// <param name="requests">The requests to be submitted</param>
-        /// <param name="options">The configurable options for the parallel <see cref="DiscoveryServiceProxy"/> requests</param>
-        /// <param name="errorHandler">An optional error handling operation. Handler will be passed the request that failed along with the corresponding <see cref="FaultException{OrganizationServiceFault}"/></param>        
-        /// <returns>A collection of type <see cref="DiscoveryResponse"/> containing response to the <see cref="DiscoveryRequest"/></returns>
-        /// <exception cref="AggregateException">callers should catch <see cref="AggregateException"/> to handle exceptions raised by individual requests</exception>
-        public IEnumerable<DiscoveryResponse> Execute(IEnumerable<DiscoveryRequest> requests, DiscoveryServiceProxyOptions options, Action<DiscoveryRequest, FaultException<DiscoveryServiceFault>> errorHandler = null)
-        {
-            return this.ExecuteOperationWithResponse<DiscoveryRequest, DiscoveryResponse>(requests, options,
-                (request, context) =>
-                {
-                    var response = context.Local.Execute(request);
-
-                    //Collect the result from each iteration in this partition
-                    context.Results.Add(response);
-                },
-                errorHandler);
-        }
-
-        /// <summary>
-        /// Performs data parallelism on a collection of type TRequest to execute <see cref="IDiscoveryService"/>.Execute() requests concurrently
-        /// </summary>
-        /// <typeparam name="TRequest">The request type that derives from <see cref="DiscoveryRequest"/></typeparam>
-        /// <typeparam name="TResponse">The response type that derives from <see cref="DiscoveryResponse"/></typeparam>
-        /// <param name="requests">The requests to be executed</param>
-        /// <param name="errorHandler">An optional error handling operation. Handler will be passed the request that failed along with the corresponding <see cref="FaultException{OrganizationServiceFault}"/></param>        
-        /// <returns>A collection of type TResponse containing the responses to each executed request</returns>
-        /// <exception cref="AggregateException">callers should catch <see cref="AggregateException"/> to handle exceptions raised by individual requests</exception>
-        public IEnumerable<TResponse> Execute<TRequest, TResponse>(IEnumerable<TRequest> requests, Action<TRequest, FaultException<DiscoveryServiceFault>> errorHandler = null)
-            where TRequest : DiscoveryRequest
-            where TResponse : DiscoveryResponse
-        {
-            return this.Execute<TRequest, TResponse>(requests, new DiscoveryServiceProxyOptions(), errorHandler);
-        }
-
-        /// <summary>
-        /// Performs data parallelism on a collection of type TRequest to execute <see cref="IDiscoveryService"/>.Execute() requests concurrently
-        /// </summary>
-        /// <typeparam name="TRequest">The request type that derives from <see cref="DiscoveryRequest"/></typeparam>
-        /// <typeparam name="TResponse">The response type that derives from <see cref="DiscoveryResponse"/></typeparam>
-        /// <param name="requests">The requests to be executed</param>
-        /// <param name="options">The configurable options for the parallel <see cref="DiscoveryServiceProxy"/> requests</param>
-        /// <param name="errorHandler">An optional error handling operation. Handler will be passed the request that failed along with the corresponding <see cref="FaultException{OrganizationServiceFault}"/></param>        
-        /// <returns>A collection of type TResponse containing the responses to each executed request</returns>
-        /// <exception cref="AggregateException">callers should catch <see cref="AggregateException"/> to handle exceptions raised by individual requests</exception>
-        public IEnumerable<TResponse> Execute<TRequest, TResponse>(IEnumerable<TRequest> requests, DiscoveryServiceProxyOptions options, Action<TRequest, FaultException<DiscoveryServiceFault>> errorHandler = null)
-            where TRequest : DiscoveryRequest
-            where TResponse : DiscoveryResponse
-        {
-            return this.ExecuteOperationWithResponse<TRequest, TResponse>(requests, options,
-                (request, context) =>
-                {
-                    var response = (TResponse)context.Local.Execute(request);
-
-                    context.Results.Add(response);
-                },
-                errorHandler);
-        }
-
-        #endregion
-
-        #endregion
-
-        #region Core Parallel Execution Method <TRequest, TResponse>
-        
-        /// <summary>
-        /// Core implementation of the parallel pattern for service operations that should collect responses to each request
-        /// </summary>
-        /// <typeparam name="TRequest">The type being submitted in the service operation request</typeparam>
-        /// <typeparam name="TResponse">The response type collected from each request and returned</typeparam>
-        /// <param name="requests">The collection of requests to be submitted</param>
-        /// <param name="options">The configurable options for the <see cref="DiscoveryServiceProxy"/> requests</param>
-        /// <param name="coreOperation">The specific operation being executed</param>
-        /// <returns>A collection of specified response types from service operation requests</returns>
-        /// <remarks>
-        /// IMPORTANT!! When defining the core operation, be sure to add responses you wish to collect via proxy.Results.Add(TResponse item);
-        /// </remarks>
-        private IEnumerable<TResponse> ExecuteOperationWithResponse<TRequest, TResponse>(IEnumerable<TRequest> requests, DiscoveryServiceProxyOptions options,
-            Action<TRequest, ParallelDiscoveryOperationContext<TRequest, TResponse>> coreOperation, Action<TRequest, FaultException<DiscoveryServiceFault>> errorHandler)
-        {
-            var allResponses = new ConcurrentBag<TResponse>();
-            var allFailures = new ConcurrentBag<ParallelDiscoveryOperationFailure<TRequest>>();
-
-            // Inline method for initializing a new discovery service channel
-            Func<ManagedTokenDiscoveryServiceProxy> proxyInit = () =>
-                {
-                    var proxy = this.ServiceManager.GetProxy();
-                    proxy.SetProxyOptions(options);
-
-                    return proxy;
-                };            
-
-            using (var threadLocalProxy = new ThreadLocal<ManagedTokenDiscoveryServiceProxy>(proxyInit, true))
-            {
-                try
-                {
-                    Parallel.ForEach<TRequest, ParallelDiscoveryOperationContext<TRequest, TResponse>>(requests,
-                        new ParallelOptions() { MaxDegreeOfParallelism = this.MaxDegreeOfParallelism },
-                        () => new ParallelDiscoveryOperationContext<TRequest, TResponse>(threadLocalProxy.Value),
-                        (request, loopState, index, context) => 
-                        {
-                            try
-                            {
-                                coreOperation(request, context);
-                            }
-                            catch (FaultException<DiscoveryServiceFault> fault)
-                            {
-                                // Track faults locally
-                                if (errorHandler != null)
-                                {
-                                    context.Failures.Add(new ParallelDiscoveryOperationFailure<TRequest>(request, fault));
-                                }
-                                else
-                                {
-                                    throw;
-                                }
-                            }
-
-                            return context;
-                        },
-                        (context) =>
-                        {
-                            // Join results and faults together
-                            Array.ForEach(context.Results.ToArray(), r => allResponses.Add(r));
-                            Array.ForEach(context.Failures.ToArray(), f => allFailures.Add(f));
-
-                            // Remove temporary reference to ThreadLocal proxy
-                            context.Local = null;
-                        });
-                }
-                finally
-                {
-                    Array.ForEach(threadLocalProxy.Values.ToArray(), p => p.Dispose());
-                }
-            }
-
-            // Handle faults
-            if (errorHandler != null)
-            {
-                foreach (var failure in allFailures)
-                {
-                    errorHandler(failure.Request, failure.Exception);
-                }
-            }
-
-            return allResponses;
-        }
-
-        #endregion
-    }
-
+    using Microsoft.Xrm.Tooling.Connector;
+    
     /// <summary>
     /// Class for executing concurrent <see cref="IOrganizationService"/> operations
     /// </summary>
@@ -301,19 +38,21 @@ namespace Microsoft.Pfe.Xrm
     /// </remarks>
     public class ParallelOrganizationServiceProxy : ParallelServiceProxy<OrganizationServiceManager>
     {
+        
         #region Constructor(s)
 
         public ParallelOrganizationServiceProxy(OrganizationServiceManager serviceManager)
             : base(serviceManager) {  }
 
-        public ParallelOrganizationServiceProxy(OrganizationServiceManager serviceManager, int maxDegreeOfParallelism)
-            : base(serviceManager, maxDegreeOfParallelism) {  }
+        public ParallelOrganizationServiceProxy(OrganizationServiceManager serviceManager, int maxDegreeOfParallelism, int maxThrottleRetries)
+            : base(serviceManager, maxDegreeOfParallelism, maxThrottleRetries) {  }
 
         #endregion
 
         #region Properties
-
-        private bool shouldEnableProxyTypesBehavior { get; set; }
+        private const int ThrottleRateLimitExceededErrorCode = -2147015902;
+        private const int ThrottleTimeLimitExceededErrorCode = -2147015903;
+        private const int ThrottleConcurrencyLimitExceededErrorCode = -2147015898;
 
         #endregion
 
@@ -833,12 +572,12 @@ namespace Microsoft.Pfe.Xrm
         /// <param name="operation">The specific operation being executed</param>
         /// <param name="errorHandler">The error handling operation. Handler will be passed the request that failed along with the corresponding <see cref="FaultException{OrganizationServiceFault}"/></param>
         private void ExecuteOperation<TRequest>(IEnumerable<TRequest> requests, OrganizationServiceProxyOptions options,
-            Action<TRequest, ManagedTokenOrganizationServiceProxy> operation, Action<TRequest, FaultException<OrganizationServiceFault>> errorHandler)
+            Action<TRequest, CrmServiceClient> operation, Action<TRequest, FaultException<OrganizationServiceFault>> errorHandler)
         {
             var allFailures = new ConcurrentBag<ParallelOrganizationOperationFailure<TRequest>>();
             
             // Inline method for initializing a new organization service channel
-            Func<ManagedTokenOrganizationServiceProxy> proxyInit = () =>
+            Func<CrmServiceClient> proxyInit = () =>
                 {
                     var proxy = this.ServiceManager.GetProxy();
                     proxy.SetProxyOptions(options);
@@ -846,32 +585,76 @@ namespace Microsoft.Pfe.Xrm
                     return proxy;
                 };
             
-            using (var threadLocalProxy = new ThreadLocal<ManagedTokenOrganizationServiceProxy>(proxyInit, true))
+            using (var threadLocalProxy = new ThreadLocal<CrmServiceClient>(proxyInit, true))
             {
                 try
                 {
                     Parallel.ForEach<TRequest, ParallelOrganizationOperationContext<TRequest, bool>>(requests,
                         new ParallelOptions() { MaxDegreeOfParallelism = this.MaxDegreeOfParallelism },
-                        () => new ParallelOrganizationOperationContext<TRequest, bool>(),
+                        () => {
+                            return new ParallelOrganizationOperationContext<TRequest, bool>(); 
+                        },
                         (request, loopState, index, context) =>
                         {
-                            try
+                            var retryCount = 0;
+                            do
                             {
-                                operation(request, threadLocalProxy.Value);
-                            }
-                            catch (FaultException<OrganizationServiceFault> fault)
-                            {
-                                // Track faults locally                                
-                                if (errorHandler != null)
+                                try
                                 {
-                                    context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, fault));
+                                    XrmCoreEventSource.Log.ParallelCoreOperationStart("ExecuteOperation"); 
+                                    operation(request, threadLocalProxy.Value);
+                                    XrmCoreEventSource.Log.ParallelCoreOperationCompleted("ExecuteOperation"); 
+                                    break;
                                 }
-                                else
+                                catch (FaultException<OrganizationServiceFault> e) when (IsTransientError(e) && ++retryCount < this.MaxThrottleRetries)
                                 {
-                                    throw;
+                                    //log an event and apply delay
+                                    LogAndApplyDelay(e, retryCount);
                                 }
-                            }
+                                catch (FaultException<OrganizationServiceFault> fault)
+                                {
+                                    XrmCoreEventSource.Log.LogError(fault.ToErrorMessageString().ToString());
+                                    // Track faults locally
+                                    if (errorHandler != null)
+                                    {
+                                        context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, fault));
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        throw;
+                                    }
+                                }
+                                catch (Exception exception) 
+                                    when (exception is System.TimeoutException || exception is System.Net.WebException)
+                                {
+                                    XrmCoreEventSource.Log.LogError(exception.ToErrorMessageString().ToString());
 
+                                    var errorDetails = new ErrorDetailCollection();
+
+                                    foreach (KeyValuePair<string, object> dataElement in exception.Data)
+                                    {
+                                        errorDetails.Add(dataElement);
+                                    }
+
+                                    var orgFaultMock = new FaultException<OrganizationServiceFault>(new OrganizationServiceFault()
+                                    {
+                                        ErrorCode = exception.HResult,
+                                        ErrorDetails = errorDetails
+                                    });
+
+                                    // Track faults locally
+                                    if (errorHandler != null)
+                                    {
+                                        context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, orgFaultMock));
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        throw;
+                                    }
+                                }
+                            } while (retryCount < this.MaxThrottleRetries && retryCount > 0); //avoiding the while(true) pattern..
                             return context;
                         },
                         (context) =>
@@ -916,7 +699,7 @@ namespace Microsoft.Pfe.Xrm
             var allFailures = new ConcurrentBag<ParallelOrganizationOperationFailure<TRequest>>();
 
             // Inline method for initializing a new organization service channel
-            Func<ManagedTokenOrganizationServiceProxy> proxyInit = () =>
+            Func<CrmServiceClient> proxyInit = () =>
                 {
                     var proxy = this.ServiceManager.GetProxy();
                     proxy.SetProxyOptions(options);
@@ -924,31 +707,76 @@ namespace Microsoft.Pfe.Xrm
                     return proxy;
                 };
             
-            using (var threadLocalProxy = new ThreadLocal<ManagedTokenOrganizationServiceProxy>(proxyInit, true))
+            using (var threadLocalProxy = new ThreadLocal<CrmServiceClient>(proxyInit, true))
             {
                 try
                 {
-                    Parallel.ForEach<TRequest, ParallelOrganizationOperationContext<TRequest, TResponse>>(requests,
+                    Parallel.ForEach<TRequest, ParallelOrganizationOperationContext<TRequest, TResponse>>(
+                        requests,
                         new ParallelOptions() { MaxDegreeOfParallelism = this.MaxDegreeOfParallelism },
-                        () => new ParallelOrganizationOperationContext<TRequest, TResponse>(threadLocalProxy.Value),
+                        () => {
+                            return new ParallelOrganizationOperationContext<TRequest, TResponse>(threadLocalProxy.Value);
+                        },
                         (request, loopState, index, context) =>
                         {
-                            try
+                            var retryCount = 0;
+                            do
                             {
-                                coreOperation(request, context);
-                            }
-                            catch (FaultException<OrganizationServiceFault> fault)
-                            {
-                                // Track faults locally
-                                if (errorHandler != null)
+                                try
                                 {
-                                    context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, fault));
+                                    XrmCoreEventSource.Log.ParallelCoreOperationStart("ExecuteOperationWithResponse");
+                                    coreOperation(request, context);
+                                    XrmCoreEventSource.Log.ParallelCoreOperationCompleted("ExecuteOperationWithResponse");
+                                    break;
                                 }
-                                else
+                                catch (FaultException<OrganizationServiceFault> e) when (IsTransientError(e) && ++retryCount < this.MaxThrottleRetries)
                                 {
-                                    throw;
+                                    //log an event and apply delay
+                                    LogAndApplyDelay(e, retryCount);
                                 }
-                            }
+                                catch (FaultException<OrganizationServiceFault> fault)
+                                {
+                                    XrmCoreEventSource.Log.LogError(fault.ToErrorMessageString().ToString());
+                                    // Track faults locally
+                                    if (errorHandler != null)
+                                    {
+                                        context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, fault));
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        throw;
+                                    }
+                                }
+                                catch (Exception exception)
+                                    when (exception is System.TimeoutException || exception is System.Net.WebException)
+                                {
+                                    XrmCoreEventSource.Log.LogError(exception.ToErrorMessageString().ToString()); 
+                                    var errorDetails = new ErrorDetailCollection();
+
+                                    foreach (KeyValuePair<string, object> dataElement in exception.Data)
+                                    {
+                                        errorDetails.Add(dataElement);
+                                    }
+
+                                    var orgFaultMock = new FaultException<OrganizationServiceFault>(new OrganizationServiceFault()
+                                    {
+                                        ErrorCode = exception.HResult,
+                                        ErrorDetails = errorDetails
+                                    });
+
+                                    // Track faults locally
+                                    if (errorHandler != null)
+                                    {
+                                        context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, orgFaultMock));
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        throw;
+                                    }
+                                }
+                            } while (retryCount < this.MaxThrottleRetries && retryCount > 0); //avoiding the while(true) pattern..
 
                             return context;
                         },
@@ -980,13 +808,50 @@ namespace Microsoft.Pfe.Xrm
             return allResponses;
         }
 
+        private static void LogAndApplyDelay(FaultException<OrganizationServiceFault> e, int retryCount)
+        {
+            TimeSpan delay = new TimeSpan();
+
+            switch (e.Detail.ErrorCode)
+            {
+                case ThrottleRateLimitExceededErrorCode:
+                    // Use Retry-After delay when specified
+                    if (e.Detail.ErrorDetails.Contains("Retry-After"))
+                        delay = (TimeSpan)e.Detail.ErrorDetails["Retry-After"];
+                    else
+                        delay = TimeSpan.FromSeconds(Math.Pow(2, retryCount));
+                    XrmCoreEventSource.Log.ThrottleEventGeneric($"RateLimitExceeded: {e.Detail.ErrorCode} retry-after: {delay.TotalMilliseconds}");
+                    break;
+                case ThrottleConcurrencyLimitExceededErrorCode:
+                    // else use exponential backoff delay
+                    delay = TimeSpan.FromSeconds(Math.Pow(2, retryCount));
+                    XrmCoreEventSource.Log.ThrottleEventGeneric($"ConcurrencyLimitExceeded: {e.Detail.ErrorCode} retry-after: {delay.TotalMilliseconds}");
+                    break;
+                case ThrottleTimeLimitExceededErrorCode:
+                    // else use exponential backoff delay
+                    delay = TimeSpan.FromSeconds(Math.Pow(2, retryCount));
+                    XrmCoreEventSource.Log.ThrottleEventGeneric($"TimeLimitExceeded: {e.Detail.ErrorCode} retry-after: {delay.TotalMilliseconds}");
+                    break;
+
+            }
+            Thread.Sleep(delay);
+        }
+
+        private static bool IsTransientError(FaultException<OrganizationServiceFault> ex)
+        {
+            // You can add more transient fault codes to retry here
+            return ex.Detail.ErrorCode == ThrottleRateLimitExceededErrorCode ||
+                   ex.Detail.ErrorCode == ThrottleTimeLimitExceededErrorCode ||
+                   ex.Detail.ErrorCode == ThrottleConcurrencyLimitExceededErrorCode;
+        }
+
         #endregion 
     }
 
     /// <summary>
     /// Base class for executing concurrent requests for common <see cref="ServiceProxy{TService}"/> operations
     /// </summary>
-    /// <typeparam name="T">The type of service manager Discovery or Organization</typeparam>
+    /// <typeparam name="T">The type of service manager Organization</typeparam>
     public abstract class ParallelServiceProxy<T> : ParallelServiceProxy
         where T : XrmServiceManagerBase
     {
@@ -997,7 +862,7 @@ namespace Microsoft.Pfe.Xrm
         private ParallelServiceProxy() { throw new NotImplementedException(); }
 
         protected ParallelServiceProxy(T serviceManager)
-            : this(serviceManager, ParallelServiceProxy.MaxDegreeOfParallelismDefault) { }
+            : this(serviceManager, ParallelServiceProxy.MaxDegreeOfParallelismDefault, ParallelServiceProxy.MaxRetriesDefault) { }
 
         protected ParallelServiceProxy(T serviceManager, int maxDegreeOfParallelism)
         {
@@ -1005,16 +870,24 @@ namespace Microsoft.Pfe.Xrm
             this.MaxDegreeOfParallelism = maxDegreeOfParallelism;
         }
 
+        protected ParallelServiceProxy(T serviceManager, int maxDegreeOfParallelism, int maximumThrottleRetries)
+        {
+            this.ServiceManager = serviceManager;
+            this.MaxDegreeOfParallelism = maxDegreeOfParallelism;
+            this.maxThrottleRetries = maximumThrottleRetries;
+        }
         #endregion
 
         #region Fields
 
         private int maxDegreeOfParallelism;
 
+        private int maxThrottleRetries;
+
         #endregion
 
         #region Properties
-        
+
         protected T ServiceManager { get; set; }
 
 
@@ -1035,6 +908,40 @@ namespace Microsoft.Pfe.Xrm
             }
         }
 
+        /// <summary>
+        /// Override the default (3) maximum retries when throttling events are encountered
+        /// </summary>
+        public int MaxThrottleRetries
+        {
+            get
+            {
+                return this.maxThrottleRetries;
+            }
+            set
+            {
+                ValidateMaximumRetries(value);
+
+                this.maxThrottleRetries = value;
+            }
+        }
+
+        public bool IsCrmServiceClientReady
+        {
+            get
+            {
+                if (ServiceManager != null &&
+                    ServiceManager is OrganizationServiceManager )
+                {
+
+                    if ((ServiceManager as OrganizationServiceManager).IsCrmServiceClient)
+                    {
+                        return (ServiceManager as OrganizationServiceManager).IsCrmServiceClientReady;
+                    }
+                }
+                return false; 
+            }
+        }
+
         #endregion
 
         #region Methods
@@ -1051,11 +958,22 @@ namespace Microsoft.Pfe.Xrm
                 throw new ArgumentOutOfRangeException(string.Format("The provided MaxDegreeOfParallelism={0} is not valid. Argument must be -1 or greater than 0.", maxDegree));
         }
 
+        /// <summary>
+        /// Ensures a valid max retry value is provided
+        /// </summary>
+        /// <param name="maxRetries">The max degree of parallelism</param>
+        /// <exception cref="ArgumentOutOfRangeException">An exception will be thrown if value is less than 0</exception>
+        protected void ValidateMaximumRetries(int maxRetries)
+        {
+            if (maxRetries < 0)
+                throw new ArgumentOutOfRangeException($"The provided value for MaximumRetries={maxRetries} is not valid. Argument must be 0 or greater than 0.");
+        }
         #endregion
     }
 
     public abstract class ParallelServiceProxy
     {
         public const int MaxDegreeOfParallelismDefault = -1;
+        public const int MaxRetriesDefault = 3;
     }
 }

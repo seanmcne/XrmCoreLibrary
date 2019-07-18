@@ -9,7 +9,6 @@
 
     public enum XrmServiceType
     {
-        Discovery,
         Organization,
         OrganizationWeb,
         OrganizationData

@@ -23,21 +23,8 @@ namespace Microsoft.Pfe.Xrm
 
     using Microsoft.Xrm.Sdk;
     using Microsoft.Xrm.Sdk.Client;
-    using Microsoft.Xrm.Sdk.Discovery;
+    using Microsoft.Xrm.Tooling.Connector;
 
-    /// <summary>
-    /// A parallel operation context object that maintains a reference to a Discovery.svc channel
-    /// </summary>
-    /// <typeparam name="TResponse">The expected response type to collect</typeparam>
-    /// <remarks>
-    /// ASSUMPTION: The local reference temporarily points to a threadlocal instance shared across partitions, thus we do not dispose from the context directly
-    /// </remarks>
-    internal sealed class ParallelDiscoveryOperationContext<TRequest, TResponse> : ParallelOperationContext<ManagedTokenDiscoveryServiceProxy, TResponse, ParallelDiscoveryOperationFailure<TRequest>>
-    {
-        public ParallelDiscoveryOperationContext(ManagedTokenDiscoveryServiceProxy proxy)
-            : base(proxy) { }
-    }
-    
     /// <summary>
     /// A parallel operation context object that maintains a reference to a Organization.svc channel
     /// </summary>
@@ -45,11 +32,11 @@ namespace Microsoft.Pfe.Xrm
     /// <remarks>
     /// ASSUMPTION: The local reference temporarily points to a threadlocal instance shared across partitions, thus we do not dispose from the context directly
     /// </remarks>
-    internal sealed class ParallelOrganizationOperationContext<TRequest, TResponse> : ParallelOperationContext<ManagedTokenOrganizationServiceProxy, TResponse, ParallelOrganizationOperationFailure<TRequest>>
+    internal sealed class ParallelOrganizationOperationContext<TRequest, TResponse> : ParallelOperationContext<CrmServiceClient, TResponse, ParallelOrganizationOperationFailure<TRequest>>
     {
         public ParallelOrganizationOperationContext() { }
         
-        public ParallelOrganizationOperationContext(ManagedTokenOrganizationServiceProxy proxy)
+        public ParallelOrganizationOperationContext(CrmServiceClient proxy)
             : base(proxy) {  }        
     }
     

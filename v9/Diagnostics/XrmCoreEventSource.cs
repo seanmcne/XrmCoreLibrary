@@ -38,14 +38,41 @@ namespace Microsoft.Pfe.Xrm.Diagnostics
 			public const EventTask Associate = (EventTask)11;
 			public const EventTask Disassociate = (EventTask)12;
 			public const EventTask Execute = (EventTask)13;
-		}
+			public const EventTask ExceptionHandler = (EventTask)14;
+        }
 
 		[Event(XrmCoreEventSourceEventIds.Failure, 
 			Message = "Crital Failure: {0}", 
 			Level = EventLevel.Critical)]
-		internal void Failure(string message)
+		internal void LogFailureLine(string message)
 		{
 			WriteEvent(XrmCoreEventSourceEventIds.Failure, message);
 		}
-	}
+
+        [Event(XrmCoreEventSourceEventIds.GenericFailure,
+            Message = "Request Failure encountered: {0}",
+            Level = EventLevel.Error)]
+        public void LogError(string Message)
+        {
+            WriteEvent(XrmCoreEventSourceEventIds.GenericFailure, Message);
+        }
+
+        [Event(XrmCoreEventSourceEventIds.GenericWarning,
+            Message = "{0}",
+            Level = EventLevel.Warning,
+            Opcode = EventOpcode.Info)]
+        public void LogWarning(string Message)
+        {
+            WriteEvent(XrmCoreEventSourceEventIds.GenericWarning, Message);
+        }
+
+        [Event(XrmCoreEventSourceEventIds.GenericInformational,
+            Message = "{0}",
+            Level = EventLevel.Informational, 
+            Opcode = EventOpcode.Info)]
+        public void LogInformation(string Message)
+        {
+            WriteEvent(XrmCoreEventSourceEventIds.GenericInformational, Message);
+        }
+    }
 }
