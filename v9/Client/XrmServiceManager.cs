@@ -304,17 +304,18 @@ namespace Microsoft.Pfe.Xrm
                         #endregion 
 
                         //cloning
-                        var svcClientClone = ServiceClient.Clone();
+                        using(var svcClientClone = ServiceClient.Clone())
+                        {
+                            var sessionTrackingGuid = Guid.NewGuid();
+                            XrmCoreEventSource.Log.ServiceClientCloneRequested(sessionTrackingGuid.ToString());
+                            svcClientClone.SessionTrackingId = sessionTrackingGuid;
 
-                        var sessionTrackingGuid = Guid.NewGuid();
-                        XrmCoreEventSource.Log.ServiceClientCloneRequested(sessionTrackingGuid.ToString());
-                        svcClientClone.SessionTrackingId = sessionTrackingGuid;
+                            //cloned objects don't inherit the same settings, fixing that in code for now
+                            svcClientClone.RetryPauseTime = this.ServiceClient.RetryPauseTime;
+                            svcClientClone.MaxRetryCount = this.ServiceClient.MaxRetryCount;
 
-                        //cloned objects don't inherit the same settings, fixing that in code for now
-                        svcClientClone.RetryPauseTime = this.ServiceClient.RetryPauseTime;
-                        svcClientClone.MaxRetryCount = this.ServiceClient.MaxRetryCount; 
-
-                        return svcClientClone;
+                            return svcClientClone;
+                        }
                     }
                     else
                     {
