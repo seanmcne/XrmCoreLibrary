@@ -269,14 +269,9 @@ namespace Microsoft.Pfe.Xrm
                 }
 
                 if (AdalVersion != null
-                    && (AdalVersion.FileMajorPart != 2))
+                    && (AdalVersion.FileMajorPart != 2 && AdalVersion.FileMajorPart != 3))
                 {
-                    XrmCoreEventSource.Log.LogError($"ADAL Version {AdalVersion.FileVersion} is not matching the expected version of 2.x. Certain functions may not work as expected if you're not using the AuthOverrideHook.");
-                }
-                else if (AdalVersion != null
-                        && (AdalVersion.FileMajorPart == 2 && (AdalVersion.FileMinorPart != 22 || AdalVersion.FileBuildPart != 30211 || AdalVersion.FilePrivatePart != 1727)))
-                {
-                    XrmCoreEventSource.Log.LogInformation($"ADAL Version {AdalVersion.FileVersion} is not matching the expected version of 2.x or specifically, 2.22.302111727.");
+                    XrmCoreEventSource.Log.LogError($"ADAL Version {AdalVersion.FileVersion} is not matching the expected versions of 2.x or 3.x. Certain functions may not work as expected if you're not using the AuthOverrideHook.");
                 }
             }
            
@@ -286,36 +281,20 @@ namespace Microsoft.Pfe.Xrm
                 {
                     if(this.ServiceClient.ActiveAuthenticationType == Microsoft.Xrm.Tooling.Connector.AuthenticationType.OAuth
                         || this.ServiceClient.ActiveAuthenticationType == Microsoft.Xrm.Tooling.Connector.AuthenticationType.Certificate 
+                        || this.ServiceClient.ActiveAuthenticationType == Microsoft.Xrm.Tooling.Connector.AuthenticationType.ClientSecret
                         || this.ServiceClient.ActiveAuthenticationType == Microsoft.Xrm.Tooling.Connector.AuthenticationType.ExternalTokenManagement)
                     {
-                        #region remove reflection as it's no longer needed
-                        //var svcClientClone = ((T)typeof(T).GetMethod("Clone", new Type[0]).Invoke(ServiceClient, null));
-                        //PropertyInfo propSessionId = svcClientClone.GetType().GetProperty("SessionTrackingId", BindingFlags.Public | BindingFlags.Instance);
-                        //if (propSessionId != null && propSessionId.CanWrite)
-                        //{
-                        //    var sessionTrackingGuid = Guid.NewGuid();
-                        //    XrmCoreEventSource.Log.ServiceClientCloneRequested(sessionTrackingGuid.ToString());
-                        //    propSessionId.SetValue(svcClientClone, sessionTrackingGuid, null);
-                        //}
-                        //else
-                        //{
-                        //    XrmCoreEventSource.Log.ServiceClientCloneRequested("null");
-                        //}
-                        #endregion 
-
                         //cloning
-                        using(var svcClientClone = ServiceClient.Clone())
-                        {
-                            var sessionTrackingGuid = Guid.NewGuid();
-                            XrmCoreEventSource.Log.ServiceClientCloneRequested(sessionTrackingGuid.ToString());
-                            svcClientClone.SessionTrackingId = sessionTrackingGuid;
+                        var svcClientClone = ServiceClient.Clone();
+                        var sessionTrackingGuid = Guid.NewGuid();
+                        XrmCoreEventSource.Log.ServiceClientCloneRequested(sessionTrackingGuid.ToString());
+                        svcClientClone.SessionTrackingId = sessionTrackingGuid;
 
-                            //cloned objects don't inherit the same settings, fixing that in code for now
-                            svcClientClone.RetryPauseTime = this.ServiceClient.RetryPauseTime;
-                            svcClientClone.MaxRetryCount = this.ServiceClient.MaxRetryCount;
+                        //cloned objects don't inherit the same settings, fixing that in code for now
+                        svcClientClone.RetryPauseTime = this.ServiceClient.RetryPauseTime;
+                        svcClientClone.MaxRetryCount = this.ServiceClient.MaxRetryCount;
 
-                            return svcClientClone;
-                        }
+                        return svcClientClone;
                     }
                     else
                     {
