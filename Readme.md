@@ -11,11 +11,12 @@ The purpose of this project is to distribute the PFE Dynamics Core Library for D
 
 ###### NuGet Packages
 As an alternative to downloading the binaries or source code from this project, you can get signed versions of V8 (2016), V7 (2015), V6 (2013) and V5 (2011) libraries via NuGet packages:
-
+* [Xrm Core Library for DataVerse(CDS) & CRM V9.x on NuGet](https://www.nuget.org/packages/Pfe.Microsoft.Xrm.CoreV9/)
 * [PFE Dynamics Core Library for Dynamics CRM 2016 on NuGet](https://www.nuget.org/packages/Microsoft.Pfe.Xrm.CoreV8/)
 * [PFE Dynamics Core Library for Dynamics CRM 2015 on NuGet](https://www.nuget.org/packages/Microsoft.Pfe.Xrm.CoreV7/)
 * [PFE Dynamics Core Library for Dynamics CRM 2013 on NuGet](https://www.nuget.org/packages/Microsoft.Pfe.Xrm.CoreV6/)
 * [PFE Dynamics Core Library for Dynamics CRM 2011 on NuGet](https://www.nuget.org/packages/Microsoft.Pfe.Xrm.CoreV5/)
+
 ###### Feedback
 Please let us know what's working, what isn't, as well as suggestions for new capabilities by [submitting a new issue](https://github.com/seanmcne/XrmCoreLibrary/issues)
 
