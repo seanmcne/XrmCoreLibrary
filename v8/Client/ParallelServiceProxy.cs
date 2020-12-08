@@ -126,7 +126,7 @@ namespace Microsoft.Pfe.Xrm
                 errorHandler)
                 .ToDictionary(r => r.Key, r => r.Value);
         }
-        
+
         /// <summary>
         /// Performs data parallelism on a collection of type <see cref="DiscoveryRequest"/> to execute <see cref="IDiscoveryService"/>.Execute() requests concurrently
         /// </summary>
@@ -205,7 +205,7 @@ namespace Microsoft.Pfe.Xrm
         #endregion
 
         #region Core Parallel Execution Method <TRequest, TResponse>
-        
+
         /// <summary>
         /// Core implementation of the parallel pattern for service operations that should collect responses to each request
         /// </summary>
@@ -226,12 +226,12 @@ namespace Microsoft.Pfe.Xrm
 
             // Inline method for initializing a new discovery service channel
             Func<ManagedTokenDiscoveryServiceProxy> proxyInit = () =>
-                {
-                    var proxy = this.ServiceManager.GetProxy();
-                    proxy.SetProxyOptions(options);
+            {
+                var proxy = this.ServiceManager.GetProxy();
+                proxy.SetProxyOptions(options);
 
-                    return proxy;
-                };            
+                return proxy;
+            };
 
             using (var threadLocalProxy = new ThreadLocal<ManagedTokenDiscoveryServiceProxy>(proxyInit, true))
             {
@@ -240,7 +240,7 @@ namespace Microsoft.Pfe.Xrm
                     Parallel.ForEach<TRequest, ParallelDiscoveryOperationContext<TRequest, TResponse>>(requests,
                         new ParallelOptions() { MaxDegreeOfParallelism = this.MaxDegreeOfParallelism },
                         () => new ParallelDiscoveryOperationContext<TRequest, TResponse>(threadLocalProxy.Value),
-                        (request, loopState, index, context) => 
+                        (request, loopState, index, context) =>
                         {
                             try
                             {
@@ -301,13 +301,19 @@ namespace Microsoft.Pfe.Xrm
     /// </remarks>
     public class ParallelOrganizationServiceProxy : ParallelServiceProxy<OrganizationServiceManager>
     {
+        private const int RateLimitExceededErrorCode = -2147015902;
+        private const int TimeLimitExceededErrorCode = -2147015903;
+        private const int ConcurrencyLimitExceededErrorCode = -2147015898;
+
+        private const int MaxRetries = 3;
+
         #region Constructor(s)
 
         public ParallelOrganizationServiceProxy(OrganizationServiceManager serviceManager)
-            : base(serviceManager) {  }
+            : base(serviceManager) { }
 
         public ParallelOrganizationServiceProxy(OrganizationServiceManager serviceManager, int maxDegreeOfParallelism)
-            : base(serviceManager, maxDegreeOfParallelism) {  }
+            : base(serviceManager, maxDegreeOfParallelism) { }
 
         #endregion
 
@@ -397,9 +403,9 @@ namespace Microsoft.Pfe.Xrm
         {
             return this.ExecuteOperationWithResponse<Entity, Entity>(targets, options,
                 (target, context) =>
-                {                   
+                {
                     target.Id = context.Local.Create(target); //Hydrate target with response Id
-                    
+
                     //Collect the result from each iteration in this partition
                     context.Results.Add(target);
                 },
@@ -513,7 +519,7 @@ namespace Microsoft.Pfe.Xrm
         /// <param name="errorHandler">An optional error handling operation. Handler will be passed the request that failed along with the corresponding <see cref="FaultException{OrganizationServiceFault}"/></param>
         /// <exception cref="AggregateException">callers should catch <see cref="AggregateException"/> to handle exceptions raised by individual requests</exception>
         public void Disassociate(IEnumerable<DisassociateRequest> requests, Action<DisassociateRequest, FaultException<OrganizationServiceFault>> errorHandler = null)
-        {         
+        {
             this.Disassociate(requests, new OrganizationServiceProxyOptions(), errorHandler);
         }
 
@@ -664,7 +670,7 @@ namespace Microsoft.Pfe.Xrm
                     },
                     errorHandler)
                     .ToDictionary(r => r.Key, r => r.Value);
-        }     
+        }
 
         #endregion
 
@@ -836,16 +842,16 @@ namespace Microsoft.Pfe.Xrm
             Action<TRequest, ManagedTokenOrganizationServiceProxy> operation, Action<TRequest, FaultException<OrganizationServiceFault>> errorHandler)
         {
             var allFailures = new ConcurrentBag<ParallelOrganizationOperationFailure<TRequest>>();
-            
+
             // Inline method for initializing a new organization service channel
             Func<ManagedTokenOrganizationServiceProxy> proxyInit = () =>
-                {
-                    var proxy = this.ServiceManager.GetProxy();
-                    proxy.SetProxyOptions(options);
+            {
+                var proxy = this.ServiceManager.GetProxy();
+                proxy.SetProxyOptions(options);
 
-                    return proxy;
-                };
-            
+                return proxy;
+            };
+
             using (var threadLocalProxy = new ThreadLocal<ManagedTokenOrganizationServiceProxy>(proxyInit, true))
             {
                 try
@@ -855,20 +861,22 @@ namespace Microsoft.Pfe.Xrm
                         () => new ParallelOrganizationOperationContext<TRequest, bool>(),
                         (request, loopState, index, context) =>
                         {
-                            try
+                            var retryCount = 0;
+                            while (true)
                             {
-                                operation(request, threadLocalProxy.Value);
-                            }
-                            catch (FaultException<OrganizationServiceFault> fault)
-                            {
-                                // Track faults locally                                
-                                if (errorHandler != null)
+                                try
                                 {
-                                    context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, fault));
+                                    operation(request, threadLocalProxy.Value);
                                 }
-                                else
+                                catch (FaultException<OrganizationServiceFault> e) when (IsTransientError(e) && ++retryCount < MaxRetries)
                                 {
-                                    throw;
+                                    ApplyDelay(e, retryCount);
+                                }
+                                catch (FaultException<OrganizationServiceFault> fault) when (errorHandler != null)
+                                {
+                                    // Track faults locally                                
+                                    context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, fault));
+                                    break;
                                 }
                             }
 
@@ -891,7 +899,7 @@ namespace Microsoft.Pfe.Xrm
             {
                 foreach (var failure in allFailures)
                 {
-                    errorHandler(failure.Request, failure.Exception);                    
+                    errorHandler(failure.Request, failure.Exception);
                 }
             }
         }
@@ -917,13 +925,13 @@ namespace Microsoft.Pfe.Xrm
 
             // Inline method for initializing a new organization service channel
             Func<ManagedTokenOrganizationServiceProxy> proxyInit = () =>
-                {
-                    var proxy = this.ServiceManager.GetProxy();
-                    proxy.SetProxyOptions(options);
+            {
+                var proxy = this.ServiceManager.GetProxy();
+                proxy.SetProxyOptions(options);
 
-                    return proxy;
-                };
-            
+                return proxy;
+            };
+
             using (var threadLocalProxy = new ThreadLocal<ManagedTokenOrganizationServiceProxy>(proxyInit, true))
             {
                 try
@@ -933,30 +941,32 @@ namespace Microsoft.Pfe.Xrm
                         () => new ParallelOrganizationOperationContext<TRequest, TResponse>(threadLocalProxy.Value),
                         (request, loopState, index, context) =>
                         {
-                            try
+                            var retryCount = 0;
+                            while (true)
                             {
-                                coreOperation(request, context);
-                            }
-                            catch (FaultException<OrganizationServiceFault> fault)
-                            {
-                                // Track faults locally
-                                if (errorHandler != null)
+                                try
                                 {
-                                    context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, fault));
+                                    coreOperation(request, context);
                                 }
-                                else
+                                catch (FaultException<OrganizationServiceFault> e) when (IsTransientError(e) && ++retryCount < MaxRetries)
                                 {
-                                    throw;
+                                    ApplyDelay(e, retryCount);
+                                }
+                                catch (FaultException<OrganizationServiceFault> fault) when (errorHandler != null)
+                                {
+                                    // Track faults locally
+                                    context.Failures.Add(new ParallelOrganizationOperationFailure<TRequest>(request, fault));
+                                    break;
                                 }
                             }
 
                             return context;
                         },
                         (context) =>
-                        {                                                                                                                
+                        {
                             // Join results and faults together
                             Array.ForEach(context.Results.ToArray(), r => allResponses.Add(r));
-                            Array.ForEach(context.Failures.ToArray(), f => allFailures.Add(f));                            
+                            Array.ForEach(context.Failures.ToArray(), f => allFailures.Add(f));
 
                             // Remove temporary reference to ThreadLocal proxy
                             context.Local = null;
@@ -971,13 +981,39 @@ namespace Microsoft.Pfe.Xrm
             // Handle faults
             if (errorHandler != null)
             {
-                foreach(var failure in allFailures)
+                foreach (var failure in allFailures)
                 {
-                    errorHandler(failure.Request, failure.Exception);                  
+                    errorHandler(failure.Request, failure.Exception);
                 }
             }
 
             return allResponses;
+        }
+
+
+        private static void ApplyDelay(FaultException<OrganizationServiceFault> e, int retryCount)
+        {
+            TimeSpan delay;
+            if (e.Detail.ErrorCode == RateLimitExceededErrorCode)
+            {
+                // Use Retry-After delay when specified
+                delay = (TimeSpan)e.Detail.ErrorDetails["Retry-After"];
+            }
+            else
+            {
+                // else use exponential backoff delay
+                delay = TimeSpan.FromSeconds(Math.Pow(2, retryCount));
+            }
+
+            Thread.Sleep(delay);
+        }
+
+        private static bool IsTransientError(FaultException<OrganizationServiceFault> ex)
+        {
+            // You can add more transient fault codes to retry here
+            return ex.Detail.ErrorCode == RateLimitExceededErrorCode ||
+                   ex.Detail.ErrorCode == TimeLimitExceededErrorCode ||
+                   ex.Detail.ErrorCode == ConcurrencyLimitExceededErrorCode;
         }
 
         #endregion 
@@ -990,7 +1026,7 @@ namespace Microsoft.Pfe.Xrm
     public abstract class ParallelServiceProxy<T> : ParallelServiceProxy
         where T : XrmServiceManagerBase
     {
-        protected static object syncRoot = new Object();            
+        protected static object syncRoot = new Object();
 
         #region Constructor(s)
 
@@ -1014,7 +1050,7 @@ namespace Microsoft.Pfe.Xrm
         #endregion
 
         #region Properties
-        
+
         protected T ServiceManager { get; set; }
 
 
