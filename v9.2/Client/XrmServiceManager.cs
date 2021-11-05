@@ -259,27 +259,12 @@ namespace Microsoft.Pfe.Xrm
 
         protected Microsoft.PowerPlatform.Dataverse.Client.ServiceClient GetProxy<ServiceClient>()
         {
-            if (this.ServiceClient.ActiveAuthenticationType != Microsoft.PowerPlatform.Dataverse.Client.AuthenticationType.ExternalTokenManagement)
+            if (this.IsCrmServiceClient)
             {
-                if (AdalVersion == null)
+                if (this.ServiceClient.IsReady)
                 {
-                    FileVersionInfo fvi = FileVersionInfo.GetVersionInfo("Microsoft.IdentityModel.Clients.ActiveDirectory.dll");
-                    AdalVersion = fvi;
-                }
-
-                if (AdalVersion != null
-                    && (AdalVersion.FileMajorPart != 2 && AdalVersion.FileMajorPart != 3))
-                {
-                    XrmCoreEventSource.Log.LogError($"ADAL Version {AdalVersion.FileVersion} is not matching the expected versions of 2.x or 3.x. Certain functions may not work as expected if you're not using the AuthOverrideHook.");
-                }
-            }
-           
-            if ( this.IsCrmServiceClient )
-            {
-                if(this.ServiceClient.IsReady)
-                {
-                    if(this.ServiceClient.ActiveAuthenticationType == Microsoft.PowerPlatform.Dataverse.Client.AuthenticationType.OAuth
-                        || this.ServiceClient.ActiveAuthenticationType == Microsoft.PowerPlatform.Dataverse.Client.AuthenticationType.Certificate 
+                    if (this.ServiceClient.ActiveAuthenticationType == Microsoft.PowerPlatform.Dataverse.Client.AuthenticationType.OAuth
+                        || this.ServiceClient.ActiveAuthenticationType == Microsoft.PowerPlatform.Dataverse.Client.AuthenticationType.Certificate
                         || this.ServiceClient.ActiveAuthenticationType == Microsoft.PowerPlatform.Dataverse.Client.AuthenticationType.ClientSecret
                         || this.ServiceClient.ActiveAuthenticationType == Microsoft.PowerPlatform.Dataverse.Client.AuthenticationType.ExternalTokenManagement)
                     {
@@ -302,6 +287,22 @@ namespace Microsoft.Pfe.Xrm
                     }
                 }
             }
+
+            if (this.ServiceClient.ActiveAuthenticationType != Microsoft.PowerPlatform.Dataverse.Client.AuthenticationType.ExternalTokenManagement)
+            {
+                if (AdalVersion == null)
+                {
+                    FileVersionInfo fvi = FileVersionInfo.GetVersionInfo("Microsoft.IdentityModel.Clients.ActiveDirectory.dll");
+                    AdalVersion = fvi;
+                }
+
+                if (AdalVersion != null
+                    && (AdalVersion.FileMajorPart != 2 && AdalVersion.FileMajorPart != 3))
+                {
+                    XrmCoreEventSource.Log.LogError($"ADAL Version {AdalVersion.FileVersion} is not matching the expected versions of 2.x or 3.x. Certain functions may not work as expected if you're not using the AuthOverrideHook.");
+                }
+            }
+
             XrmCoreEventSource.Log.LogFailureLine($"CrmServiceClient is 'Not Ready'.  The only reason we can find is: {this.ServiceClient.LastError}");
             throw new Exception($"CrmServiceClient is 'Not Ready'.  The only reason we can find is: {this.ServiceClient.LastError}", this.ServiceClient.LastException);
         }
