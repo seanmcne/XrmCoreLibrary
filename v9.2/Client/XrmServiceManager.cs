@@ -32,6 +32,7 @@ namespace Microsoft.Pfe.Xrm
     using Microsoft.Rest;
     using System.Security.Cryptography.X509Certificates;
     using Microsoft.PowerPlatform.Dataverse.Client;
+    using System.IO;
 
 
     /// <summary>
@@ -45,7 +46,7 @@ namespace Microsoft.Pfe.Xrm
         /// Setup base / Preinitialized XRM client. 
         /// </summary>
         /// <param name="cli"></param>
-        public OrganizationServiceManager(ServiceClient crmServiceClientObject) 
+        public OrganizationServiceManager(ServiceClient crmServiceClientObject)
             : base(crmServiceClientObject) { }
 
         /// <summary>
@@ -71,7 +72,7 @@ namespace Microsoft.Pfe.Xrm
         #endregion
 
         #region Fields
-        
+
         private ParallelOrganizationServiceProxy parallelProxy;
 
         #endregion
@@ -89,7 +90,7 @@ namespace Microsoft.Pfe.Xrm
 
                 return this.parallelProxy;
             }
-        } 
+        }
 
         #endregion
     }
@@ -138,16 +139,16 @@ namespace Microsoft.Pfe.Xrm
         /// <param name="password">The password of the identity to authenticate</param>
         /// <param name="applicationId">The password of the identity to authenticate</param>
         /// <param name="password">The password of the identity to authenticate</param>
-        protected XrmServiceManager(Uri environmentUri, string username, string password, string applicationId= null, Uri redirectUri = null)            
+        protected XrmServiceManager(Uri environmentUri, string username, string password, string applicationId = null, Uri redirectUri = null)
         {
-            if(applicationId == null || redirectUri == null)
+            if (applicationId == null || redirectUri == null)
             {
                 applicationId = "2ad88395-b77d-4561-9441-d0e40824f9bc";
-                redirectUri = new Uri("app://5d3e90d6-aa8e-48a8-8f2c-58b45cc67315"); 
+                redirectUri = new Uri("app://5d3e90d6-aa8e-48a8-8f2c-58b45cc67315");
             }
 
             var connectionstring = $"Username={username};Password={password};Url={environmentUri.AbsoluteUri};AuthType=OAuth;ClientId={applicationId};redirecturi={redirectUri};SkipDiscovery=True";
-            
+
             this.ServiceClient = new ServiceClient(connectionstring);
         }
 
@@ -159,7 +160,7 @@ namespace Microsoft.Pfe.Xrm
         /// Copy of the CrmService Client that has been initialized
         /// </summary>
         private ServiceClient ServiceClient { get; set; }
-        
+
         /// <summary>
         /// Is TService an IOrganizationService type
         /// </summary>
@@ -177,8 +178,10 @@ namespace Microsoft.Pfe.Xrm
         /// <summary>
         /// Current endpoint address
         /// </summary>
-        public Uri ServiceUri {
-            get {
+        public Uri ServiceUri
+        {
+            get
+            {
                 return this.ServiceClient.ConnectedOrgUriActual;
             }
         }
@@ -201,12 +204,12 @@ namespace Microsoft.Pfe.Xrm
         {
             get
             {
-                return this.ServiceClient.MaxRetryCount; 
+                return this.ServiceClient.MaxRetryCount;
             }
             set
             {
-                this.ServiceClient.MaxRetryCount = value; 
-            } 
+                this.ServiceClient.MaxRetryCount = value;
+            }
         }
 
         /// <summary>
@@ -220,7 +223,7 @@ namespace Microsoft.Pfe.Xrm
             }
             set
             {
-                this.ServiceClient.RetryPauseTime = value; 
+                this.ServiceClient.RetryPauseTime = value;
             }
         }
 
@@ -259,6 +262,28 @@ namespace Microsoft.Pfe.Xrm
 
         protected Microsoft.PowerPlatform.Dataverse.Client.ServiceClient GetProxy<ServiceClient>()
         {
+            if (this.ServiceClient.ActiveAuthenticationType != Microsoft.PowerPlatform.Dataverse.Client.AuthenticationType.ExternalTokenManagement)
+            {
+                //This should no longer be needed as DataverseClient is ported over to MSAL, but keeping it here for review/testing.
+                //Added check for file exist before getting the FileVersion.
+                if (AdalVersion == null)
+                {
+                    var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.RelativeSearchPath ?? "") + @"\Microsoft.IdentityModel.Clients.ActiveDirectory.dll";
+                    
+                    if (File.Exists(path))
+                    {
+                        FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(path);
+                        AdalVersion = fvi;
+                    }
+                }
+
+                if (AdalVersion != null
+                    && (AdalVersion.FileMajorPart != 2 && AdalVersion.FileMajorPart != 3))
+                {
+                    XrmCoreEventSource.Log.LogError($"ADAL Version {AdalVersion.FileVersion} is not matching the expected versions of 2.x or 3.x. Certain functions may not work as expected if you're not using the AuthOverrideHook.");
+                }
+            }
+
             if (this.IsCrmServiceClient)
             {
                 if (this.ServiceClient.IsReady)
@@ -288,25 +313,10 @@ namespace Microsoft.Pfe.Xrm
                 }
             }
 
-            if (this.ServiceClient.ActiveAuthenticationType != Microsoft.PowerPlatform.Dataverse.Client.AuthenticationType.ExternalTokenManagement)
-            {
-                if (AdalVersion == null)
-                {
-                    FileVersionInfo fvi = FileVersionInfo.GetVersionInfo("Microsoft.IdentityModel.Clients.ActiveDirectory.dll");
-                    AdalVersion = fvi;
-                }
-
-                if (AdalVersion != null
-                    && (AdalVersion.FileMajorPart != 2 && AdalVersion.FileMajorPart != 3))
-                {
-                    XrmCoreEventSource.Log.LogError($"ADAL Version {AdalVersion.FileVersion} is not matching the expected versions of 2.x or 3.x. Certain functions may not work as expected if you're not using the AuthOverrideHook.");
-                }
-            }
-
             XrmCoreEventSource.Log.LogFailureLine($"CrmServiceClient is 'Not Ready'.  The only reason we can find is: {this.ServiceClient.LastError}");
             throw new Exception($"CrmServiceClient is 'Not Ready'.  The only reason we can find is: {this.ServiceClient.LastError}", this.ServiceClient.LastException);
         }
-        
+
         /// <summary>
         /// Sets up a new proxy connection of type TProxy using <see cref="TService"/>
         /// </summary>
@@ -318,8 +328,8 @@ namespace Microsoft.Pfe.Xrm
         /// </remarks>
         public ServiceClient GetProxy()
         {
-            return this.GetProxy<ServiceClient>();                          
-        }        
+            return this.GetProxy<ServiceClient>();
+        }
 
         #endregion
     }
