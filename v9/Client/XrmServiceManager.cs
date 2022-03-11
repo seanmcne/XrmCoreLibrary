@@ -260,21 +260,29 @@ namespace Microsoft.Pfe.Xrm
 
         protected Microsoft.Xrm.Tooling.Connector.CrmServiceClient GetProxy<CrmServiceClient>()
         {
-            if (this.ServiceClient.ActiveAuthenticationType != Microsoft.Xrm.Tooling.Connector.AuthenticationType.ExternalTokenManagement)
+            try
             {
-                if (AdalVersion == null)
+                if (this.ServiceClient.ActiveAuthenticationType != Microsoft.Xrm.Tooling.Connector.AuthenticationType.ExternalTokenManagement)
                 {
-                    FileVersionInfo fvi = FileVersionInfo.GetVersionInfo("Microsoft.IdentityModel.Clients.ActiveDirectory.dll");
-                    AdalVersion = fvi;
-                }
+                    if (AdalVersion == null)
+                    {
+                        FileVersionInfo fvi = FileVersionInfo.GetVersionInfo("Microsoft.IdentityModel.Clients.ActiveDirectory.dll");
+                        AdalVersion = fvi;
+                    }
 
-                if (AdalVersion != null
-                    && (AdalVersion.FileMajorPart != 2 && AdalVersion.FileMajorPart != 3))
-                {
-                    XrmCoreEventSource.Log.LogError($"ADAL Version {AdalVersion.FileVersion} is not matching the expected versions of 2.x or 3.x. Certain functions may not work as expected if you're not using the AuthOverrideHook.");
+                    if (AdalVersion != null
+                        && (AdalVersion.FileMajorPart != 2 && AdalVersion.FileMajorPart != 3))
+                    {
+                        XrmCoreEventSource.Log.LogError($"ADAL Version {AdalVersion.FileVersion} is not matching the expected versions of 2.x or 3.x. Certain functions may not work as expected if you're not using the AuthOverrideHook.");
+                    }
                 }
             }
-           
+            catch
+            {
+                XrmCoreEventSource.Log.LogWarning($"ADAL Version was not found and may not match the expected versions of 2.x or 3.x. Certain functions may not work as expected if you're not using the AuthOverrideHook.");
+            }
+
+
             if ( this.IsCrmServiceClient )
             {
                 if(this.ServiceClient.IsReady)
