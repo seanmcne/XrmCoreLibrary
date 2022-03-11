@@ -1,9 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>msftpfedynamics-private.pfx</AssemblyOriginatorKeyFile>
-    <DelaySign>false</DelaySign>
     <AssemblyName>Microsoft.Pfe.Xrm.Core</AssemblyName>
     <RootNamespace>Microsoft.Pfe.Xrm.Core</RootNamespace>
     <Company>Microsoft Corporation</Company>
