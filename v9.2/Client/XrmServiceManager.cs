@@ -302,6 +302,7 @@ namespace Microsoft.Pfe.Xrm
                         //cloned objects don't inherit the same settings, fixing that in code for now
                         svcClientClone.RetryPauseTime = this.ServiceClient.RetryPauseTime;
                         svcClientClone.MaxRetryCount = this.ServiceClient.MaxRetryCount;
+                        svcClientClone.UseWebApi = this.ServiceClient.UseWebApi;
 
                         return svcClientClone;
                     }
